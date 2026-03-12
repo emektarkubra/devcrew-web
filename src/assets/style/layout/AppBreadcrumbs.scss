@@ -1,0 +1,29 @@
+@import "../variables";
+
+.ant-breadcrumb-link {
+    display: flex;
+    justify-content: center !important;
+    align-items: center !important;
+    color: $primary-color !important;
+
+    a {
+        color: $light-gray1 !important;
+
+        &:hover {
+            background-color: #ffffff00;
+        }
+    }
+}
+
+.custom-breadcrumbs {
+    li {
+        display: flex;
+        color: $light-gray1 !important;
+    }
+}
+
+.current-breadcrumb {
+    a {
+        color: $primary-color !important;
+    }
+}

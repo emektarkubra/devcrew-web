@@ -1,0 +1,22 @@
+@import '../variables';
+
+.app-container {
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+}
+
+.app-inside-container {
+    margin-top: 64px;
+}
+
+.content-container {
+    text-align: center;
+    min-height: 120px;
+    line-height: 120px;
+}
+
+.sidebar-container {
+    background-color: $white;
+}

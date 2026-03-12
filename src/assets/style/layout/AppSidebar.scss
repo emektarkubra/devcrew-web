@@ -1,0 +1,127 @@
+@import "/src/assets/style/variables";
+
+.sider-container {
+    text-align: center;
+    line-height: 120px;
+    flex: 0 0 200px !important;
+    min-width: 200px !important;
+    width: 200px !important;
+
+    .ant-layout-sider-children {
+        background-color: $white;
+    }
+
+    .ant-menu-item {
+        text-align: start !important;
+        margin: 0px !important;
+        width: 100%;
+        border-radius: 5px;
+
+        &:hover {
+            background-color: $light-primary-color !important;
+        }
+    }
+
+    .ant-menu-sub {
+        li {
+            padding-left: 35px !important;
+        }
+    }
+
+    .ant-menu-title-content {
+        color: $dark-gray;
+    }
+
+    .ant-menu-submenu-title {
+        text-align: start !important;
+        width: 100%;
+        margin: 0px !important;
+    }
+
+    .ant-menu-item-selected {
+        background-color: $light-primary-color;
+        color: $primary-color;
+
+        .ant-menu-title-content {
+            color: $primary-color !important;
+        }
+
+        .ant-menu-item-icon {
+            color: $primary-color !important;
+        }
+    }
+
+    .ant-menu-item-icon {
+        color: $dark-gray !important;
+    }
+
+    .ant-menu-light.ant-menu-inline .ant-menu-item-selected::after {
+        border: 1.5px solid $primary-color !important;
+    }
+
+}
+
+.collapsed-sider-container {
+    flex: 0 0 70px !important;
+    min-width: 70px !important;
+    width: 70px !important;
+
+    .ant-menu-title-content {
+        display: none;
+    }
+
+    .ant-menu-submenu-arrow {
+        display: none;
+    }
+
+    .ant-menu-submenu-title {
+        padding: 0 16px;
+    }
+
+    .ant-menu-item {
+        padding: 0 16px;
+        display: flex;
+        justify-content: center;
+
+        &:hover {
+            background-color: $light-primary-color !important;
+
+            .ant-menu-item-icon {
+                color: $primary-color !important;
+            }
+        }
+    }
+
+    .ant-menu-submenu-title {
+        display: flex;
+        justify-content: center;
+
+        &:hover {
+            background-color: $light-primary-color !important;
+        }
+    }
+
+    .ant-menu-submenu-selected {
+        background-color: $light-primary-color;
+
+        .ant-menu-item-icon {
+            color: $primary-color !important;
+        }
+    }
+
+    .ant-menu-submenu {
+        &:hover {
+            .ant-menu-item-icon {
+                color: $primary-color !important;
+            }
+
+        }
+    }
+}
+
+.ant-menu-submenu-popup {
+    .ant-menu-item-selected {
+        background-color: $light-primary-color;
+        color: $primary-color;
+    }
+}

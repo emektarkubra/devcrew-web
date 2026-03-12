@@ -1,0 +1,58 @@
+@import "../style/variables";
+
+// Select
+
+.ant-select-single .ant-select-selector {
+    &:hover {
+        border: 1px solid $primary-color !important;
+    }
+}
+
+.ant-select-selection-item {
+    color: $dark-gray !important;
+    font-size: 12px;
+    @apply dark:text-lightColor !important;
+}
+
+.ant-select-selector {
+    background-color: $light-gray4 !important;
+    @apply dark:bg-darkColor !important;
+}
+
+.ant-select-dropdown {
+    @apply dark:bg-darkColor !important;
+}
+
+.ant-select-item-option-content {
+    @apply dark:text-lightColor !important;
+}
+
+.ant-select-item-option-content {
+    color: $dark-gray !important;
+}
+
+.ant-select-item-option-active {
+    background-color: $light-primary-color !important;
+
+    .ant-select-item-option-content {
+        color: $primary-color !important;
+    }
+}
+
+.ant-select-item-option-selected {
+    background-color: $light-primary-color !important;
+
+    .ant-select-item-option-content {
+        color: $primary-color !important;
+    }
+}
+
+// Button
+
+.ant-btn {
+    cursor: pointer;
+
+    &:hover {
+        background-color: #ffffff00 !important;
+    }
+}
