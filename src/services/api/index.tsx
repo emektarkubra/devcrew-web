@@ -1,4 +1,5 @@
 import { dashboard } from "./dashboard";
+import { login } from "./login";
 
 
 /**
@@ -16,6 +17,15 @@ class api {
      * @memberof api
      */
     static dashboard = dashboard;
+
+
+    /**
+     *
+     * Login
+     * @static
+     * @memberof login
+     */
+    static login = login;
 
 }
 
