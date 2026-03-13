@@ -1,27 +1,26 @@
 import { Route, Routes } from "react-router-dom"
-import getRoutesWithAuth from "./routes"
 import { useContext } from "react"
 import { AuthContext } from "./context/authContext"
+import getRoutes from "./routes"
 import Page404 from "./pages/page404"
+import Login from "./pages/login"
 
 function App() {
+  const { isAuthenticated } = useContext(AuthContext)
 
-  const { userRoles } = useContext(AuthContext)
-  const MENU_ROUTES = getRoutesWithAuth(userRoles)
+  if (!isAuthenticated) {
+    return <Login /> 
+  }
+
+  const MENU_ROUTES = getRoutes()
 
   return (
-    <>
-      <Routes>
-        {
-          MENU_ROUTES?.map((menuElement, index) => {
-            return (
-              <Route key={index} path={menuElement?.path} element={menuElement?.element} />
-            )
-          })
-        }
-        <Route path="*" element={<Page404 />} />
-      </Routes>
-    </>
+    <Routes>
+      {MENU_ROUTES?.map((menuElement, index) => (
+        <Route key={index} path={menuElement?.path} element={menuElement?.element} />
+      ))}
+      <Route path="*" element={<Page404 />} />
+    </Routes>
   )
 }
 
