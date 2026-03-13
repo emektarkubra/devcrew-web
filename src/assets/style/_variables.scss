@@ -1,9 +1,34 @@
-$primary-color : #1677ff;
-$light-primary-color : rgba(22, 119, 255, 0.067);
+$primary-color: #1677ff;
+$light-primary-color: rgba(22, 119, 255, 0.067);
 
-$dark-gray : #595959;
-$light-gray1 : #8c8c8c;
-$light-gray2 : #bfbfbf;
-$light-gray3 : #d9d9d9;
-$light-gray4 : #f0f0f0;
+$dark-gray: #595959;
+$light-gray1: #8c8c8c;
+$light-gray2: #bfbfbf;
+$light-gray3: #d9d9d9;
+$light-gray4: #f0f0f0;
 $white: #fff;
+
+// GitHub Dark Mode
+$gh-bg-primary: #0d1117;       // sayfa arka planı
+$gh-bg-secondary: #161b22;     // kart, panel arka planı
+$gh-bg-tertiary: #21262d;      // input, hover arka planı
+
+$gh-border: #30363d;           // varsayılan border
+$gh-border-light: #21262d;     // hafif border
+
+$gh-text-primary: #e6edf3;     // ana metin
+$gh-text-secondary: #8b949e;   // ikincil metin
+$gh-text-muted: #6e7681;       // soluk metin
+
+$gh-green: #238636;            // primary buton (yeşil)
+$gh-green-border: #2ea043;     // yeşil buton border
+$gh-green-text: #3fb950;       // yeşil ikon, link
+
+$gh-blue: #1f6feb;             // link, info
+$gh-blue-light: #388bfd;       // hover link
+
+$gh-red: #da3633;              // danger, hata
+$gh-red-light: #f85149;        // hata metni
+
+$gh-yellow: #9e6a03;           // warning
+$gh-yellow-light: #d29922;     // warning metni

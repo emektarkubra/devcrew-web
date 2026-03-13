@@ -18,20 +18,29 @@ export const AuthContext = createContext<AuthContextProps>({
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<any | null>(null);
     const [token, setToken] = useState<string | null>(localStorage.getItem('dt-token'));
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         // GitHub'dan callback ile gelen token'ı yakala
         const newToken = api.login.handleCallback();
         if (newToken) setToken(newToken);
+        else setLoading(false);
     }, []);
 
     useEffect(() => {
-        if (!token) return;
+        if (!token) {
+            setLoading(false);
+            return;
+        }
         api.login.getMe(token)
-            .then((r: any) => setUser(r.data))
+            .then((r: any) => {
+                setUser(r.data)
+                setLoading(false)   // ← kullanıcı gelince kapat
+            })
             .catch(() => {
                 localStorage.removeItem('dt-token');
                 setToken(null);
+                setLoading(false);
             });
     }, [token]);
 
@@ -43,7 +52,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
     return (
         <AuthContext.Provider value={{ user, token, isAuthenticated: !!token && !!user, logout }}>
-            {children}
+            {loading ? null : children}  {/* ← loading bitene kadar hiçbir şey render etme */}
         </AuthContext.Provider>
     );
 };
