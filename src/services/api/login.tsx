@@ -2,33 +2,23 @@ import request from "./requests";
 import * as paths from "./paths"
 
 class login {
+
     /**
-     * Dashboard environment
+     * redirect gitHub login
      * @static
      * @memberof login
      */
-    static getEnvironement = async () => {
-        return await request.get(paths.dashboard)
+    static githubLogin = () => {
+        const baseURL = import.meta.env.VITE_API_BASE_URL || (window as any).API_BASE_URL
+        const url = `${baseURL}${paths.githubLogin}`
+        console.log('GİDİLECEK URL:', url)
+        alert(url) 
+        window.location.href = url
     }
 
-    /**
-     * GitHub login sayfasına yönlendir
-     * @static
-     * @memberof login
-     */
-
-
-    static githubLogin = () => {
-  const baseURL = import.meta.env.VITE_API_BASE_URL || (window as any).API_BASE_URL
-  const url = `${baseURL}${paths.githubLogin}`
-  console.log('GİDİLECEK URL:', url)
-  alert(url)  // ← bunu ekle, kaybolmaz
-  window.location.href = url
-}
-
 
     /**
-     * Token ile giriş yapan kullanıcının bilgilerini getir
+     * user info with token
      * @static
      * @memberof login
      */
@@ -37,7 +27,7 @@ class login {
     }
 
     /**
-     * Kullanıcının repolarını getir
+     * user repo list
      * @static
      * @memberof login
      */
@@ -46,25 +36,25 @@ class login {
     }
 
     /**
-     * URL'den token'ı al ve localStorage'a kaydet
+     * get token from url and save
      * @static
      * @memberof login
      */
     static handleCallback = () => {
         const params = new URLSearchParams(window.location.search)
-        const token  = params.get('token')
+        const token = params.get('token')
 
         if (token) {
-        localStorage.setItem('dt-token', token)
-        // URL'den token'ı temizle
-        window.history.replaceState({}, '', '/')
-        return token
+            localStorage.setItem('dt-token', token)
+            // URL'den token'ı temizle
+            window.history.replaceState({}, '', '/')
+            return token
         }
         return null
     }
 
     /**
-     * Çıkış yap
+     * logout
      * @static
      * @memberof login
      */
@@ -74,7 +64,7 @@ class login {
     }
 
     /**
-     * Kullanıcı giriş yapmış mı kontrol et
+     * 
      * @static
      * @memberof login
      */

@@ -3,6 +3,12 @@ import './index.scss'
 
 const Login = () => {
 
+    const githubLoginInfo = [
+        'Profil bilgileri (username, avatar)',
+        'Public ve private repolar',
+        'Email adresi'
+    ]
+
     const handleLogin = () => {
         api.login.githubLogin()
     }
@@ -21,11 +27,7 @@ const Login = () => {
 
                 <div className="login-page__permissions">
                     <p className="login-page__permissions__title">Bu uygulama şunlara erişecek:</p>
-                    {[
-                        'Profil bilgileri (username, avatar)',
-                        'Public ve private repolar',
-                        'Email adresi',
-                    ].map((item) => (
+                    {githubLoginInfo?.map((item) => (
                         <div key={item} className="login-page__permissions__item">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="#3fb950">
                                 <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z" />
