@@ -9,26 +9,61 @@ $light-gray4: #f0f0f0;
 $white: #fff;
 
 // GitHub Dark Mode
-$gh-bg-primary: #0d1117;       // sayfa arka planı
-$gh-bg-secondary: #161b22;     // kart, panel arka planı
-$gh-bg-tertiary: #21262d;      // input, hover arka planı
+$gh-bg-primary: #0d1117; // sayfa arka planı
+$gh-bg-secondary: #161b22; // kart, panel arka planı
+$gh-bg-tertiary: #21262d; // input, hover arka planı
 
-$gh-border: #30363d;           // varsayılan border
-$gh-border-light: #21262d;     // hafif border
+$gh-border: #30363d; // varsayılan border
+$gh-border-light: #21262d; // hafif border
 
-$gh-text-primary: #e6edf3;     // ana metin
-$gh-text-secondary: #8b949e;   // ikincil metin
-$gh-text-muted: #6e7681;       // soluk metin
+$gh-text-primary: #e6edf3; // ana metin
+$gh-text-secondary: #8b949e; // ikincil metin
+$gh-text-muted: #6e7681; // soluk metin
 
-$gh-green: #238636;            // primary buton (yeşil)
-$gh-green-border: #2ea043;     // yeşil buton border
-$gh-green-text: #3fb950;       // yeşil ikon, link
+$gh-green: #238636; // primary buton (yeşil)
+$gh-green-border: #2ea043; // yeşil buton border
+$gh-green-text: #3fb950; // yeşil ikon, link
 
-$gh-blue: #1f6feb;             // link, info
-$gh-blue-light: #388bfd;       // hover link
+$gh-blue: #1f6feb; // link, info
+$gh-blue-light: #388bfd; // hover link
 
-$gh-red: #da3633;              // danger, hata
-$gh-red-light: #f85149;        // hata metni
+$gh-red: #da3633; // danger, hata
+$gh-red-light: #f85149; // hata metni
 
-$gh-yellow: #9e6a03;           // warning
-$gh-yellow-light: #d29922;     // warning metni
+$gh-yellow: #9e6a03; // warning
+$gh-yellow-light: #d29922; // warning metni
+
+
+
+
+// GitHub Light Mode
+$gh-light-bg-primary: #ffffff;
+$gh-light-bg-secondary: #f6f8fa;
+$gh-light-bg-tertiary: #eaeef2;
+
+$gh-light-border: #d0d7de;
+$gh-light-border-muted: #d8dee4;
+
+$gh-light-text-primary: #1f2328;
+$gh-light-text-secondary: #656d76;
+$gh-light-text-muted: #8c959f;
+
+$gh-light-green: #1a7f37;
+$gh-light-green-bg: #dafbe1;
+$gh-light-green-border: #82cfff;
+
+$gh-light-blue: #0969da;
+$gh-light-blue-bg: #ddf4ff;
+$gh-light-blue-border: #54aeff;
+
+$gh-light-purple: #8250df;
+$gh-light-purple-bg: #fbefff;
+$gh-light-purple-border: #d2a8ff;
+
+$gh-light-red: #d1242f;
+$gh-light-red-bg: #ffebe9;
+$gh-light-red-border: #ffcecb;
+
+$gh-light-yellow: #9a6700;
+$gh-light-yellow-bg: #fff8c5;
+$gh-light-yellow-border: #eac54f;

@@ -2,7 +2,7 @@ import axios, { AxiosRequestHeaders, ResponseType } from 'axios';
 import { stateError } from './errors';
 
 
-const baseURL = import.meta.env.API_BASE_URL || (window as any).API_BASE_URL;
+const baseURL = import.meta.env.VITE_API_BASE_URL || (window as any).API_BASE_URL;
 
 axios.defaults.baseURL = baseURL;
 axios.defaults.withCredentials = true;

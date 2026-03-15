@@ -42,46 +42,14 @@ export const MENU_ELEMENTS: MenuTypes[] = [
         key: '/dashboard',
         label: 'Dashboard',
         title: 'Dashboard',
-        href: '',
+        href: '/',
         icon: <Icon icon="mdi:home-outline" width='20px' />,
-        children: [
-            {
-                key: '/',
-                label: 'Main',
-                title: 'Main',
-                href: '/',
-                icon: <Icon icon="mdi:home-outline" width='16px' />,
-            },
-            {
-                key: '/analytics',
-                label: 'Analytics',
-                title: 'Analytics',
-                href: '/analytics',
-                icon: <Icon icon="mdi:view-dashboard-outline" width='16px' />,
-            }
-        ],
     },
     {
-        key: '/management',
-        label: 'Management',
-        title: 'Management',
-        href: '',
-        icon: <Icon icon="mdi:cog-outline" width='20px' />,
-        children: [
-            {
-                key: '/tasks',
-                label: 'Tasks',
-                title: 'Tasks',
-                href: '/tasks',
-                icon: <Icon icon="mdi:cog-outline" width='16px' />,
-            },
-            {
-                key: '/alerts',
-                label: 'Alerts',
-                title: 'Alerts',
-                href: '/alerts',
-                icon: <Icon icon="mdi:bell-outline" width='16px' />,
-            },
-        ],
-    },
+        key: '/profile',
+        label: 'Profile',
+        title: 'Profile',
+        href: '/profile',
+        icon: <Icon icon="mdi:home-outline" width='20px' />,
+    }
 ];

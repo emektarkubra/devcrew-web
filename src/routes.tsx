@@ -1,9 +1,5 @@
-import Analytics from "./pages/dashboard/analytics";
-import Home from "./pages/dashboard/home";
-import Detail from "./pages/dashboard/home/detail";
-import Inside from "./pages/dashboard/home/detail/inside";
-import Alerts from "./pages/management/alerts";
-import Tasks from "./pages/management/tasks";
+import Dashboard from "./pages/dashboard";
+import Profile from "./pages/profile";
 
 
 export const MENU_ROUTES = [
@@ -11,38 +7,16 @@ export const MENU_ROUTES = [
   {
     path: "/",
     title: "Main title",
-    element: <Home />,
-  },
-  {
-    path: "/detail-page",
-    title: "Detail title",
-    element: <Detail />,
-  },
-  {
-    path: "/detail-page/inside",
-    title: "Inside title",
-    element: <Inside />,
-  },
-  {
-    path: "/analytics",
-    title: "Analytics title",
-    element: <Analytics />,
+    element: <Dashboard />,
   },
 
-
-  // Management
+  // Profile
   {
-    path: "/tasks",
-    title: "Tasks title",
-    element: <Tasks />,
-  },
-  {
-    path: "/alerts",
-    title: "Alerts title",
-    element: <Alerts />,
-  },
+    path: "/profile",
+    title: "Main title",
+    element: <Profile />,
+  }
 ];
-
 
 const getRoutes = () => {
   return MENU_ROUTES;
