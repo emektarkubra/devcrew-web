@@ -1,14 +1,85 @@
 @import '../../assets/style/variables';
 
 .profile-page {
-    padding: 14px;
     background: $gh-light-bg-secondary;
     min-height: 100vh;
+
+    &__user-card {
+        border-radius: 0;
+        border: none !important;
+        border-bottom: 1px solid $gh-light-border !important;
+        box-shadow: none !important;
+    }
+
+    &__user-avatar {
+        border: 2px solid $gh-light-border;
+        flex-shrink: 0;
+    }
+
+    &__user-name {
+        margin: 0 !important;
+        text-align: left !important;
+    }
+
+    &__user-meta {
+        font-size: 13px;
+        color: $gh-light-text-secondary;
+        text-align: left;
+        display: block;
+    }
+
+    &__user-icon {
+        color: $gh-light-text-secondary;
+    }
+
+    &__user-link {
+        font-size: 13px;
+    }
+
+    &__scroll-container {
+        padding: 10px;
+        height: calc(100vh - 280px);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    &__stat-row {
+        margin-bottom: 10px;
+    }
+
+    &__stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        flex-shrink: 0;
+    }
+
+    &__stat-value {
+        margin: 0px !important;
+
+    }
+
+    &__stats__card {
+        height: 100%;
+
+    }
+
+    &__stat-label {
+        font-size: 16px;
+        color: $gh-light-text-secondary;
+        text-align: left;
+    }
+
+    &__filters {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
 
     .ant-card {
         background: $gh-light-bg-primary;
         border-color: $gh-light-border;
-        border-radius: 10px;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
     }
 
     .ant-statistic-title {
@@ -86,7 +157,6 @@
     .lang-dot {
         width: 10px;
         height: 10px;
-        border-radius: 50%;
         display: inline-block;
     }
 
@@ -97,18 +167,18 @@
 
     .visibility {
         font-size: 11px;
-        border-radius: 20px;
+        font-weight: 500;
 
         &.public {
-            background: $gh-light-green-bg;
-            color: $gh-light-green;
-            border: 1px solid $gh-light-green-border;
+            background: $gh-light-blue-bg;
+            color: $gh-light-blue;
+            border-color: $gh-light-blue-border;
         }
 
         &.private {
-            background: $gh-light-bg-secondary;
-            color: $gh-light-text-secondary;
-            border: 1px solid $gh-light-border;
+            background: $gh-light-red-bg;
+            color: $gh-light-red;
+            border-color: $gh-light-red-border;
         }
     }
 
