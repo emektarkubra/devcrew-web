@@ -1,0 +1,156 @@
+.documentation {
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #fff;
+    margin: 20px;
+
+    &__header {
+        padding: 14px 20px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    &__dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #534AB7;
+        flex-shrink: 0;
+    }
+
+    &__body {
+        padding: 20px;
+    }
+
+    &__section-label {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        display: block !important;
+    }
+
+    &__input {
+        flex: 1;
+    }
+
+    &__generate-btn {
+        background: #534AB7 !important;
+    }
+
+    &__preview-btn--active {
+        background: #534AB7 !important;
+    }
+
+    &__preview-card {
+        background: #f9fafb !important;
+        max-height: 420px;
+        overflow-y: auto;
+    }
+
+    &__file-title {
+        font-size: 17px !important;
+        font-weight: 500 !important;
+        display: block !important;
+    }
+
+    &__file-desc {
+        font-size: 13px !important;
+        line-height: 1.65 !important;
+    }
+
+    &__methods-label {
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        display: block !important;
+        margin-bottom: 8px !important;
+    }
+
+    &__method-item {
+        background: #fff;
+        border: 1px solid #f0f0f0;
+        border-radius: 6px;
+        padding: 10px 12px;
+    }
+
+    &__method-header {
+        margin-bottom: 4px;
+    }
+
+    &__method-name {
+        font-size: 12px !important;
+        font-weight: 500 !important;
+    }
+
+    &__method-params {
+        font-size: 11px !important;
+        font-family: monospace !important;
+    }
+
+    &__method-returns {
+        font-size: 11px !important;
+        color: #534AB7 !important;
+        font-family: monospace !important;
+    }
+
+    &__method-desc {
+        font-size: 12px !important;
+    }
+
+    &__markdown {
+        font-family: monospace;
+        font-size: 12px;
+        line-height: 1.7;
+        color: #111;
+        margin: 0;
+        white-space: pre-wrap;
+    }
+
+    &__export-btn {
+        flex: 1;
+        background: #534AB7 !important;
+    }
+
+    &__repo-btn {
+        flex: 1;
+    }
+
+    &__file-status-scroll {
+        max-height: 180px;
+        overflow-y: auto;
+    }
+
+    &__file-status-item {
+        padding: 8px 0;
+        width: 100%;
+    }
+
+    &__file-code {
+        font-size: 12px !important;
+    }
+
+    &__history-scroll {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    &__history-item {
+        padding: 10px 0;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    &__history-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #534AB7;
+        margin-top: 6px;
+        flex-shrink: 0;
+    }
+
+    &__history-file {
+        font-size: 12px !important;
+    }
+
+    &__history-meta {
+        font-size: 11px !important;
+    }
+}

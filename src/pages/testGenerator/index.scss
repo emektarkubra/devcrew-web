@@ -1,0 +1,141 @@
+.test-generator {
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #fff;
+    margin: 20px;
+
+    &__header {
+        padding: 14px 20px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    &__dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #3B6D11;
+        flex-shrink: 0;
+    }
+
+    &__body {
+        padding: 20px;
+    }
+
+    &__section-label {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        display: block !important;
+    }
+
+    &__input {
+        flex: 1;
+    }
+
+    &__generate-btn {
+        background: #3B6D11 !important;
+    }
+
+    &__card-green {
+        flex: 1;
+        background: #f0fdf4 !important;
+        border: 1px solid #bbf7d0 !important;
+    }
+
+    &__card-neutral {
+        flex: 1;
+        background: #f9fafb !important;
+    }
+
+    &__stat-value-green {
+        font-size: 22px !important;
+        font-weight: 500 !important;
+        color: #16a34a !important;
+    }
+
+    &__stat-value {
+        font-size: 22px !important;
+        font-weight: 500 !important;
+    }
+
+    &__tests-scroll {
+        max-height: 420px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    &__test-item {
+        border: 1px solid #f0f0f0;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    &__test-header {
+        padding: 9px 12px;
+        background: #f9fafb;
+        cursor: pointer;
+
+        &--expanded {
+            border-bottom: 1px solid #f0f0f0;
+        }
+    }
+
+    &__test-body {
+        padding: 10px 12px;
+    }
+
+    &__test-description {
+        font-size: 12px !important;
+        display: block !important;
+        margin-bottom: 8px !important;
+    }
+
+    &__test-code {
+        background: #f9fafb;
+        border-radius: 4px;
+        padding: 10px 12px;
+        font-family: monospace;
+        font-size: 12px;
+        line-height: 1.7;
+        color: #111;
+        white-space: pre;
+    }
+
+    &__save-btn {
+        flex: 1;
+        background: #3B6D11 !important;
+    }
+
+    &__run-btn {
+        flex: 1;
+    }
+
+    &__history-scroll {
+        max-height: 420px;
+        overflow-y: auto;
+    }
+
+    &__history-item {
+        padding: 10px 0;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    &__history-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #3B6D11;
+        margin-top: 6px;
+        flex-shrink: 0;
+    }
+
+    &__history-file {
+        font-size: 12px !important;
+    }
+
+    &__history-meta {
+        font-size: 11px !important;
+    }
+}
