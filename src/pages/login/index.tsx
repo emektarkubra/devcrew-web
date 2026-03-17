@@ -11,6 +11,7 @@ const Login = () => {
 
     const handleLogin = () => {
         api.login.githubLogin()
+        
     }
 
     return (

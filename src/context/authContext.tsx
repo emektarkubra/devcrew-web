@@ -36,6 +36,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
             .then((r: any) => {
                 setUser(r.data)
                 setLoading(false)   // ← kullanıcı gelince kapat
+                console.log('user: ', r.data)
             })
             .catch(() => {
                 localStorage.removeItem('dt-token');
@@ -48,6 +49,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         api.login.logout();
         setUser(null);
         setToken(null);
+        localStorage.removeItem('dt-token')  // ← bu çalışıyor mu?
+        window.location.href = '/'
     };
 
     return (

@@ -3,7 +3,6 @@ import { Content } from "antd/es/layout/layout";
 import "../assets/style/layout/layout.scss"
 import AppHeader from "./AppHeader";
 import AppSidebar from "./AppSidebar";
-import PageTitle from "../components/PageTitle";
 
 
 const withLayout = (PageContent: any) => {
@@ -19,7 +18,7 @@ const withLayout = (PageContent: any) => {
           <AppSidebar />
         </Flex>
         <Content className="content-container">
-          <PageTitle />
+          {/* <PageTitle /> */}
           {PageContent}
         </Content>
       </Layout>

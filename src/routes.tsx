@@ -1,9 +1,5 @@
-import Analytics from "./pages/dashboard/analytics";
-import Home from "./pages/dashboard/home";
-import Detail from "./pages/dashboard/home/detail";
-import Inside from "./pages/dashboard/home/detail/inside";
-import Alerts from "./pages/management/alerts";
-import Tasks from "./pages/management/tasks";
+import Dashboard from "./pages/dashboard";
+import Profile from "./pages/profile";
 
 
 export const MENU_ROUTES = [
@@ -11,38 +7,51 @@ export const MENU_ROUTES = [
   {
     path: "/",
     title: "Main title",
-    element: <Home />,
-  },
-  {
-    path: "/detail-page",
-    title: "Detail title",
-    element: <Detail />,
-  },
-  {
-    path: "/detail-page/inside",
-    title: "Inside title",
-    element: <Inside />,
-  },
-  {
-    path: "/analytics",
-    title: "Analytics title",
-    element: <Analytics />,
+    element: <Dashboard />,
   },
 
-
-  // Management
+  // Profile
   {
-    path: "/tasks",
-    title: "Tasks title",
-    element: <Tasks />,
+    path: "/profile",
+    title: "Main title",
+    element: <Profile />,
   },
   {
-    path: "/alerts",
-    title: "Alerts title",
-    element: <Alerts />,
-  },
+    path: "/agents/codebase-qa",
+    title: "Codebase Q&A",
+    element: <div>Codebase Q&A</div>,  // ilerleyen aşamada component gelir
+},
+{
+    path: "/agents/pr-review",
+    title: "PR Review",
+    element: <div>PR Review</div>,
+},
+{
+    path: "/agents/debugging",
+    title: "Debugging",
+    element: <div>Debugging</div>,
+},
+{
+    path: "/agents/test-generator",
+    title: "Test Generator",
+    element: <div>Test Generator</div>,
+},
+{
+    path: "/agents/documentation",
+    title: "Documentation",
+    element: <div>Documentation</div>,
+},
+{
+    path: "/analysis/architecture",
+    title: "Architecture Graph",
+    element: <div>Architecture Graph</div>,
+},
+{
+    path: "/analysis/intelligence",
+    title: "Repo Intelligence",
+    element: <div>Repo Intelligence</div>,
+},
 ];
-
 
 const getRoutes = () => {
   return MENU_ROUTES;
