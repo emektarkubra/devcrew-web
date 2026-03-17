@@ -1,221 +1,403 @@
-import { Card, Row, Col, Statistic, Table, Tag, Typography, Avatar, List } from 'antd'
-import ReactECharts from 'echarts-for-react'
+import { useState } from 'react'
+import { Table, Input, Tag, Avatar, Card, Space, Typography, Flex, Select, Progress } from 'antd'
+import { SearchOutlined } from '@ant-design/icons'
+import { GoLinkExternal } from 'react-icons/go'
 import withLayout from '../../layout/withLayout'
+import { VscCode, VscBeaker, VscShield } from 'react-icons/vsc'
 import './index.scss'
 
-const { Text, Title } = Typography
+const { Text, Link } = Typography
 
-const DUMMY_USER = {
-    username: 'kubraemektar',
-    avatar_url: 'https://avatars.githubusercontent.com/u/124355274',
-}
-
-const DUMMY_REPOS = [
-    { id: 1, name: 'devcrew-backend', language: 'Python', stargazers_count: 4, private: false },
-    { id: 2, name: 'react-keycloak-integration', language: 'TypeScript', stargazers_count: 7, private: true },
-    { id: 3, name: 'python-base', language: 'Python', stargazers_count: 2, private: false },
-    { id: 4, name: 'portfolio', language: 'JavaScript', stargazers_count: 12, private: false },
-    { id: 5, name: 'go-microservice', language: 'Go', stargazers_count: 5, private: false },
-    { id: 6, name: 'rust-cli-tool', language: 'Rust', stargazers_count: 3, private: true },
-]
-
-const DUMMY_RECENT_ANALYSES = [
-    { id: 1, repo: 'devcrew-backend', agent: 'Codebase Q&A', status: 'completed', time: '2 saat önce', result: '14 dosya analiz edildi' },
-    { id: 2, repo: 'react-keycloak-integration', agent: 'PR Review', status: 'completed', time: '5 saat önce', result: '3 kritik issue bulundu' },
-    { id: 3, repo: 'python-base', agent: 'Test Generator', status: 'completed', time: '1 gün önce', result: '12 test oluşturuldu' },
-    { id: 4, repo: 'portfolio', agent: 'Debugging', status: 'failed', time: '2 gün önce', result: 'Zaman aşımı' },
-    { id: 5, repo: 'go-microservice', agent: 'Documentation', status: 'completed', time: '3 gün önce', result: 'README güncellendi' },
-]
-
-const DUMMY_ACTIVITIES = [
-    { id: 1, agent: 'PR Review Agent', repo: 'devcrew-backend', action: 'PR #14 analiz etti', time: '10 dk önce', type: 'review' },
-    { id: 2, agent: 'Test Generator', repo: 'python-base', action: '8 unit test yazdı', time: '1 saat önce', type: 'test' },
-    { id: 3, agent: 'Codebase Q&A', repo: 'react-keycloak-integration', action: 'Auth modülünü analiz etti', time: '3 saat önce', type: 'analyze' },
-    { id: 4, agent: 'Debugging Agent', repo: 'go-microservice', action: 'Memory leak tespit etti', time: '5 saat önce', type: 'debug' },
-    { id: 5, agent: 'Documentation', repo: 'portfolio', action: 'API dokümanı oluşturdu', time: '1 gün önce', type: 'doc' },
-]
-
-const langColors: Record<string, string> = {
+const languageColors: Record<string, string> = {
     Python: '#3572A5',
     TypeScript: '#2b7489',
     JavaScript: '#f1e05a',
     Go: '#00ADD8',
     Rust: '#dea584',
+    Java: '#b07219',
 }
 
-const agentColors: Record<string, string> = {
-    review: '#58a6ff',
-    test: '#3fb950',
-    analyze: '#bc8cff',
-    debug: '#d29922',
-    doc: '#8b949e',
+const user = {
+    avatar_url: 'https://avatars.githubusercontent.com/u/1?v=4',
+    html_url: 'https://github.com/kubraemektar'
 }
-
-const agentBadgeClass: Record<string, string> = {
-    review: 'badge-blue',
-    test: 'badge-green',
-    analyze: 'badge-purple',
-    debug: 'badge-yellow',
-    doc: 'badge-gray',
-}
-
-const langData = Object.entries(
-    DUMMY_REPOS.reduce((acc: Record<string, number>, r) => {
-        if (r.language) acc[r.language] = (acc[r.language] || 0) + 1
-        return acc
-    }, {})
-).map(([name, value]) => ({ name, value }))
-
-const langChartOption = {
-    tooltip: {
-        trigger: 'item',
-        formatter: '{b}: {c} repo ({d}%)',
-    },
-    legend: { show: false },
-    series: [
-        {
-            type: 'pie',
-            radius: ['50%', '75%'],
-            center: ['50%', '50%'],
-            avoidLabelOverlap: false,
-            itemStyle: {
-                borderRadius: 6,
-                borderWidth: 2,
-                borderColor: '#f6f8fa',
-            },
-            label: { show: false },
-            emphasis: {
-                label: { show: false },
-                scaleSize: 5,
-            },
-            data: langData.map(({ name, value }) => ({
-                name,
-                value,
-                itemStyle: { color: langColors[name] || '#8b949e' },
-            })),
+const dummyRepos = [
+    {
+        id: 1,
+        name: 'ai-code-reviewer',
+        description: 'AI powered code review tool',
+        html_url: 'https://github.com/example/ai-code-reviewer',
+        language: 'TypeScript',
+        agent: 'Code Review Agent',
+        topics: ['ai', 'review', 'typescript'],
+        result: '14 files analysed',
+        status: 'Completed',
+        time: '2 hours ago',
+        activity: {
+            status: 'Completed',
+            detail: 'PR #14 - 3 critical issues found',
+            time: '10 m ago',
         },
-    ],
-}
-
-const recentColumns = [
-    {
-        title: 'Repo',
-        dataIndex: 'repo',
-        key: 'repo',
-        render: (name: string) => <Text className="repo-name">{name}</Text>,
     },
     {
-        title: 'Agent',
-        dataIndex: 'agent',
-        key: 'agent',
-        render: (agent: string) => <Text style={{ fontSize: 13 }}>{agent}</Text>,
+        id: 2,
+        name: 'ml-agent',
+        description: 'Autonomous ML pipeline agent',
+        html_url: 'https://github.com/example/ml-agent',
+        language: 'Python',
+        agent: 'ML Analysis Agent',
+        topics: ['ml', 'agent'],
+        result: '8 files analysed',
+        status: 'Running',
+        time: '5 min ago',
+        activity: {
+            status: 'Running',
+            detail: 'PR #7 - Analysing model outputs',
+            time: '2 m ago',
+        },
     },
     {
-        title: 'Sonuç',
-        dataIndex: 'result',
-        key: 'result',
-        render: (result: string) => <Text type="secondary" style={{ fontSize: 12 }}>{result}</Text>,
-    },
-    {
-        title: 'Durum',
-        dataIndex: 'status',
-        key: 'status',
-        render: (status: string) => (
-            <Tag className={`status-tag ${status}`}>
-                {status === 'completed' ? 'Tamamlandı' : 'Başarısız'}
-            </Tag>
-        ),
-    },
-    {
-        title: 'Zaman',
-        dataIndex: 'time',
-        key: 'time',
-        render: (time: string) => <Text className="date">{time}</Text>,
+        id: 3,
+        name: 'devops-automation',
+        description: 'CI/CD automation scripts',
+        html_url: 'https://github.com/example/devops',
+        language: 'Go',
+        agent: 'DevOps Security Agent',
+        topics: ['devops', 'automation'],
+        result: '21 files analysed',
+        status: 'Failed',
+        time: '1 day ago',
+        activity: {
+            status: 'Failed',
+            detail: 'PR #22 - Timeout during pipeline scan',
+            time: '1 h ago',
+        },
     },
 ]
 
 const Dashboard = () => {
-    const totalStars = DUMMY_REPOS.reduce((a, r) => a + r.stargazers_count, 0)
-    const languages = [...new Set(DUMMY_REPOS.map(r => r.language).filter(Boolean))].length
-    const completedAnalyses = DUMMY_RECENT_ANALYSES.filter(a => a.status === 'completed').length
 
-    return (
-        <div className="dashboard-page">
+    const [repos] = useState<any[]>(dummyRepos)
+    const [loading] = useState(false)
 
-            <div className="dashboard-page__welcome">
-                <Avatar size={40} src={DUMMY_USER.avatar_url} />
+    const [search, setSearch] = useState('')
+    const [agentFilter, setAgentFilter] = useState<string>('all')
+    const [sortBy, setSortBy] = useState<string>('updated')
+
+    const agents = ['all', ...Array.from(new Set(repos.map(r => r.agent)))]
+
+    const agentIcons: Record<string, React.ReactNode> = {
+        'Code Review Agent': <VscCode size={14} style={{ color: '#0969da' }} />,
+        'ML Analysis Agent': <VscBeaker size={14} style={{ color: '#8250df' }} />,
+        'DevOps Security Agent': <VscShield size={14} style={{ color: '#cf222e' }} />,
+    }
+
+    const defaultAgentIcon = <VscCode size={14} style={{ color: '#57606a' }} />
+
+
+    // language distribution
+    const dummyLanguageStats = [
+        { language: 'TypeScript', count: 12 },
+        { language: 'Python', count: 8 },
+        { language: 'Go', count: 5 },
+        { language: 'JavaScript', count: 4 },
+        { language: 'Rust', count: 2 },
+        { language: 'Java', count: 1 },
+    ]
+
+    const totalLangCount = dummyLanguageStats?.reduce((sum, s) => sum + s.count, 0)
+    const languageStats = dummyLanguageStats?.map(s => [s.language, s.count])
+
+    // agent usage
+    const dummyAgentStats = [
+        { agent: 'Code Review Agent', count: 18 },
+        { agent: 'ML Analysis Agent', count: 11 },
+        { agent: 'DevOps Security Agent', count: 7 },
+        { agent: 'Test Generator Agent', count: 4 },
+    ]
+
+    const totalAgentCount = dummyAgentStats.reduce((sum, s) => sum + s.count, 0)
+    const agentStats = dummyAgentStats.map(s => [s.agent, s.count])
+
+    const statusStyles: Record<string, { background: string; color: string }> = {
+        Completed: { background: '#dafbe1', color: '#116329' },
+        Running: { background: '#ddf4ff', color: '#0969da' },
+        Failed: { background: '#ffebe9', color: '#cf222e' },
+    }
+
+    const statusColors: Record<string, string> = {
+        Completed: 'green',
+        Running: 'blue',
+        Failed: 'red',
+    }
+
+    const recentActivtyColumns = [
+        {
+            title: 'Activity',
+            key: 'activity',
+            render: (_: any, repo: any) => {
+                const { status, detail, time } = repo.activity
+                const style = statusStyles[status] ?? { background: '#f0f0f0', color: '#555' }
+                const icon = agentIcons[repo.agent] ?? defaultAgentIcon  // 👈
+
+                return (
+                    <Flex align="center" justify="space-between">
+                        <Flex vertical>
+                            <Flex align="center" gap={8}>
+                                {icon}
+                                <Text style={{ fontWeight: 600 }}>{repo.agent}</Text>
+                                <Tag
+                                    style={{
+                                        fontSize: 11,
+                                        borderRadius: 12,
+                                        background: style.background,
+                                        color: style.color,
+                                        padding: '0 6px',
+                                    }}
+                                >
+                                    {status}
+                                </Tag>
+                            </Flex>
+                            <Text style={{ fontSize: 12, color: '#57606a', marginLeft: 22 }}>
+                                {detail}
+                            </Text>
+                        </Flex>
+                        <Text style={{ fontSize: 11, color: '#8c959f', whiteSpace: 'nowrap' }}>
+                            {time}
+                        </Text>
+                    </Flex>
+                )
+            },
+        },
+    ]
+
+    const columns = [
+        {
+            title: 'Repository',
+            dataIndex: 'name',
+            key: 'name',
+            render: (_: any, repo: any) => (
                 <div>
-                    <Title level={5} style={{ margin: 0 }}>Hoş geldin, {DUMMY_USER.username}</Title>
-                    <Text type="secondary" style={{ fontSize: 12 }}>DevCrew AI Dev Team hazır</Text>
-                </div>
-            </div>
+                    <Link href={repo.html_url} target="_blank" className="repo-name">
+                        {repo.name}
+                    </Link>
 
-            <Row gutter={12} style={{ marginBottom: 16 }}>
-                {[
-                    { label: 'Repositories', value: DUMMY_REPOS.length },
-                    { label: 'Total Stars', value: totalStars },
-                    { label: 'Languages', value: languages },
-                    { label: 'AI Analyses', value: completedAnalyses },
-                ].map(({ label, value }) => (
-                    <Col span={6} key={label}>
-                        <Card className="stat-card">
-                            <Statistic title={label} value={value} />
-                        </Card>
-                    </Col>
-                ))}
-            </Row>
+                    <div className="repo-desc">
+                        {repo.description || '—'}
+                    </div>
 
-            <Row gutter={12} style={{ marginBottom: 16 }}>
-                <Col span={10}>
-                    <Card title="Dil Dağılımı" className="dashboard-card">
-                        <ReactECharts
-                            option={langChartOption}
-                            style={{ height: 200 }}
-                            opts={{ renderer: 'svg' }}
-                        />
-                        <div className="lang-legend">
-                            {langData.map(({ name, value }) => (
-                                <div key={name} className="lang-legend-item">
-                                    <span className="lang-dot" style={{ background: langColors[name] || '#8b949e' }} />
-                                    <Text style={{ fontSize: 12 }}>{name}</Text>
-                                    <Text type="secondary" style={{ fontSize: 12, marginLeft: 'auto' }}>{value}</Text>
-                                </div>
+                    {repo.topics?.length > 0 && (
+                        <div style={{ marginTop: 4, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                            {repo.topics.slice(0, 3).map((topic: string) => (
+                                <Tag key={topic}>{topic}</Tag>
                             ))}
                         </div>
-                    </Card>
-                </Col>
+                    )}
+                </div>
+            ),
+        },
+        {
+            title: 'Agent',
+            dataIndex: 'agent',
+            key: 'agent',
+            render: (agent: string, repo: any) => (
+                <span className="lang-badge">
+                    <span
+                        className="lang-dot"
+                        style={{ background: languageColors[repo.language] || '#8b949e' }}
+                    />
+                    {agent}
+                </span>
+            ),
+        },
+        {
+            title: 'Result',
+            key: 'result',
+            render: (_: any, repo: any) => (
+                <Tag>{repo.result}</Tag>
+            ),
+        },
+        {
+            title: 'Status',
+            key: 'status',
+            render: (_: any, repo: any) => (
+                <Tag color={statusColors[repo.status] ?? 'default'}>
+                    {repo.status}
+                </Tag>
+            ),
+        },
+        {
+            title: 'Time',
+            key: 'time',
+            render: (_: any, repo: any) => (
+                <Space size={4}>
+                    {repo.time}
+                </Space>
+            ),
+        },
+    ]
 
-                <Col span={14}>
-                    <Card title="Agent Aktiviteleri" className="dashboard-card">
-                        <List
-                            dataSource={DUMMY_ACTIVITIES}
-                            renderItem={(item) => (
-                                <List.Item className="activity-item">
-                                    <div className="activity-dot" style={{ background: agentColors[item.type] }} />
-                                    <div className="activity-content">
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                            <Text style={{ fontSize: 13, fontWeight: 500 }}>{item.agent}</Text>
-                                            <Tag className={`agent-tag ${agentBadgeClass[item.type]}`}>{item.repo}</Tag>
-                                        </div>
-                                        <Text type="secondary" style={{ fontSize: 12 }}>{item.action}</Text>
-                                    </div>
-                                    <Text type="secondary" style={{ fontSize: 11, whiteSpace: 'nowrap' }}>{item.time}</Text>
-                                </List.Item>
-                            )}
+    return (
+        <div className="container dashboard-page">
+
+            <Card className="dashboard-page__user-card">
+                <Flex align="flex-start" gap={20}>
+
+                    <Avatar
+                        size={80}
+                        src={user.avatar_url}
+                    />
+
+                    <Flex vertical style={{ flex: 1 }}>
+                        <Typography.Title level={3}>
+                            Hoşgeldin, kubraemektar
+                        </Typography.Title>
+                    </Flex>
+
+                    <Flex align="center" gap={6}>
+                        <GoLinkExternal size={14} />
+                        <Link href={user.html_url} target="_blank" />
+                    </Flex>
+
+                </Flex>
+            </Card>
+
+            <div className="dashboard-page__scroll-container">
+
+                {/* ---------------- ANALYTICS SECTION ---------------- */}
+
+
+                <Flex gap={16} style={{ marginBottom: 20 }}>
+
+                    {/* Recent Activity */}
+
+
+                    <Card title="Recent Activity" style={{ flex: 1 }}>
+                        <Table
+                            dataSource={repos}
+                            rowKey="id"
+                            pagination={false}
+                            size="small"
+                            columns={recentActivtyColumns}
+                            scroll={{ x: 'max-content' }}
                         />
                     </Card>
-                </Col>
-            </Row>
 
-            <Card title="Son Analizler" className="dashboard-card">
-                <Table
-                    dataSource={DUMMY_RECENT_ANALYSES}
-                    columns={recentColumns}
-                    rowKey="id"
-                    pagination={false}
-                    className="repo-table"
-                />
-            </Card>
+                    <Flex vertical gap={16} style={{ flex: 1 }}>
+
+                        {/* Language Distribution */}
+
+                        <Card title="Language Distribution">
+
+                            {languageStats.map(([lang, count]) => {
+                                const percent = Math.round((Number(count) / totalLangCount) * 100)  // 👈 totalLangCount
+
+                                return (
+                                    <div key={lang} style={{ marginBottom: 12 }}>
+                                        <Flex justify="space-between">
+                                            <Text>{lang}</Text>
+                                            <Text>{percent}%</Text>
+                                        </Flex>
+                                        <Progress
+                                            percent={percent}
+                                            showInfo={false}
+                                            strokeColor={languageColors[lang as string]}
+                                        />
+                                    </div>
+                                )
+                            })}
+
+                        </Card>
+
+                        {/* Agent Usage */}
+
+                        <Card title="Agent Usage">
+
+                            {agentStats.map(([agent, count]) => {
+                                const percent = Math.round((Number(count) / totalAgentCount) * 100)
+
+                                return (
+                                    <div key={agent} style={{ marginBottom: 12 }}>
+                                        <Flex justify="space-between">
+                                            <Text>{agent}</Text>
+                                            <Text>{percent}%</Text>
+                                        </Flex>
+                                        <Progress
+                                            percent={percent}
+                                            showInfo={false}
+                                        />
+                                    </div>
+                                )
+                            })}
+
+                        </Card>
+
+                    </Flex>
+
+                </Flex>
+
+                {/* ---------------- TABLE ---------------- */}
+
+                <Card
+                    className="dashboard-page__table-container"
+                    extra={
+                        <div className="dashboard-page__filters">
+
+                            <Input
+                                prefix={<SearchOutlined />}
+                                placeholder="Search repository..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                style={{ width: 200 }}
+                            />
+
+                            <Select
+                                value={agentFilter}
+                                onChange={setAgentFilter}
+                                style={{ width: 200 }}
+                                options={agents.map(agent => ({
+                                    value: agent,
+                                    label: agent === 'all' ? 'All agents' : agent,
+                                }))}
+                            />
+
+                            <Select
+                                style={{ width: 140 }}
+                                defaultValue="all"
+                                options={[
+                                    { value: 'all', label: 'All status' },
+                                    { value: 'completed', label: 'Completed' },
+                                    { value: 'failed', label: 'Failed' },
+                                    { value: 'running', label: 'Running' },
+                                ]}
+                            />
+
+                            <Select
+                                value={sortBy}
+                                onChange={setSortBy}
+                                style={{ width: 140 }}
+                                options={[
+                                    { value: 'updated', label: 'Last scan' },
+                                    { value: 'created', label: 'Newest' },
+                                    { value: 'name', label: 'Name' },
+                                ]}
+                            />
+
+                        </div>
+                    }
+                >
+
+                    <Table
+                        dataSource={repos}
+                        columns={columns}
+                        rowKey="id"
+                        pagination={{ pageSize: 10 }}
+                        loading={loading}
+                    />
+
+                </Card>
+
+            </div>
         </div>
     )
 }

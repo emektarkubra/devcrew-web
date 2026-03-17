@@ -268,7 +268,7 @@ const Profile = () => {
                                         {icon}
                                     </Flex>
                                     <Flex vertical justify="flex-start" align="flex-start" style={{ marginLeft: 10 }}>
-                                        <Typography.Title level={2} className="profile-page__stat-value">{value}</Typography.Title>
+                                        <Typography.Title level= {3} className="profile-page__stat-value">{value}</Typography.Title>
                                         <div className="profile-page__stat-label">{label}</div>
                                     </Flex>
                                 </Flex>

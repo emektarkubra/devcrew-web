@@ -1,124 +1,214 @@
 @import '../../assets/style/variables';
 
 .dashboard-page {
-    padding: 16px;
     background: $gh-light-bg-secondary;
     min-height: 100vh;
 
-    &__welcome {
+    &__user-card {
+        border-radius: 0;
+        border: none !important;
+        border-bottom: 1px solid $gh-light-border !important;
+        box-shadow: none !important;
+    }
+
+    &__user-avatar {
+        border: 2px solid $gh-light-border;
+        flex-shrink: 0;
+    }
+
+    &__user-name {
+        margin: 0 !important;
+        text-align: left !important;
+    }
+
+    &__user-meta {
+        font-size: 13px;
+        color: $gh-light-text-secondary;
+        text-align: left;
+        display: block;
+    }
+
+    &__user-icon {
+        color: $gh-light-text-secondary;
+    }
+
+    &__user-link {
+        font-size: 13px;
+    }
+
+    &__scroll-container {
+        padding: 10px;
+        height: calc(100vh - 280px);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    &__stat-row {
+        margin-bottom: 10px;
+    }
+
+    &__stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        flex-shrink: 0;
+    }
+
+    &__stat-value {
+        margin: 0px !important;
+
+    }
+
+    &__stats__card {
+        height: 100%;
+
+    }
+
+    &__stat-label {
+        font-size: 16px;
+        color: $gh-light-text-secondary;
+        text-align: left;
+    }
+
+    &__filters {
         display: flex;
+        gap: 8px;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
-        padding: 14px 16px;
-        background: $gh-light-bg-primary;
-        border: 1px solid $gh-light-border;
-        border-radius: 10px;
     }
 
     .ant-card {
         background: $gh-light-bg-primary;
         border-color: $gh-light-border;
-        border-radius: 10px;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    }
+
+    .ant-statistic-title {
+        color: $gh-light-text-secondary;
+        font-size: 12px;
+    }
+
+    .ant-statistic-content-value {
+        color: $gh-light-text-primary;
+    }
+
+    .ant-table {
+        background: $gh-light-bg-primary;
+    }
+
+    .ant-table-thead>tr>th {
+        background: $gh-light-bg-secondary;
+        color: $gh-light-text-secondary;
+        border-color: $gh-light-border;
+        font-size: 12px;
+    }
+
+    .ant-table-tbody>tr>td {
+        background: $gh-light-bg-primary;
+        color: $gh-light-text-primary;
+        border-color: $gh-light-border;
+    }
+
+    .ant-table-tbody>tr:hover>td {
+        background: $gh-light-bg-secondary !important;
+    }
+
+    .ant-input-affix-wrapper {
+        background: $gh-light-bg-primary;
+        border-color: $gh-light-border;
+
+        input {
+            background: $gh-light-bg-primary;
+            color: $gh-light-text-primary;
+        }
     }
 
     .ant-card-head {
         border-color: $gh-light-border;
         background: $gh-light-bg-primary;
         color: $gh-light-text-primary;
-        font-size: 14px;
     }
 
-    .stat-card {
-        .ant-statistic-title { font-size: 12px; color: $gh-light-text-secondary; }
-        .ant-statistic-content-value { color: $gh-light-text-primary; }
-    }
+    .repo-name {
+        color: $gh-light-blue;
+        font-weight: 500;
 
-    .dashboard-card { height: 100%; }
-
-    .lang-legend {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-top: 8px;
-        padding-top: 8px;
-        border-top: 1px solid $gh-light-border;
-
-        &-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        &:hover {
+            text-decoration: underline;
         }
+    }
+
+    .repo-desc {
+        color: $gh-light-text-secondary;
+        font-size: 12px;
+        max-width: 220px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .lang-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        color: $gh-light-text-secondary;
     }
 
     .lang-dot {
         width: 10px;
         height: 10px;
-        border-radius: 50%;
         display: inline-block;
-        flex-shrink: 0;
     }
 
-    .activity-item {
-        padding: 8px 0 !important;
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        border-bottom: 1px solid $gh-light-border !important;
-
-        &:last-child { border-bottom: none !important; }
-    }
-
-    .activity-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        margin-top: 5px;
-        flex-shrink: 0;
-    }
-
-    .activity-content {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        flex: 1;
-    }
-
-    .agent-tag {
-        font-size: 11px;
-        border-radius: 20px;
-        padding: 0 8px;
-
-        &.badge-blue { background: $gh-light-blue-bg; color: $gh-light-blue; border-color: $gh-light-blue-border; }
-        &.badge-green { background: $gh-light-green-bg; color: $gh-light-green; border-color: $gh-light-green-border; }
-        &.badge-purple { background: $gh-light-purple-bg; color: $gh-light-purple; border-color: $gh-light-purple-border; }
-        &.badge-yellow { background: #fff8e6; color: #9a6700; border-color: #d4a72c; }
-        &.badge-gray { background: $gh-light-bg-secondary; color: $gh-light-text-secondary; border-color: $gh-light-border; }
-    }
-
-    .status-tag {
-        font-size: 11px;
-        border-radius: 20px;
-        &.completed { background: $gh-light-green-bg; color: $gh-light-green; border-color: $gh-light-green-border; }
-        &.failed { background: #ffebe9; color: #cf222e; border-color: #ff818266; }
-    }
-
-    .repo-name { color: $gh-light-blue; font-weight: 500; font-size: 13px; }
-    .date { color: $gh-light-text-secondary; font-size: 12px; }
-
-    .ant-table { background: $gh-light-bg-primary; }
-    .ant-table-thead > tr > th {
-        background: $gh-light-bg-secondary;
+    .date {
         color: $gh-light-text-secondary;
-        border-color: $gh-light-border;
         font-size: 12px;
     }
-    .ant-table-tbody > tr > td {
-        background: $gh-light-bg-primary;
-        color: $gh-light-text-primary;
-        border-color: $gh-light-border;
+
+    .visibility {
+        font-size: 11px;
+        font-weight: 500;
+
+        &.public {
+            background: $gh-light-blue-bg;
+            color: $gh-light-blue;
+            border-color: $gh-light-blue-border;
+        }
+
+        &.private {
+            background: $gh-light-red-bg;
+            color: $gh-light-red;
+            border-color: $gh-light-red-border;
+        }
     }
-    .ant-table-tbody > tr:hover > td {
-        background: $gh-light-bg-secondary !important;
+
+    .btn-analyze {
+        background: $gh-light-blue-bg;
+        color: $gh-light-blue;
+        border-color: $gh-light-blue-border;
+
+        &:hover {
+            opacity: 0.85;
+        }
+    }
+
+    .btn-test {
+        background: $gh-light-green-bg;
+        color: $gh-light-green;
+        border-color: $gh-light-green-border;
+
+        &:hover {
+            opacity: 0.85;
+        }
+    }
+
+    .btn-review {
+        background: $gh-light-purple-bg;
+        color: $gh-light-purple;
+        border-color: $gh-light-purple-border;
+
+        &:hover {
+            opacity: 0.85;
+        }
     }
 }
