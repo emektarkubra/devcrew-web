@@ -21,17 +21,14 @@
     npm install
     ```
 
-4. Start Keycloak with Docker using the links below and update the initOptions:
-    - <a href="https://www.keycloak.org/getting-started/getting-started-docker" target="_blank">Keycloak Docker Getting Started Guid</a>
-    - <a href="https://medium.hexadefence.com/securing-a-react-app-using-keycloak-ac0ee5dd4bfc" target="_blank">Securing a React App Using Keycloak</a>
 
-5. Open the project with Visual Studio Code:
+4. Open the project with Visual Studio Code:
     ```bash
     code .
     ```
-6. Update the Docker container ID in the start.sh file. (Only applicable for macOS; different files should be added for different versions)
+5. Update the Docker container ID in the start.sh file. (Only applicable for macOS; different files should be added for different versions)
 
-7. Start the project:
+6. Start the project:
     ```bash
     npm run dev
     ```
