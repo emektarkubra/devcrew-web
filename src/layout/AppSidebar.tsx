@@ -1,23 +1,21 @@
-import { Menu } from "antd";
+import { Menu, MenuProps } from "antd";
 import Sider from "antd/es/layout/Sider";
 import "../assets/style/layout/AppSidebar.scss";
 import { createModifiedMenu } from "../utils/sidebar";
 import { useSelector } from "react-redux";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../context/authContext";
+import { useEffect, useState } from "react";
 
 const AppSidebar = () => {
-    const { userRoles } = useContext(AuthContext)
-    const menuItems = createModifiedMenu({ userRoles });
+    const menuItems = createModifiedMenu() as MenuProps['items'];
 
     const collapsed = useSelector((state: any) => state.collapsed.collapsed);
-    const [openKeys, setOpenKeys] = useState<string[]>(['/dashboard', '/security', '/management', '/reports']);
+    const [openKeys, setOpenKeys] = useState<string[]>([]);
 
     useEffect(() => {
         if (collapsed) {
             setOpenKeys([]);
         } else {
-            setOpenKeys(['/dashboard', '/security', '/management', '/reports']);
+            setOpenKeys([]);
         }
     }, [collapsed]);
 

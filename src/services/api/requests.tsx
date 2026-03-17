@@ -1,15 +1,14 @@
-const axios = require('axios').default;
-import { AxiosRequestHeaders } from 'axios';
+import axios, { AxiosRequestHeaders, ResponseType } from 'axios';
 import { stateError } from './errors';
 
-const baseURL = process.env.API_BASE_URL || window.API_BASE_URL;
+
+const baseURL = import.meta.env.VITE_API_BASE_URL || (window as any).API_BASE_URL;
 
 axios.defaults.baseURL = baseURL;
 axios.defaults.withCredentials = true;
 
 axios.interceptors.request.use(function (config: { headers: AxiosRequestHeaders }) {
-  config.headers['Authorization'] = `Bearer ${JSON.parse(JSON.stringify(localStorage.getItem('dt-token'))) || ''
-    }`;
+  config.headers['Authorization'] = `Bearer ${localStorage.getItem('dt-token') || ''}`;
   return config;
 });
 
@@ -20,15 +19,14 @@ class request {
         baseURL: customBaseURL,
         withCredentials: true,
         headers: {
-          Authorization: `Bearer ${JSON.parse(JSON.stringify(localStorage.getItem('dt-token'))) || ''
-            }`,
+          Authorization: `Bearer ${localStorage.getItem('dt-token') || ''}`,
         },
       });
     }
     return axios;
   }
 
-  static async get(url = '', params = {}, headers = {}, responseType = 'json', riskBaseURL = '') {
+  static async get(url = '', params = {}, headers = {}, responseType: ResponseType = 'json', riskBaseURL = '') {
     try {
       const instance = this.createInstance(riskBaseURL);
       return await instance.get(url, { params, headers, responseType });
@@ -37,14 +35,7 @@ class request {
     }
   }
 
-  static async post(
-    url = '',
-    body = {},
-    params = {},
-    headers = {},
-    responseType = 'json',
-    riskBaseURL = '',
-  ) {
+  static async post(url = '', body = {}, params = {}, headers = {}, responseType: ResponseType = 'json', riskBaseURL = '') {
     try {
       const instance = this.createInstance(riskBaseURL);
       return await instance.post(url, body, { params, headers, responseType });
@@ -54,10 +45,6 @@ class request {
   }
 
   static async put(url = '', body = {}, headers = {}, riskBaseURL = '') {
-    if (Object.keys(body).length !== 0) {
-      let params = this.setParams({ params: body });
-    }
-
     try {
       const instance = this.createInstance(riskBaseURL);
       return await instance.put(url, body, { headers });
@@ -65,11 +52,8 @@ class request {
       return stateError(error);
     }
   }
-  static async patch(url = '', body = {}, headers = {}, riskBaseURL = '') {
-    if (Object.keys(body).length !== 0) {
-      let params = this.setParams({ params: body });
-    }
 
+  static async patch(url = '', body = {}, headers = {}, riskBaseURL = '') {
     try {
       const instance = this.createInstance(riskBaseURL);
       return await instance.patch(url, body, { headers });
@@ -88,9 +72,7 @@ class request {
   }
 
   static setParams({ params }: { params: {} }) {
-    return Object.entries(params)
-      .map((e) => e.join('='))
-      .join('&');
+    return Object.entries(params).map((e) => e.join('=')).join('&');
   }
 }
 

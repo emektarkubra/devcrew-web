@@ -1,0 +1,131 @@
+.debugging {
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #fff;
+  margin: 20px;
+
+  &__header {
+    padding: 14px 20px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  &__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #A32D2D;
+    flex-shrink: 0;
+  }
+
+  &__body {
+    padding: 20px;
+  }
+
+  &__section-label {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    display: block !important;
+  }
+
+  &__textarea {
+    font-family: monospace;
+    font-size: 12px;
+  }
+
+  &__analyze-btn {
+    background: #A32D2D !important;
+    align-self: flex-start;
+  }
+
+  &__root-card {
+    flex: 2;
+    background: #fef2f2 !important;
+    border: 1px solid #fecaca !important;
+  }
+
+  &__root-text {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #dc2626 !important;
+  }
+
+  &__stat-card {
+    flex: 1;
+    background: #f9fafb !important;
+  }
+
+  &__confidence {
+    font-size: 22px !important;
+    font-weight: 500 !important;
+    color: #16a34a !important;
+  }
+
+  &__explanation-card {
+    background: #f9fafb !important;
+    flex: 1;
+  }
+
+  &__explanation-text {
+    font-size: 13px !important;
+    line-height: 1.7 !important;
+    margin: 0 !important;
+  }
+
+  &__fix-card {
+    background: #f9fafb !important;
+    flex: 1;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  &__diff-line {
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  &__action-btn-primary {
+    flex: 1;
+    background: #A32D2D !important;
+  }
+
+  &__action-btn {
+    flex: 1;
+  }
+
+  &__history-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  &__history-item {
+    padding: 10px 0;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  &__history-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+
+    &--resolved {
+      background: #16a34a;
+    }
+
+    &--unresolved {
+      background: #dc2626;
+    }
+  }
+
+  &__history-error {
+    font-size: 12px !important;
+    font-family: monospace !important;
+  }
+
+  &__history-meta {
+    font-size: 11px !important;
+  }
+}
