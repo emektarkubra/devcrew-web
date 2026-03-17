@@ -1,5 +1,12 @@
+import ArchitectureGraph from "./pages/architectureGraph";
+import CodebaseQA from "./pages/codebase";
 import Dashboard from "./pages/dashboard";
+import Debugging from "./pages/debugging";
+import Documentation from "./pages/documentation";
 import Profile from "./pages/profile";
+import PrReview from "./pages/PRReview";
+import RepoIntelligence from "./pages/repoIntelligence";
+import TestGenerator from "./pages/testGenerator";
 
 
 export const MENU_ROUTES = [
@@ -19,37 +26,37 @@ export const MENU_ROUTES = [
   {
     path: "/agents/codebase-qa",
     title: "Codebase Q&A",
-    element: <div>Codebase Q&A</div>,  // ilerleyen aşamada component gelir
+    element: <CodebaseQA/>,  // ilerleyen aşamada component gelir
 },
 {
     path: "/agents/pr-review",
     title: "PR Review",
-    element: <div>PR Review</div>,
+    element: <PrReview/>,
 },
 {
     path: "/agents/debugging",
     title: "Debugging",
-    element: <div>Debugging</div>,
+    element: <Debugging/>,
 },
 {
     path: "/agents/test-generator",
     title: "Test Generator",
-    element: <div>Test Generator</div>,
+    element: <TestGenerator/>,
 },
 {
     path: "/agents/documentation",
     title: "Documentation",
-    element: <div>Documentation</div>,
+    element: <Documentation/>,
 },
 {
     path: "/analysis/architecture",
     title: "Architecture Graph",
-    element: <div>Architecture Graph</div>,
+    element: <ArchitectureGraph/>,
 },
 {
     path: "/analysis/intelligence",
     title: "Repo Intelligence",
-    element: <div>Repo Intelligence</div>,
+    element: <RepoIntelligence/>,
 },
 ];
 

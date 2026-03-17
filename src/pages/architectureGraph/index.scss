@@ -1,0 +1,116 @@
+.architecture-graph {
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #fff;
+    margin: 20px;
+
+    &__header {
+        padding: 14px 20px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    &__dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #0F6E56;
+        flex-shrink: 0;
+    }
+
+    &__live-tag {
+        background: #e1f5ee !important;
+        color: #0F6E56 !important;
+        border: 1px solid #9FE1CB !important;
+    }
+
+    &__toolbar {
+        padding: 10px 20px;
+        border-bottom: 1px solid #f0f0f0;
+        background: #fafafa;
+    }
+
+    &__filter-label {
+        font-size: 12px !important;
+    }
+
+    &__legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__legend-label {
+        font-size: 11px !important;
+    }
+
+    &__download-btn {
+        background: #0F6E56 !important;
+    }
+
+    &__graph {
+        height: 540px;
+    }
+
+    &__minimap {
+        background: #f9fafb;
+        border: 1px solid #f0f0f0;
+    }
+
+    &__drawer-label {
+        font-size: 11px !important;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        display: block !important;
+    }
+
+    &__drawer-desc-label {
+        margin-bottom: 4px !important;
+    }
+
+    &__drawer-conn-label {
+        margin-bottom: 6px !important;
+    }
+
+    &__drawer-description {
+        font-size: 13px !important;
+    }
+
+    &__drawer-conn-item {
+        padding: 6px 0 !important;
+    }
+
+    &__drawer-conn-arrow {
+        font-size: 11px !important;
+    }
+
+    &__drawer-conn-label-text {
+        font-size: 12px !important;
+    }
+}
+
+.service-node {
+    &__dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__label {
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: #111 !important;
+    }
+
+    &__tag {
+        font-size: 10px !important;
+        margin: 0 !important;
+        padding: 0 5px !important;
+    }
+
+    &__handle {
+        width: 8px !important;
+        height: 8px !important;
+    }
+}
