@@ -4,16 +4,11 @@ import { FileOutlined, SearchOutlined, GithubOutlined, LoadingOutlined, CheckCir
 import withLayout from '../../layout/withLayout'
 import { api } from '../../services/api'
 import toast from 'react-hot-toast'
+import { timeAgo } from '../../utils/timeAgo'
+import { getLanguageColor } from '../../utils/languageColors'
 import './index.scss'
 
 const { Text, Paragraph } = Typography
-
-const QUICK_CHIPS = [
-    'How does rate limiting work?',
-    'Which services does the payment flow call?',
-    'What are the utility functions?',
-    'Where is the database connection?',
-]
 
 const INDEXING_STEPS = [
     'Connecting to repository...',
@@ -34,6 +29,7 @@ const CodebaseQA = () => {
     const [result, setResult] = useState<any>(null)
     const [loading, setLoading] = useState(false)
     const [history, setHistory] = useState<any[]>([])
+    const [selectedHistory, setSelectedHistory] = useState<number | null>(null)
 
     const token = localStorage.getItem('dt-token') || ''
 
@@ -57,6 +53,7 @@ const CodebaseQA = () => {
         setIndexStatus('indexing')
         setIndexStep(0)
         setResult(null)
+        setSelectedHistory(null)
 
         const [owner, repo] = value.split('/')
 
@@ -96,6 +93,7 @@ const CodebaseQA = () => {
         if (!query.trim() || indexStatus !== 'ready' || !selectedRepo) return
         setLoading(true)
         setResult(null)
+        setSelectedHistory(null)
 
         const [owner, repo] = selectedRepo.split('/')
 
@@ -110,6 +108,17 @@ const CodebaseQA = () => {
         setLoading(false)
     }
 
+    // history click
+    const handleHistoryClick = (item: any, index: number) => {
+        setSelectedHistory(index)
+        setQuery(item.question)
+        setResult({
+            answer: item.response,
+            files: [],
+            suggestions: [],
+        })
+    }
+
     // header tag
     const renderStatusTag = () => {
         if (indexStatus === 'idle') return <Tag className="codebase-qa__status-tag codebase-qa__status-tag--idle">No Repo Selected</Tag>
@@ -120,6 +129,7 @@ const CodebaseQA = () => {
     return (
         <div className="codebase-qa">
 
+            {/* Header */}
             <Flex align="center" justify="space-between" className="codebase-qa__header">
                 <Flex align="center" gap={10}>
                     <div className={`codebase-qa__dot codebase-qa__dot--${indexStatus}`} />
@@ -135,8 +145,10 @@ const CodebaseQA = () => {
                 {renderStatusTag()}
             </Flex>
 
+            {/* Body */}
             <Flex vertical gap={16} className="codebase-qa__body">
 
+                {/* Repo Select */}
                 <Flex vertical gap={6}>
                     <Text className="codebase-qa__section-label">REPO</Text>
                     <Select
@@ -150,6 +162,7 @@ const CodebaseQA = () => {
                         value={selectedRepo}
                         onChange={handleRepoSelect}
                         disabled={indexStatus === 'indexing'}
+                        showSearch
                         options={repos.map((r) => ({
                             value: r.full_name,
                             label: (
@@ -157,10 +170,22 @@ const CodebaseQA = () => {
                                     <Flex align="center" gap={8}>
                                         <GithubOutlined />
                                         <span>{r.full_name}</span>
-                                    </Flex>
-                                    <Flex gap={4}>
-                                        {r.language && <Tag className="codebase-qa__repo-lang-tag">{r.language}</Tag>}
                                         {r.is_private && <Tag className="codebase-qa__repo-private-tag">Private</Tag>}
+                                    </Flex>
+                                    <Flex align="center" gap={8}>
+                                        {r.language && (
+                                            <Flex align="center" gap={4}>
+                                                <div style={{
+                                                    width: 10,
+                                                    height: 10,
+                                                    borderRadius: '50%',
+                                                    background: getLanguageColor(r.language),
+                                                    flexShrink: 0,
+                                                }} />
+                                                <Text style={{ fontSize: 12, color: '#6b7280' }}>{r.language}</Text>
+                                            </Flex>
+                                        )}
+
                                     </Flex>
                                 </Flex>
                             ),
@@ -168,6 +193,7 @@ const CodebaseQA = () => {
                     />
                 </Flex>
 
+                {/* Indexing Status */}
                 {indexStatus === 'indexing' && (
                     <Flex align="center" gap={10} className="codebase-qa__indexing-status">
                         <Spin indicator={<LoadingOutlined spin />} size="small" />
@@ -177,6 +203,7 @@ const CodebaseQA = () => {
                     </Flex>
                 )}
 
+                {/* Search */}
                 <Space.Compact style={{ width: '100%' }}>
                     <Input
                         value={query}
@@ -202,19 +229,22 @@ const CodebaseQA = () => {
                     </Button>
                 </Space.Compact>
 
-                {/* Quick Chips */}
-                <Flex wrap gap={6}>
-                    {QUICK_CHIPS.map((chip) => (
-                        <Tag
-                            key={chip}
-                            className={`codebase-qa__chip ${indexStatus !== 'ready' ? 'codebase-qa__chip--disabled' : ''}`}
-                            onClick={() => indexStatus === 'ready' && setQuery(chip)}
-                        >
-                            {chip}
-                        </Tag>
-                    ))}
-                </Flex>
+                {/* Suggestions */}
+                {result?.suggestions?.length > 0 && (
+                    <Flex wrap gap={6}>
+                        {result.suggestions.map((s: string) => (
+                            <Tag
+                                key={s}
+                                className="codebase-qa__chip"
+                                onClick={() => setQuery(s)}
+                            >
+                                {s}
+                            </Tag>
+                        ))}
+                    </Flex>
+                )}
 
+                {/* Response */}
                 <Flex vertical gap={8} className="codebase-qa__response">
                     <Text className="codebase-qa__section-label">RESPONSE</Text>
                     <Card size="small" className="codebase-qa__response-card">
@@ -276,14 +306,19 @@ const CodebaseQA = () => {
                     <List
                         dataSource={history}
                         split
-                        renderItem={(item: any) => (
+                        renderItem={(item: any, index: number) => (
                             <List.Item style={{ padding: 0 }}>
-                                <Flex align="flex-start" gap={10} className="codebase-qa__history-item">
-                                    <div className="codebase-qa__history-dot" />
+                                <Flex
+                                    align="flex-start"
+                                    gap={10}
+                                    className={`codebase-qa__history-item ${selectedHistory === index ? 'codebase-qa__history-item--active' : ''}`}
+                                    onClick={() => handleHistoryClick(item, index)}
+                                >
+                                    <div className={`codebase-qa__history-dot ${selectedHistory === index ? 'codebase-qa__history-dot--active' : ''}`} />
                                     <Flex align="center" gap={30}>
                                         <Text className="codebase-qa__history-question">{item.question}</Text>
                                         <Text type="secondary" className="codebase-qa__history-meta">
-                                            {item.filesFound} files · {item.timeAgo}
+                                            {item.filesFound} files · {timeAgo(item.timeAgo)}
                                         </Text>
                                     </Flex>
                                 </Flex>

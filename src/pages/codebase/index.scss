@@ -138,8 +138,15 @@
   }
 
   @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.4; }
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.4;
+    }
   }
 
   // status
@@ -410,5 +417,43 @@
     color: $gh-light-text-muted !important;
 
     @apply dark:text-softLightColor;
+  }
+
+
+  &__history-item {
+    padding: 10px 0;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 6px;
+    transition: background 0.15s;
+
+    &:hover {
+      background: #f5f5f5;
+      padding-left: 8px;
+    }
+
+    &--active {
+      background: #f0f7ff;
+      padding-left: 8px;
+
+      .codebase-qa__history-question {
+        color: #185FA5 !important;
+        font-weight: 500 !important;
+      }
+    }
+  }
+
+  &__history-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #d1d5db;
+    margin-top: 6px;
+    flex-shrink: 0;
+    transition: background 0.15s;
+
+    &--active {
+      background: #185FA5;
+    }
   }
 }
