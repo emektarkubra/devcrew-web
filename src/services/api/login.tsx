@@ -10,20 +10,16 @@ class login {
      */
     static githubLogin = () => {
         const baseURL = import.meta.env.VITE_API_BASE_URL || (window as any).API_BASE_URL
-        const url = `${baseURL}${paths.githubLogin}`
-        console.log('GİDİLECEK URL:', url)
-        alert(url) 
-        window.location.href = url
+        window.location.href = `${baseURL}${paths.githubLogin}`
     }
 
-
     /**
-     * user info with token
+     * user profile with token
      * @static
      * @memberof login
      */
-    static getMe = async (token: string) => {
-        return await request.get(paths.getMe, { token })
+    static getUserProfile = async (token: string) => {
+        return await request.get(paths.profile, { token })
     }
 
     /**
@@ -32,7 +28,7 @@ class login {
      * @memberof login
      */
     static getRepos = async (token: string) => {
-        return await request.get(paths.getRepos, { token })
+        return await request.get(paths.repos, { token })
     }
 
     /**
@@ -46,7 +42,6 @@ class login {
 
         if (token) {
             localStorage.setItem('dt-token', token)
-            // URL'den token'ı temizle
             window.history.replaceState({}, '', '/')
             return token
         }
@@ -64,7 +59,7 @@ class login {
     }
 
     /**
-     * 
+     * is user authenticated
      * @static
      * @memberof login
      */

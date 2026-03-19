@@ -21,7 +21,6 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        // GitHub'dan callback ile gelen token'ı yakala
         const newToken = api.login.handleCallback();
         if (newToken) setToken(newToken);
         else setLoading(false);
@@ -32,11 +31,10 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
             setLoading(false);
             return;
         }
-        api.login.getMe(token)
+        api.login.getUserProfile(token)
             .then((r: any) => {
                 setUser(r.data)
-                setLoading(false)   // ← kullanıcı gelince kapat
-                console.log('user: ', r.data)
+                setLoading(false)
             })
             .catch(() => {
                 localStorage.removeItem('dt-token');
@@ -49,13 +47,13 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         api.login.logout();
         setUser(null);
         setToken(null);
-        localStorage.removeItem('dt-token')  // ← bu çalışıyor mu?
+        localStorage.removeItem('dt-token') 
         window.location.href = '/'
     };
 
     return (
         <AuthContext.Provider value={{ user, token, isAuthenticated: !!token && !!user, logout }}>
-            {loading ? null : children}  {/* ← loading bitene kadar hiçbir şey render etme */}
+            {loading ? null : children}
         </AuthContext.Provider>
     );
 };

@@ -1,3 +1,4 @@
+import { agents } from "./agents";
 import { dashboard } from "./dashboard";
 import { login } from "./login";
 
@@ -26,6 +27,14 @@ class api {
      * @memberof login
      */
     static login = login;
+
+    /**
+     *
+     * Agents
+     * @static
+     * @memberof agents
+     */
+    static agents = agents;
 
 }
 
