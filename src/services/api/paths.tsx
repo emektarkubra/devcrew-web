@@ -13,3 +13,9 @@ export const repos = '/repos';
 export const indexRepo = '/agents/index'
 export const codebaseQA = '/agents/codebase-qa'
 export const codebaseQAHistory = '/agents/codebase-qa/history'
+
+
+// pr
+export const prList          = "/pr-list"
+export const prReview        = "/agents/pr-review"
+export const prReviewHistory = "/agents/pr-review/history"

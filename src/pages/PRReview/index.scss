@@ -1,0 +1,384 @@
+@import '../../assets/style/variables';
+
+.pr-review {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid $gh-light-border;
+    background-color: $gh-light-bg-primary;
+    margin: 20px;
+
+    @apply dark:bg-darkColor dark:border-lightGray;
+
+    .ant-select-selector {
+        background-color: $gh-light-bg-primary !important;
+        border-color: $gh-light-border !important;
+        color: $gh-light-text-primary !important;
+        @apply dark:bg-softDarkColor dark:border-lightGray dark:text-lightColor;
+    }
+
+    .ant-select-arrow,
+    .ant-select-selection-placeholder {
+        color: $gh-light-text-muted !important;
+        @apply dark:text-softLightColor;
+    }
+
+    .ant-card {
+        background-color: $gh-light-bg-secondary !important;
+        border-color: $gh-light-border !important;
+        @apply dark:bg-softDarkColor dark:border-lightGray;
+    }
+
+    .ant-typography {
+        color: $gh-light-text-primary !important;
+        @apply dark:text-lightColor;
+    }
+
+    .ant-typography.ant-typography-secondary {
+        color: $gh-light-text-secondary !important;
+        @apply dark:text-softLightColor;
+    }
+
+    .ant-list-split .ant-list-item {
+        border-bottom-color: $gh-light-border !important;
+        @apply dark:border-lightGray;
+    }
+
+    // ── Layout ──────────────────────────────────────────────
+
+    &__header {
+        padding: 14px 20px;
+        border-bottom: 1px solid $gh-light-border;
+        background-color: $gh-light-bg-secondary;
+        @apply dark:bg-softDarkColor dark:border-lightGray;
+    }
+
+    &__body {
+        padding: 20px;
+    }
+
+    &__stretch-row {
+        align-items: stretch;
+    }
+
+    &__col {
+        flex: 1;
+    }
+
+    // ── Dot ─────────────────────────────────────────────────
+
+    &__dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+
+        &--idle {
+            background: $gh-light-text-muted;
+        }
+
+        &--active {
+            background: $gh-light-yellow;
+            box-shadow: 0 0 6px rgba(154, 103, 0, 0.4);
+            animation: pr-pulse 1.2s ease-in-out infinite;
+        }
+
+        &--ready {
+            background: $gh-light-green;
+            box-shadow: 0 0 6px rgba(26, 127, 55, 0.4);
+        }
+    }
+
+    @keyframes pr-pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.4;
+        }
+    }
+
+    // ── Typography ───────────────────────────────────────────
+
+    &__title {
+        font-size: 15px !important;
+    }
+
+    &__subtitle {
+        font-size: 12px !important;
+    }
+
+    &__section-label {
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.06em !important;
+        display: block !important;
+        align-self: flex-start;
+        color: $gh-light-text-muted !important;
+        @apply dark:text-softLightColor;
+    }
+
+    // ── Tags ─────────────────────────────────────────────────
+
+    &__tag--warning {
+        background-color: $gh-light-yellow-bg !important;
+        border-color: $gh-light-yellow-border !important;
+        color: $gh-light-yellow !important;
+        @apply dark:bg-gh-yellow-bg dark:border-gh-yellow-border dark:text-gh-yellow-text;
+    }
+
+    &__tag--private {
+        font-size: 10px !important;
+        padding: 0 5px !important;
+        background-color: $gh-light-purple-bg !important;
+        border-color: $gh-light-purple-border !important;
+        color: $gh-light-purple-text !important;
+        @apply dark:bg-gh-purple-bg dark:border-gh-purple-border dark:text-gh-purple-text;
+    }
+
+    // ── Select ───────────────────────────────────────────────
+
+    &__select {
+        width: 100%;
+    }
+
+    &__lang-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__lang-text {
+        font-size: 12px !important;
+        color: $gh-light-text-muted !important;
+        @apply dark:text-softLightColor;
+    }
+
+    // ── PR Select ────────────────────────────────────────────
+
+    &__pr-number {
+        font-size: 11px !important;
+    }
+
+    &__pr-author {
+        font-size: 11px !important;
+        color: $gh-light-text-muted !important;
+        @apply dark:text-softLightColor;
+    }
+
+    &__pr-state-tag {
+        margin: 0 !important;
+        font-size: 10px !important;
+    }
+
+    // ── Spin ─────────────────────────────────────────────────
+
+    &__spin-wrap {
+        padding: 16px 0;
+    }
+
+    // ── Button ───────────────────────────────────────────────
+
+    &__btn {
+        background: #BA7517 !important;
+        border-color: #BA7517 !important;
+
+        &:hover {
+            background: #9a5f10 !important;
+        }
+
+        &--flex {
+            flex: 1;
+        }
+    }
+
+    // ── Meta ─────────────────────────────────────────────────
+
+    &__meta {
+        flex-wrap: wrap;
+    }
+
+    &__meta-title {
+        font-size: 14px !important;
+    }
+
+    &__meta-sub {
+        font-size: 12px !important;
+    }
+
+    // ── Score Cards ──────────────────────────────────────────
+
+    &__score-card {
+        flex: 1;
+
+        &--danger {
+            background: #fef2f2 !important;
+            border: 1px solid #fecaca !important;
+        }
+
+        &--neutral {
+            background: $gh-light-bg-secondary !important;
+        }
+
+        &--warning {
+            background: #fffbeb !important;
+            border: 1px solid #fde68a !important;
+        }
+    }
+
+    &__score-label {
+        font-size: 11px !important;
+        display: block !important;
+    }
+
+    &__score-value {
+        font-size: 22px !important;
+        font-weight: 500 !important;
+
+        &--danger {
+            color: #dc2626 !important;
+        }
+
+        &--warning {
+            color: #d97706 !important;
+        }
+    }
+
+    // ── Issues ───────────────────────────────────────────────
+
+    &__issues-scroll {
+        max-height: 300px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    &__issue-item {
+        border-left: 3px solid transparent;
+        padding: 10px 12px;
+        border-radius: 0 4px 4px 0;
+    }
+
+    &__issue-title {
+        font-size: 13px !important;
+        display: block !important;
+    }
+
+    &__issue-desc {
+        font-size: 12px !important;
+        display: block !important;
+        margin-top: 2px !important;
+    }
+
+    &__issue-file {
+        font-size: 11px !important;
+        color: #9ca3af !important;
+        display: block !important;
+        margin-top: 4px !important;
+        font-family: monospace !important;
+    }
+
+    // ── Diff ─────────────────────────────────────────────────
+
+    &__diff-card {
+        background: $gh-light-bg-secondary !important;
+        flex: 1;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    &__diff-line {
+        font-family: monospace;
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    // ── Files ────────────────────────────────────────────────
+
+    &__files-scroll {
+        max-height: 260px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    &__file-item {
+        padding: 8px 10px;
+        border: 1px solid $gh-light-border;
+        border-radius: 6px;
+        @apply dark:border-lightGray;
+    }
+
+    &__file-avatar {
+        background: #fef9c3 !important;
+        color: #a16207 !important;
+        flex-shrink: 0;
+    }
+
+    &__file-info {
+        flex: 1;
+    }
+
+    &__file-name {
+        font-size: 12px !important;
+        font-weight: 500 !important;
+    }
+
+    &__file-meta {
+        font-size: 11px !important;
+    }
+
+    &__actions {
+        margin-top: 4px;
+    }
+
+    // ── History ──────────────────────────────────────────────
+
+    &__history-scroll {
+        max-height: 260px;
+        overflow-y: auto;
+    }
+
+    &__history-item {
+        padding: 10px 0;
+        cursor: pointer;
+        width: 100%;
+        border-radius: 6px;
+        transition: background 0.15s;
+
+        &:hover {
+            background: $gh-light-bg-secondary;
+            padding-left: 8px;
+            @apply dark:bg-softDarkColor;
+        }
+    }
+
+    &__history-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: $gh-light-text-muted;
+        margin-top: 6px;
+        flex-shrink: 0;
+        @apply dark:bg-gh-text-muted;
+    }
+
+    &__history-pr {
+        font-size: 11px !important;
+    }
+
+    &__history-title {
+        font-size: 13px !important;
+    }
+
+    &__history-meta {
+        font-size: 11px !important;
+        white-space: nowrap;
+    }
+}
