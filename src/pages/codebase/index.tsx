@@ -10,20 +10,12 @@ import './index.scss'
 
 const { Text, Paragraph } = Typography
 
-const INDEXING_STEPS = [
-    'Connecting to repository...',
-    'Scanning files...',
-    'Analyzing code...',
-    'Building index...',
-]
-
 type IndexStatus = 'idle' | 'indexing' | 'ready'
 
 const CodebaseQA = () => {
     const [repos, setRepos] = useState<any[]>([])
     const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
     const [indexStatus, setIndexStatus] = useState<IndexStatus>('idle')
-    const [indexStep, setIndexStep] = useState(0)
     const [indexedFileCount, setIndexedFileCount] = useState(0)
     const [query, setQuery] = useState('')
     const [result, setResult] = useState<any>(null)
@@ -51,16 +43,10 @@ const CodebaseQA = () => {
     const handleRepoSelect = async (value: string) => {
         setSelectedRepo(value)
         setIndexStatus('indexing')
-        setIndexStep(0)
         setResult(null)
         setSelectedHistory(null)
 
         const [owner, repo] = value.split('/')
-
-        for (let i = 0; i < INDEXING_STEPS.length; i++) {
-            setIndexStep(i)
-            await new Promise((r) => setTimeout(r, 500))
-        }
 
         try {
             const { data, error } = await api.agents.indexRepo(token, owner, repo)
@@ -193,41 +179,34 @@ const CodebaseQA = () => {
                     />
                 </Flex>
 
-                {/* Indexing Status */}
-                {indexStatus === 'indexing' && (
-                    <Flex align="center" gap={10} className="codebase-qa__indexing-status">
-                        <Spin indicator={<LoadingOutlined spin />} size="small" />
-                        <Text className="codebase-qa__indexing-text">
-                            {INDEXING_STEPS[indexStep]}
-                        </Text>
-                    </Flex>
-                )}
-
                 {/* Search */}
-                <Space.Compact style={{ width: '100%' }}>
-                    <Input
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onPressEnter={handleAsk}
-                        placeholder={
-                            indexStatus === 'idle' ? 'Select a repo first...' :
-                                indexStatus === 'indexing' ? 'Indexing in progress...' :
-                                    'Ask anything about the repo...'
-                        }
-                        prefix={<SearchOutlined className="codebase-qa__search-prefix" />}
-                        disabled={indexStatus !== 'ready'}
-                        className={indexStatus !== 'ready' ? 'codebase-qa__input--disabled' : ''}
-                    />
-                    <Button
-                        type="primary"
-                        onClick={handleAsk}
-                        loading={loading}
-                        disabled={indexStatus !== 'ready'}
-                        className="codebase-qa__btn"
-                    >
-                        Ask
-                    </Button>
-                </Space.Compact>
+                <Flex vertical gap={6}>
+                    <Text className="codebase-qa__section-label">SEARCH</Text>
+                    <Space.Compact style={{ width: '100%' }}>
+                        <Input
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            onPressEnter={handleAsk}
+                            placeholder={
+                                indexStatus === 'idle' ? 'Select a repo first...' :
+                                    indexStatus === 'indexing' ? 'Indexing in progress...' :
+                                        'Ask anything about the repo...'
+                            }
+                            prefix={<SearchOutlined className="codebase-qa__search-prefix" />}
+                            disabled={indexStatus !== 'ready'}
+                            className={indexStatus !== 'ready' ? 'codebase-qa__input--disabled' : ''}
+                        />
+                        <Button
+                            type="primary"
+                            onClick={handleAsk}
+                            loading={loading}
+                            disabled={indexStatus !== 'ready'}
+                            className="codebase-qa__btn"
+                        >
+                            Ask
+                        </Button>
+                    </Space.Compact>
+                </Flex>
 
                 {/* Suggestions */}
                 {result?.suggestions?.length > 0 && (
@@ -245,21 +224,11 @@ const CodebaseQA = () => {
                 )}
 
                 {/* Response */}
-                <Flex vertical gap={8} className="codebase-qa__response">
-                    <Text className="codebase-qa__section-label">RESPONSE</Text>
-                    <Card size="small" className="codebase-qa__response-card">
-                        {indexStatus === 'idle' && (
-                            <Text className="codebase-qa__placeholder-text">
-                                Query results will appear here.
-                            </Text>
-                        )}
-                        {indexStatus === 'indexing' && (
-                            <Flex justify="center" className="codebase-qa__spin">
-                                <Spin size="small" />
-                            </Flex>
-                        )}
-                        {indexStatus === 'ready' && (
-                            loading ? (
+                {(loading || result) && (<>
+                    <Flex vertical gap={8} className="codebase-qa__response">
+                        <Text className="codebase-qa__section-label">RESPONSE</Text>
+                        <Card size="small" className="codebase-qa__response-card">
+                            {loading ? (
                                 <Flex justify="center" className="codebase-qa__spin">
                                     <Spin size="small" />
                                 </Flex>
@@ -291,41 +260,41 @@ const CodebaseQA = () => {
                                         </Flex>
                                     ))}
                                 </>
-                            ) : (
-                                <Text className="codebase-qa__placeholder-text">
-                                    Ask a question, answer will appear here.
-                                </Text>
-                            )
-                        )}
-                    </Card>
-                </Flex>
+                            ) : null}
+                        </Card>
+                    </Flex>
 
-                {/* History */}
-                <Flex vertical gap={4}>
-                    <Text className="codebase-qa__section-label">HISTORY</Text>
-                    <List
-                        dataSource={history}
-                        split
-                        renderItem={(item: any, index: number) => (
-                            <List.Item style={{ padding: 0 }}>
-                                <Flex
-                                    align="flex-start"
-                                    gap={10}
-                                    className={`codebase-qa__history-item ${selectedHistory === index ? 'codebase-qa__history-item--active' : ''}`}
-                                    onClick={() => handleHistoryClick(item, index)}
-                                >
-                                    <div className={`codebase-qa__history-dot ${selectedHistory === index ? 'codebase-qa__history-dot--active' : ''}`} />
-                                    <Flex align="center" gap={30}>
-                                        <Text className="codebase-qa__history-question">{item.question}</Text>
-                                        <Text type="secondary" className="codebase-qa__history-meta">
-                                            {item.filesFound} files · {timeAgo(item.timeAgo)}
-                                        </Text>
+
+
+                    {/* History */}
+                    <Flex vertical gap={4}>
+                        <Text className="codebase-qa__section-label">HISTORY</Text>
+                        <List
+                            dataSource={history}
+                            split
+                            renderItem={(item: any, index: number) => (
+                                <List.Item style={{ padding: 0 }}>
+                                    <Flex
+                                        align="flex-start"
+                                        gap={10}
+                                        className={`codebase-qa__history-item ${selectedHistory === index ? 'codebase-qa__history-item--active' : ''}`}
+                                        onClick={() => handleHistoryClick(item, index)}
+                                    >
+                                        <div className={`codebase-qa__history-dot ${selectedHistory === index ? 'codebase-qa__history-dot--active' : ''}`} />
+                                        <Flex align="center" gap={30}>
+                                            <Text className="codebase-qa__history-question">{item.question}</Text>
+                                            <Text type="secondary" className="codebase-qa__history-meta">
+                                                {item.filesFound} files · {timeAgo(item.timeAgo)}
+                                            </Text>
+                                        </Flex>
                                     </Flex>
-                                </Flex>
-                            </List.Item>
-                        )}
-                    />
-                </Flex>
+                                </List.Item>
+                            )}
+                        />
+                    </Flex>
+                </>)}
+
+
 
             </Flex>
         </div>

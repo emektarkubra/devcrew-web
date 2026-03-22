@@ -94,19 +94,21 @@ const PRReview = () => {
 
 
     const handleHistoryClick = async (item: any) => {
-    if (!selectedRepo) return
-    const prNumber = parseInt(item.pr.replace('#', ''))
-
-    setSelectedPR(prNumber)
-    setLoading(true)
-    setResult(null)
-
-    const [owner, repo] = selectedRepo.split('/')
-    const { data, error } = await api.agents.prReview(token, owner, repo, prNumber)
-    if (error) { toast.error(error); setLoading(false); return }
-    setResult(data)
-    setLoading(false)
-}
+        setSelectedPR(parseInt(item.pr.replace('#', '')))
+        setResult({
+            title: item.title,
+            number: item.pr,
+            author: '',
+            timeAgo: timeAgo(item.timeAgo),
+            riskScore: item.riskScore,
+            changedFiles: item.changedFiles,
+            criticalIssues: item.issues?.filter((i: any) => i.severity === 'high').length ?? 0,
+            issues: item.issues ?? [],
+            diff: item.diff ?? [],
+            files: item.files ?? [],
+            summary: item.summary ?? '',
+        })
+    }
 
     return (
         <div className="pr-review">
