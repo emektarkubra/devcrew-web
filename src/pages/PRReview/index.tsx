@@ -1,274 +1,360 @@
-import { useState } from 'react'
-import { Button, Card, Flex, Input, Space, Tag, Typography, List, Avatar } from 'antd'
-import { FileOutlined, SearchOutlined } from '@ant-design/icons'
+import { useEffect, useState } from 'react'
+import { Button, Card, Flex, Tag, Typography, List, Avatar, Spin, Select } from 'antd'
+import { FileOutlined, GithubOutlined, LoadingOutlined } from '@ant-design/icons'
 import withLayout from '../../layout/withLayout'
+import { api } from '../../services/api'
+import toast from 'react-hot-toast'
+import { timeAgo } from '../../utils/timeAgo'
+import { getLanguageColor } from '../../utils/languageColors'
+import './index.scss'
 
 const { Text } = Typography
 
-
-
-const MOCK_HISTORY = [
-    { pr: '#41', title: 'Add user profile page', issueCount: 1, timeAgo: '1 saat önce' },
-    { pr: '#40', title: 'Fix login redirect bug', issueCount: 0, timeAgo: '3 saat önce' },
-    { pr: '#39', title: 'Refactor auth middleware', issueCount: 4, timeAgo: '1 gün önce' },
-]
-
 const RISK_CONFIG: Record<string, { color: string; label: string }> = {
-    high:   { color: 'red',    label: 'Yüksek risk' },
-    medium: { color: 'orange', label: 'Orta risk'   },
-    low:    { color: 'green',  label: 'Düşük risk'  },
+    high: { color: 'red', label: 'High risk' },
+    medium: { color: 'orange', label: 'Medium risk' },
+    low: { color: 'green', label: 'Low risk' },
 }
 
-const DEFAULT_RESULT = {
-    title: 'Add Stripe payment integration',
-    number: '#42',
-    author: 'sumeyra',
-    timeAgo: '2 saat önce',
-    riskScore: 72,
-    changedFiles: 8,
-    criticalIssues: 3,
-    issues: [
-        {
-            title: 'Timeout hatası handle edilmemiş',
-            description: 'Stripe API çağrısında timeout durumunda exception fırlatılıyor, retry logic yok.',
-            file: 'payment_service.py · satır 142',
-            severity: 'high',
-        },
-        {
-            title: "API key environment'dan okunmuyor",
-            description: 'Stripe secret key hardcode edilmiş görünüyor, env variable kullanılmalı.',
-            file: 'config.py · satır 17',
-            severity: 'medium',
-        },
-        {
-            title: 'Eksik unit test',
-            description: 'payment_validator fonksiyonu için test coverage %0.',
-            file: 'tests/ · test yok',
-            severity: 'low',
-        },
-    ],
-    diff: [
-        { type: 'context', content: '  def charge_customer(amount, card_token):' },
-        { type: 'remove', content: '-   stripe.Charge.create(amount=amount, source=card_token)' },
-        { type: 'add', content: '+   try:' },
-        { type: 'add', content: '+     stripe.Charge.create(amount=amount, source=card_token)' },
-        { type: 'add', content: '+   except stripe.error.Timeout as e:' },
-        { type: 'add', content: '+     retry_with_backoff(charge_customer, amount, card_token)' },
-    ],
-    files: [
-        { name: 'payment_service.py', path: 'app/services/', changes: '+47 -12', risk: 'high' },
-        { name: 'auth_middleware.py', path: 'app/core/', changes: '+8 -3', risk: 'medium' },
-        { name: 'user_controller.py', path: 'app/routes/', changes: '+5 -1', risk: 'low' },
-        { name: 'config.py', path: 'app/', changes: '+2 -0', risk: 'low' },
-    ],
+const SEVERITY_COLORS: Record<string, { border: string; bg: string; text: string }> = {
+    high: { border: '#dc2626', bg: '#fef2f2', text: '#dc2626' },
+    medium: { border: '#d97706', bg: '#fffbeb', text: '#d97706' },
+    low: { border: '#16a34a', bg: '#f0fdf4', text: '#16a34a' },
 }
 
 const PRReview = () => {
-    const [query, setQuery] = useState('')
-    const [result, setResult] = useState<any>(DEFAULT_RESULT)
+    const [repos, setRepos] = useState<any[]>([])
+    const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
+    const [prs, setPrs] = useState<any[]>([])
+    const [prsLoading, setPrsLoading] = useState(false)
+    const [selectedPR, setSelectedPR] = useState<number | null>(null)
+    const [result, setResult] = useState<any>(null)
     const [loading, setLoading] = useState(false)
+    const [history, setHistory] = useState<any[]>([])
+
+    const token = localStorage.getItem('dt-token') || ''
+
+    useEffect(() => {
+        const fetchRepos = async () => {
+            const { data, error } = await api.login.getRepos(token)
+            if (error) { toast.error(error); return }
+            setRepos(data)
+        }
+        fetchRepos()
+    }, [])
+
+    const handleRepoSelect = async (value: string) => {
+        setSelectedRepo(value)
+        setSelectedPR(null)
+        setResult(null)
+        setPrs([])
+        setPrsLoading(true)
+
+        const [owner, repo] = value.split('/')
+
+        const { data, error } = await api.agents.prList(token, owner, repo)
+        if (error) { toast.error(error); setPrsLoading(false); return }
+        setPrs(data)
+        setPrsLoading(false)
+
+        await fetchHistory(owner, repo)
+    }
+
+    const handlePRSelect = (prNumber: number) => {
+        setSelectedPR(prNumber)
+        setResult(null)
+    }
 
     const handleReview = async () => {
-        if (!query.trim()) return
+        if (!selectedRepo || !selectedPR) return
         setLoading(true)
         setResult(null)
 
-        // TODO: API CALL
+        const [owner, repo] = selectedRepo.split('/')
 
-        await new Promise((r) => setTimeout(r, 900))
-        setResult(DEFAULT_RESULT)
+        const { data, error } = await api.agents.prReview(token, owner, repo, selectedPR)
+        if (error) { toast.error(error); setLoading(false); return }
+        setResult(data)
+        await fetchHistory(owner, repo)
+
         setLoading(false)
     }
 
-    const diffColor = (type: any['type']) => {
+    const fetchHistory = async (owner: string, repo: string) => {
+        const { data, error } = await api.agents.prReviewHistory(token, owner, repo)
+        if (error) return
+        setHistory(data)
+    }
+
+    const diffColor = (type: string) => {
         if (type === 'add') return '#16a34a'
         if (type === 'remove') return '#dc2626'
         return '#6b7280'
     }
 
-    return (
-        <div style={{ borderRadius: 6, overflow: 'hidden', backgroundColor: '#fff', margin: 20 }}>
 
-            <Flex
-                align="center"
-                justify="space-between"
-                style={{ padding: '14px 20px', borderBottom: '1px solid #f0f0f0' }}
-            >
+    const handleHistoryClick = async (item: any) => {
+    if (!selectedRepo) return
+    const prNumber = parseInt(item.pr.replace('#', ''))
+
+    setSelectedPR(prNumber)
+    setLoading(true)
+    setResult(null)
+
+    const [owner, repo] = selectedRepo.split('/')
+    const { data, error } = await api.agents.prReview(token, owner, repo, prNumber)
+    if (error) { toast.error(error); setLoading(false); return }
+    setResult(data)
+    setLoading(false)
+}
+
+    return (
+        <div className="pr-review">
+
+            {/* Header */}
+            <Flex align="center" justify="space-between" className="pr-review__header">
                 <Flex align="center" gap={10}>
-                    <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#BA7517', flexShrink: 0 }} />
+                    <div className={`pr-review__dot pr-review__dot--${result ? 'ready' : selectedRepo ? 'active' : 'idle'}`} />
                     <Flex vertical align="flex-start" gap={2}>
-                        <Text strong style={{ fontSize: 15 }}>PR Review Agent</Text>
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                            Diff analizi · risk skoru · önerilen fix
+                        <Text strong className="pr-review__title">PR Review Agent</Text>
+                        <Text type="secondary" className="pr-review__subtitle">
+                            {selectedRepo ?? 'Select a repo to review PRs'}
                         </Text>
                     </Flex>
                 </Flex>
-                <Tag color="orange">3 issue</Tag>
+                {result && (
+                    <Tag className="pr-review__tag--warning">{result.criticalIssues} critical issues</Tag>
+                )}
             </Flex>
 
             {/* Body */}
-            <Flex vertical gap={16} style={{ padding: 20 }}>
+            <Flex vertical gap={16} className="pr-review__body">
 
-                {/* Arama */}
-                <Space.Compact style={{ width: '100%' }}>
-                    <Input
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onPressEnter={handleReview}
-                        placeholder="PR numarası veya branch adı girin... (ör: #42)"
-                        prefix={<SearchOutlined style={{ color: '#9ca3af' }} />}
+                {/* Repo */}
+                <Flex vertical gap={6}>
+                    <Text className="pr-review__section-label">REPO</Text>
+                    <Select
+                        className="pr-review__select"
+                        placeholder={
+                            <Flex align="center" gap={8}>
+                                <GithubOutlined />
+                                <span>Select repo...</span>
+                            </Flex>
+                        }
+                        value={selectedRepo}
+                        onChange={handleRepoSelect}
+                        showSearch
+                        options={repos.map((r) => ({
+                            value: r.full_name,
+                            label: (
+                                <Flex align="center" justify="space-between">
+                                    <Flex align="center" gap={8}>
+                                        <GithubOutlined />
+                                        <span>{r.full_name}</span>
+                                        {r.is_private && <Tag className="pr-review__tag--private">Private</Tag>}
+                                    </Flex>
+                                    {r.language && (
+                                        <Flex align="center" gap={4}>
+                                            <div
+                                                className="pr-review__lang-dot"
+                                                style={{ background: getLanguageColor(r.language) }}
+                                            />
+                                            <Text className="pr-review__lang-text">{r.language}</Text>
+                                        </Flex>
+                                    )}
+                                </Flex>
+                            ),
+                        }))}
                     />
+                </Flex>
+
+                {/* PR */}
+                <Flex vertical gap={6}>
+                    <Text className="pr-review__section-label">PULL REQUEST</Text>
+                    <Select
+                        className="pr-review__select"
+                        placeholder={
+                            !selectedRepo
+                                ? 'Select a repo first...'
+                                : prsLoading
+                                    ? 'Loading PRs...'
+                                    : prs.length === 0
+                                        ? 'No PRs found'
+                                        : 'Select a PR...'
+                        }
+                        value={selectedPR}
+                        onChange={handlePRSelect}
+                        disabled={!selectedRepo || prsLoading || prs.length === 0}
+                        loading={prsLoading}
+                        suffixIcon={
+                            prsLoading
+                                ? <Spin indicator={<LoadingOutlined spin />} size="small" />
+                                : undefined
+                        }
+                        options={prs.map((pr) => ({
+                            value: pr.number,
+                            label: (
+                                <Flex align="center" justify="space-between">
+                                    <Flex align="center" gap={8}>
+                                        <Text code className="pr-review__pr-number">#{pr.number}</Text>
+                                        <span>{pr.title}</span>
+                                    </Flex>
+                                    <Flex align="center" gap={8}>
+                                        <Text className="pr-review__pr-author">{pr.author}</Text>
+                                        <Tag
+                                            color={pr.state === 'open' ? 'green' : 'default'}
+                                            className="pr-review__pr-state-tag"
+                                        >
+                                            {pr.state}
+                                        </Tag>
+                                    </Flex>
+                                </Flex>
+                            ),
+                        }))}
+                    />
+                </Flex>
+
+                {/* Review Button */}
+                {selectedPR && (
                     <Button
                         type="primary"
                         onClick={handleReview}
                         loading={loading}
-                        style={{ background: '#BA7517' }}
+                        className="pr-review__btn"
+                        block
                     >
-                        İncele
+                        Review PR #{selectedPR}
                     </Button>
-                </Space.Compact>
+                )}
+
+                {loading && (
+                    <Flex justify="center" className="pr-review__spin-wrap">
+                        <Spin indicator={<LoadingOutlined spin />} size="small" />
+                    </Flex>
+                )}
 
                 {result && !loading && (
                     <>
-                        <Flex align="center" gap={8} style={{ flexWrap: 'wrap' }}>
+                        {/* Meta */}
+                        <Flex align="center" gap={8} className="pr-review__meta">
                             <Text code>{result.number}</Text>
-                            <Text strong style={{ fontSize: 14 }}>{result.title}</Text>
-                            <Text type="secondary" style={{ fontSize: 12 }}>
+                            <Text strong className="pr-review__meta-title">{result.title}</Text>
+                            <Text type="secondary" className="pr-review__meta-sub">
                                 {result.author} · {result.timeAgo}
                             </Text>
                         </Flex>
 
-                        {/* Skor kartları */}
+                        {/* Score Cards */}
                         <Flex gap={10}>
-                            <Card size="small" style={{ flex: 1, background: '#fef2f2', border: '1px solid #fecaca' }}>
-                                <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Risk skoru</Text>
-                                <Text style={{ fontSize: 22, fontWeight: 500, color: '#dc2626' }}>{result.riskScore}</Text>
+                            <Card size="small" className="pr-review__score-card pr-review__score-card--danger">
+                                <Text type="secondary" className="pr-review__score-label">Risk score</Text>
+                                <Text className="pr-review__score-value pr-review__score-value--danger">{result.riskScore}</Text>
                             </Card>
-                            <Card size="small" style={{ flex: 1, background: '#f9fafb' }}>
-                                <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Değişen dosya</Text>
-                                <Text style={{ fontSize: 22, fontWeight: 500 }}>{result.changedFiles}</Text>
+                            <Card size="small" className="pr-review__score-card pr-review__score-card--neutral">
+                                <Text type="secondary" className="pr-review__score-label">Changed files</Text>
+                                <Text className="pr-review__score-value">{result.changedFiles}</Text>
                             </Card>
-                            <Card size="small" style={{ flex: 1, background: '#fffbeb', border: '1px solid #fde68a' }}>
-                                <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Kritik issue</Text>
-                                <Text style={{ fontSize: 22, fontWeight: 500, color: '#d97706' }}>{result.criticalIssues}</Text>
+                            <Card size="small" className="pr-review__score-card pr-review__score-card--warning">
+                                <Text type="secondary" className="pr-review__score-label">Critical issues</Text>
+                                <Text className="pr-review__score-value pr-review__score-value--warning">{result.criticalIssues}</Text>
                             </Card>
                         </Flex>
 
-                        <Flex gap={16} style={{ alignItems: 'stretch' }}>
-                            <Flex vertical gap={8} style={{ flex: 1 }}>
-                                <Text style={{ fontSize: 14, fontWeight: 500, display: 'block' }}>RESPONSE</Text>
-                                <div style={{ maxHeight: 300, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                    {result.issues.map((item: any, index: any) => (
+                        {/* Response + Diff */}
+                        <Flex gap={16} className="pr-review__stretch-row">
+                            <Flex vertical gap={8} className="pr-review__col">
+                                <Text className="pr-review__section-label">RESPONSE</Text>
+                                <div className="pr-review__issues-scroll">
+                                    {result.issues.map((item: any, index: number) => (
                                         <div
                                             key={index}
+                                            className="pr-review__issue-item"
                                             style={{
-                                                borderLeft: `3px solid ${item.severity === 'high' ? '#dc2626' : item.severity === 'medium' ? '#d97706' : '#16a34a'}`,
-                                                background: item.severity === 'high' ? '#fef2f2' : item.severity === 'medium' ? '#fffbeb' : '#f0fdf4',
-                                                padding: '10px 12px',
+                                                borderLeftColor: SEVERITY_COLORS[item.severity]?.border,
+                                                background: SEVERITY_COLORS[item.severity]?.bg,
                                             }}
                                         >
                                             <Text
                                                 strong
-                                                style={{
-                                                    fontSize: 13,
-                                                    display: 'block',
-                                                    color: item.severity === 'high' ? '#dc2626' : item.severity === 'medium' ? '#d97706' : '#16a34a',
-                                                }}
+                                                className="pr-review__issue-title"
+                                                style={{ color: SEVERITY_COLORS[item.severity]?.text }}
                                             >
                                                 {item.title}
                                             </Text>
-                                            <Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 2 }}>
+                                            <Text type="secondary" className="pr-review__issue-desc">
                                                 {item.description}
                                             </Text>
-                                            <Text style={{ fontSize: 11, color: '#9ca3af', display: 'block', marginTop: 4, fontFamily: 'monospace' }}>
-                                                {item.file}
-                                            </Text>
+                                            <Text className="pr-review__issue-file">{item.file}</Text>
                                         </div>
                                     ))}
                                 </div>
                             </Flex>
 
-                            {/* Diff */}
-                            <Flex vertical gap={8} style={{ flex: 1 }}>
-                                <Text style={{ fontSize: 14, fontWeight: 500, display: 'block' }}>DIFF</Text>
-                                <Card
-                                    size="small"
-                                    style={{ background: '#f9fafb', flex: 1, maxHeight: 300, overflowY: 'auto' }}
-                                    styles={{ body: { padding: '12px 14px' } }}
-                                >
-                                    {result?.diff?.map((item: any, index: any) => (
+                            <Flex vertical gap={8} className="pr-review__col">
+                                <Text className="pr-review__section-label">DIFF</Text>
+                                <Card size="small" className="pr-review__diff-card" styles={{ body: { padding: '12px 14px' } }}>
+                                    {result.diff.map((item: any, index: number) => (
                                         <div
                                             key={index}
-                                            style={{
-                                                fontFamily: 'monospace',
-                                                fontSize: 12,
-                                                lineHeight: '1.8',
-                                                color: diffColor(item.type),
-                                            }}
+                                            className="pr-review__diff-line"
+                                            style={{ color: diffColor(item.type) }}
                                         >
                                             {item.content}
                                         </div>
                                     ))}
                                 </Card>
                             </Flex>
-
                         </Flex>
 
-                        {/* Files + History yan yana */}
-                        <Flex gap={16} style={{ alignItems: 'stretch' }}>
-
-                            {/* Dosyalar + Butonlar */}
-                            <Flex vertical gap={8} style={{ flex: 1 }}>
-                                <Text style={{ fontSize: 14, fontWeight: 500, display: 'block' }}>FILES</Text>
-                                <div style={{ maxHeight: 260, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {/* Files + History */}
+                        <Flex gap={16} className="pr-review__stretch-row">
+                            <Flex vertical gap={8} className="pr-review__col">
+                                <Text className="pr-review__section-label">FILES</Text>
+                                <div className="pr-review__files-scroll">
                                     {result.files.map((file: any) => (
-                                        <Flex
-                                            key={file?.name}
-                                            align="center"
-                                            gap={10}
-                                            style={{ padding: '8px 10px', border: '1px solid #f0f0f0', borderRadius: 6 }}
-                                        >
+                                        <Flex key={file.name} align="center" gap={10} className="pr-review__file-item">
                                             <Avatar
                                                 icon={<FileOutlined />}
-                                                style={{ background: '#fef9c3', color: '#a16207', flexShrink: 0 }}
+                                                className="pr-review__file-avatar"
                                                 size={32}
                                             />
-                                            <Flex vertical gap={2} style={{ flex: 1 }}>
-                                                <Text code style={{ fontSize: 12, fontWeight: 500 }}>{file.name}</Text>
-                                                <Text type="secondary" style={{ fontSize: 11 }}>{file.path} · {file.changes}</Text>
+                                            <Flex vertical gap={2} className="pr-review__file-info">
+                                                <Text code className="pr-review__file-name">{file.name}</Text>
+                                                <Text type="secondary" className="pr-review__file-meta">
+                                                    {file.path} · {file.changes}
+                                                </Text>
                                             </Flex>
-                                            <Tag color={RISK_CONFIG[file.risk]?.color}>{RISK_CONFIG[file.risk]?.label}</Tag>
+                                            <Tag color={RISK_CONFIG[file.risk]?.color}>
+                                                {RISK_CONFIG[file.risk]?.label}
+                                            </Tag>
                                         </Flex>
                                     ))}
                                 </div>
-                                <Flex gap={8} style={{ marginTop: 4 }}>
-                                    <Button type="primary" style={{ flex: 1, background: '#BA7517' }}>
-                                        Fix önerilerini uygula
+                                <Flex gap={8} className="pr-review__actions">
+                                    <Button type="primary" className="pr-review__btn pr-review__btn--flex">
+                                        Apply fix suggestions
                                     </Button>
-                                    <Button style={{ flex: 1 }}>
-                                        Tam raporu gör
-                                    </Button>
+                                    <Button className="pr-review__btn--flex">View full report</Button>
                                 </Flex>
                             </Flex>
 
-                            {/* Geçmiş */}
-                            <Flex vertical gap={4} style={{ flex: 1 }}>
-                                <Text style={{ fontSize: 14, fontWeight: 500, display: 'block' }}>HISTORY</Text>
-                                <div style={{ maxHeight: 260, overflowY: 'auto' }}>
+                            <Flex vertical gap={4} className="pr-review__col">
+                                <Text className="pr-review__section-label">HISTORY</Text>
+                                <div className="pr-review__history-scroll">
                                     <List
-                                        dataSource={MOCK_HISTORY}
+                                        dataSource={history}
                                         split
-                                        renderItem={(item) => (
+                                        renderItem={(item: any) => (
                                             <List.Item style={{ padding: 0 }}>
-                                                <Flex align="flex-start" gap={10} style={{ padding: '10px 0', cursor: 'pointer', width: '100%' }}>
-                                                    <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#d1d5db', marginTop: 6, flexShrink: 0 }} />
+                                                <Flex align="flex-start" gap={10} className="pr-review__history-item" onClick={() => handleHistoryClick(item)}>
+                                                    <div className="pr-review__history-dot" />
                                                     <Flex vertical gap={2}>
                                                         <Flex align="center" gap={8}>
-                                                            <Text code style={{ fontSize: 11 }}>{item.pr}</Text>
-                                                            <Text style={{ fontSize: 13 }}>{item.title}</Text>
+                                                            <Text code className="pr-review__history-pr">{item.pr}</Text>
+                                                            <Text className="pr-review__history-title">{item.title}</Text>
                                                         </Flex>
-                                                        <Text type="secondary" style={{ fontSize: 11 }}>
-                                                            {item.issueCount} issue · {item.timeAgo}
+                                                        <Text type="secondary" className="pr-review__history-meta">
+                                                            {item.issueCount} issues · {timeAgo(item.timeAgo)}
                                                         </Text>
                                                     </Flex>
                                                 </Flex>
@@ -277,7 +363,6 @@ const PRReview = () => {
                                     />
                                 </div>
                             </Flex>
-
                         </Flex>
                     </>
                 )}

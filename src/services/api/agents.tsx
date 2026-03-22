@@ -7,8 +7,6 @@ class agents {
 
     /**
      * index repo
-     * @static
-     * @memberof agents
      */
     static indexRepo = async (token: string, owner: string, repo: string) => {
         return await request.post(paths.indexRepo, { token, owner, repo })
@@ -16,8 +14,6 @@ class agents {
 
     /**
      * codebase qa query
-     * @static
-     * @memberof agents
      */
     static codebaseQA = async (token: string, owner: string, repo: string, query: string) => {
         return await request.post(paths.codebaseQA, { token, owner, repo, query })
@@ -25,11 +21,30 @@ class agents {
 
     /**
      * codebase qa history
-     * @static
-     * @memberof agents
      */
     static codebaseQAHistory = async (token: string, owner: string, repo: string) => {
         return await request.post(paths.codebaseQAHistory, { token, owner, repo })
+    }
+
+    /**
+     * pr list
+     */
+    static prList = async (token: string, owner: string, repo: string) => {
+        return await request.post(paths.prList, { token, owner, repo })
+    }
+
+    /**
+     * pr review
+     */
+    static prReview = async (token: string, owner: string, repo: string, pr_number: number) => {
+        return await request.post(paths.prReview, { token, owner, repo, pr_number })
+    }
+
+    /**
+     * pr review history
+     */
+    static prReviewHistory = async (token: string, owner: string, repo: string) => {
+        return await request.post(paths.prReviewHistory, { token, owner, repo })
     }
 }
 
