@@ -25,7 +25,7 @@
     background-color: $gh-light-bg-primary;
     border-color: $gh-light-border;
     color: $gh-light-text-primary;
-
+    text-align: left;
 
     @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-primary !important;
 }

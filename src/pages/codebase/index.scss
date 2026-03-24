@@ -7,7 +7,7 @@
   background-color: $gh-light-bg-primary;
   margin: 20px;
 
-  @apply dark:bg-gh-bg-primary dark:border-gh-border;
+  @apply dark:bg-gh-bg-secondary dark:border-gh-border;
 
   // ─── Header ─────────────────────────────
 
@@ -16,7 +16,7 @@
     border-bottom: 1px solid $gh-light-border;
     background-color: $gh-light-bg-secondary;
 
-    @apply dark:bg-gh-bg-secondary dark:border-gh-border;
+    @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
   }
 
   &__body {
@@ -52,15 +52,22 @@
   }
 
   @keyframes pulse {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.4; }
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.4;
+    }
   }
 
   // ─── Status Tag ─────────────────────────
 
   &__status-tag {
-    font-size: 11px;
-    padding: 2px 10px;
+    font-size: 13px;
+    padding: 4px 10px;
     font-weight: 500;
 
     &--idle {
@@ -68,7 +75,7 @@
       border-color: $gh-light-border;
       color: $gh-light-text-muted;
 
-      @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted;
+      @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-secondary;
     }
 
     &--indexing {
@@ -76,7 +83,12 @@
       border-color: $gh-light-blue-border;
       color: $gh-light-blue;
 
-      @apply dark:bg-gh-blue-bg dark:border-gh-blue-border dark:text-gh-blue-text;
+      @apply dark:bg-gh-orange-bg dark:border-gh-orange-border dark:text-gh-orange-text;
+
+      .anticon-loading {
+        @apply dark:text-gh-orange-text;
+
+      }
     }
 
     &--ready {
@@ -85,6 +97,10 @@
       color: $gh-light-green;
 
       @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
+
+      .anticon-check-circle {
+        @apply dark:text-gh-green-text;
+      }
     }
   }
 
@@ -108,7 +124,7 @@
     &:hover .ant-select-selector,
     &.ant-select-focused .ant-select-selector {
       border-color: $gh-light-blue;
-      box-shadow: 0 0 0 2px rgba(9,105,218,0.12);
+      box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.12);
 
       @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-primary;
 
@@ -186,8 +202,15 @@
     background: $gh-light-blue-bg;
     color: $gh-light-blue;
 
-    @apply dark:bg-gh-blue-bg dark:text-gh-blue-text;
+    @apply dark:bg-gh-blue-light !important;
+
+    .anticon {
+
+      @apply dark:text-gh-light-blue !important;
+    }
   }
+
+  // gh-light-blue
 
   &__file-name {
     color: $gh-light-blue;
@@ -204,10 +227,12 @@
   &__history-item {
     cursor: pointer;
     border-radius: 6px;
+    padding: 10px;
+    width: 100%;
 
     &:hover {
       background: $gh-light-bg-tertiary;
-      @apply dark:bg-gh-bg-secondary;
+      @apply dark:bg-gh-blue-bg;
     }
 
     &--active {

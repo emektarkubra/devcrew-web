@@ -31,6 +31,34 @@
         flex: 1;
     }
 
+    // ── Scrollbar ────────────────────────────────────────────
+
+    &__issues-scroll,
+    &__files-scroll,
+    &__history-scroll,
+    &__diff-card {
+
+        &::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: $gh-light-bg-secondary;
+            @apply dark:bg-gh-bg-secondary;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: $gh-light-border;
+            border-radius: 8px;
+            @apply dark:bg-gh-border;
+
+            &:hover {
+                background: $gh-light-text-muted;
+                @apply dark:bg-gh-text-muted;
+            }
+        }
+    }
+
     // ── Dot ─────────────────────────────────────────────────
 
     &__dot {
@@ -67,24 +95,24 @@
     // ── Typography ───────────────────────────────────────────
 
     &__title {
-        font-size: 15px !important;
-        color: $gh-light-text-primary !important;
+        font-size: 15px;
+        color: $gh-light-text-primary;
         @apply dark:text-gh-text-primary;
     }
 
     &__subtitle {
-        font-size: 12px !important;
-        color: $gh-light-text-secondary !important;
+        font-size: 12px;
+        color: $gh-light-text-secondary;
         @apply dark:text-gh-text-secondary;
     }
 
     &__section-label {
-        font-size: 11px !important;
-        font-weight: 600 !important;
-        letter-spacing: 0.06em !important;
-        display: block !important;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        display: block;
         align-self: flex-start;
-        color: $gh-light-text-muted !important;
+        color: $gh-light-text-muted;
 
         @apply dark:text-gh-text-muted;
     }
@@ -92,19 +120,19 @@
     // ── Tags ─────────────────────────────────────────────────
 
     &__tag--warning {
-        background-color: $gh-light-yellow-bg !important;
-        border-color: $gh-light-yellow-border !important;
-        color: $gh-light-yellow !important;
+        background-color: $gh-light-yellow-bg;
+        border-color: $gh-light-yellow-border;
+        color: $gh-light-yellow;
 
         @apply dark:bg-gh-yellow-bg dark:border-gh-yellow-border dark:text-gh-yellow-text;
     }
 
     &__tag--private {
-        font-size: 10px !important;
-        padding: 0 5px !important;
-        background-color: $gh-light-purple-bg !important;
-        border-color: $gh-light-purple-border !important;
-        color: $gh-light-purple-text !important;
+        font-size: 10px;
+        padding: 0 5px;
+        background-color: $gh-light-purple-bg;
+        border-color: $gh-light-purple-border;
+        color: $gh-light-purple-text;
 
         @apply dark:bg-gh-purple-bg dark:border-gh-purple-border dark:text-gh-purple-text;
     }
@@ -123,8 +151,8 @@
     }
 
     &__lang-text {
-        font-size: 12px !important;
-        color: $gh-light-text-muted !important;
+        font-size: 12px;
+        color: $gh-light-text-muted;
 
         @apply dark:text-gh-text-muted;
     }
@@ -132,22 +160,23 @@
     // ── PR Select ────────────────────────────────────────────
 
     &__pr-number {
-        font-size: 11px !important;
-        color: $gh-light-text-primary !important;
+        font-size: 11px;
+        color: $gh-light-text-primary;
 
         @apply dark:text-gh-text-primary;
     }
 
     &__pr-author {
-        font-size: 11px !important;
-        color: $gh-light-text-muted !important;
+        font-size: 11px;
+        color: $gh-light-text-muted;
 
         @apply dark:text-gh-text-muted;
     }
 
     &__pr-state-tag {
-        margin: 0 !important;
-        font-size: 10px !important;
+        margin: 0;
+        font-size: 10px;
+        @apply dark:bg-gh-green dark:text-gh-text-primary;
     }
 
     // ── Spin ─────────────────────────────────────────────────
@@ -159,16 +188,19 @@
     // ── Button ───────────────────────────────────────────────
 
     &__btn {
-        background: #BA7517 !important;
-        border-color: #BA7517 !important;
+        background: $gh-light-orange;
+        border-color: $gh-light-orange;
 
         &:hover {
-            background: #9a5f10 !important;
+            background: $gh-light-orange;
+            border-color: $gh-light-orange;
         }
 
         &--flex {
             flex: 1;
         }
+
+        @apply dark:bg-gh-orange dark:border-gh-orange-border #{!important};
     }
 
     // ── Meta ─────────────────────────────────────────────────
@@ -178,15 +210,15 @@
     }
 
     &__meta-title {
-        font-size: 14px !important;
-        color: $gh-light-text-primary !important;
+        font-size: 14px;
+        color: $gh-light-text-primary;
 
         @apply dark:text-gh-text-primary;
     }
 
     &__meta-sub {
-        font-size: 12px !important;
-        color: $gh-light-text-secondary !important;
+        font-size: 12px;
+        color: $gh-light-text-secondary;
 
         @apply dark:text-gh-text-secondary;
     }
@@ -197,48 +229,48 @@
         flex: 1;
 
         &--danger {
-            background: $gh-light-red-bg !important;
-            border: 1px solid $gh-light-red-border !important;
+            background: $gh-light-red-bg;
+            border: 1px solid $gh-light-red-border;
 
             @apply dark:bg-gh-red-bg dark:border-gh-red-border;
         }
 
         &--neutral {
-            background: $gh-light-bg-secondary !important;
+            background: $gh-light-bg-secondary;
 
             @apply dark:bg-gh-bg-tertiary;
         }
 
         &--warning {
-            background: $gh-light-yellow-bg !important;
-            border: 1px solid $gh-light-yellow-border !important;
+            background: $gh-light-yellow-bg;
+            border: 1px solid $gh-light-yellow-border;
 
             @apply dark:bg-gh-yellow-bg dark:border-gh-yellow-border;
         }
     }
 
     &__score-label {
-        font-size: 11px !important;
-        display: block !important;
-        color: $gh-light-text-muted !important;
+        font-size: 14px;
+        display: block;
+        color: $gh-light-text-muted;
 
-        @apply dark:text-gh-text-muted;
+        @apply dark:text-gh-text-primary !important;
     }
 
     &__score-value {
-        font-size: 22px !important;
-        font-weight: 500 !important;
-        color: $gh-light-text-primary !important;
+        font-size: 22px;
+        font-weight: 500;
+        color: $gh-light-text-primary;
 
         @apply dark:text-gh-text-primary;
 
         &--danger {
-            color: $gh-light-red !important;
+            color: $gh-light-red;
             @apply dark:text-gh-red-text;
         }
 
         &--warning {
-            color: $gh-light-yellow !important;
+            color: $gh-light-yellow;
             @apply dark:text-gh-yellow-text;
         }
     }
@@ -257,31 +289,67 @@
         border-left: 3px solid transparent;
         padding: 10px 12px;
         border-radius: 0 4px 4px 0;
+
+        &.severity--high {
+            border-left-color: $gh-light-red;
+            background: $gh-light-red-bg;
+
+            @apply dark:border-gh-red-text dark:bg-gh-red-bg;
+
+            .pr-review__issue-title {
+                color: $gh-light-red;
+                @apply dark:text-gh-red-text;
+            }
+        }
+
+        &.severity--medium {
+            border-left-color: $gh-light-orange;
+            background: $gh-light-orange-bg;
+
+            @apply dark:border-gh-orange-text dark:bg-gh-orange-bg;
+
+            .pr-review__issue-title {
+                color: $gh-light-orange;
+                @apply dark:text-gh-orange-text;
+            }
+        }
+
+        &.severity--low {
+            border-left-color: $gh-light-green;
+            background: $gh-light-green-bg;
+
+            @apply dark:border-gh-green-text dark:bg-gh-green-bg;
+
+            .pr-review__issue-title {
+                color: $gh-light-green;
+                @apply dark:text-gh-green-text;
+            }
+        }
     }
 
     &__issue-title {
-        font-size: 13px !important;
-        display: block !important;
-        color: $gh-light-text-primary !important;
+        font-size: 13px;
+        display: block;
+        color: $gh-light-text-primary;
 
         @apply dark:text-gh-text-primary;
     }
 
     &__issue-desc {
-        font-size: 12px !important;
-        display: block !important;
-        margin-top: 2px !important;
-        color: $gh-light-text-secondary !important;
+        font-size: 12px;
+        display: block;
+        margin-top: 2px;
+        color: $gh-light-text-secondary;
 
         @apply dark:text-gh-text-secondary;
     }
 
     &__issue-file {
-        font-size: 11px !important;
-        color: $gh-light-text-muted !important;
-        display: block !important;
-        margin-top: 4px !important;
-        font-family: monospace !important;
+        font-size: 11px;
+        color: $gh-light-text-muted;
+        display: block;
+        margin-top: 4px;
+        font-family: monospace;
 
         @apply dark:text-gh-text-muted;
     }
@@ -289,7 +357,7 @@
     // ── Diff ─────────────────────────────────────────────────
 
     &__diff-card {
-        background: $gh-light-bg-secondary !important;
+        background: $gh-light-bg-secondary;
         flex: 1;
         max-height: 300px;
         overflow-y: auto;
@@ -301,9 +369,24 @@
         font-family: monospace;
         font-size: 12px;
         line-height: 1.8;
-        color: $gh-light-text-primary;
+        color: $gh-light-text-secondary;
 
-        @apply dark:text-gh-text-primary;
+        @apply dark:text-gh-text-secondary;
+
+        &.diff-line--add {
+            color: $gh-light-green;
+            @apply dark:text-gh-green-text;
+        }
+
+        &.diff-line--remove {
+            color: $gh-light-red;
+            @apply dark:text-gh-red-text;
+        }
+
+        &.diff-line--context {
+            color: $gh-light-text-muted;
+            @apply dark:text-gh-text-primary;
+        }
     }
 
     // ── Files ────────────────────────────────────────────────
@@ -325,8 +408,8 @@
     }
 
     &__file-avatar {
-        background: $gh-light-yellow-bg !important;
-        color: $gh-light-yellow !important;
+        background: $gh-light-yellow-bg;
+        color: $gh-light-yellow;
         flex-shrink: 0;
 
         @apply dark:bg-gh-yellow-bg dark:text-gh-yellow-text;
@@ -337,16 +420,16 @@
     }
 
     &__file-name {
-        font-size: 12px !important;
-        font-weight: 500 !important;
-        color: $gh-light-text-primary !important;
+        font-size: 12px;
+        font-weight: 500;
+        color: $gh-light-text-primary;
 
         @apply dark:text-gh-text-primary;
     }
 
     &__file-meta {
-        font-size: 11px !important;
-        color: $gh-light-text-muted !important;
+        font-size: 11px;
+        color: $gh-light-text-muted;
 
         @apply dark:text-gh-text-muted;
     }
@@ -389,23 +472,23 @@
     }
 
     &__history-pr {
-        font-size: 11px !important;
-        color: $gh-light-text-muted !important;
+        font-size: 11px;
+        color: $gh-light-text-muted;
 
         @apply dark:text-gh-text-muted;
     }
 
     &__history-title {
-        font-size: 13px !important;
-        color: $gh-light-text-primary !important;
+        font-size: 13px;
+        color: $gh-light-text-primary;
 
         @apply dark:text-gh-text-primary;
     }
 
     &__history-meta {
-        font-size: 11px !important;
+        font-size: 11px;
         white-space: nowrap;
-        color: $gh-light-text-muted !important;
+        color: $gh-light-text-muted;
 
         @apply dark:text-gh-text-muted;
     }

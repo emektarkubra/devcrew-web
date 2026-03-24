@@ -16,10 +16,16 @@ const RISK_CONFIG: Record<string, { color: string; label: string }> = {
     low: { color: 'green', label: 'Low risk' },
 }
 
-const SEVERITY_COLORS: Record<string, { border: string; bg: string; text: string }> = {
-    high: { border: '#dc2626', bg: '#fef2f2', text: '#dc2626' },
-    medium: { border: '#d97706', bg: '#fffbeb', text: '#d97706' },
-    low: { border: '#16a34a', bg: '#f0fdf4', text: '#16a34a' },
+const SEVERITY_CLASS: Record<string, string> = {
+    high: 'severity--high',
+    medium: 'severity--medium',
+    low: 'severity--low',
+}
+
+const diffLineClass = (type: string): string => {
+    if (type === 'add') return 'diff-line--add'
+    if (type === 'remove') return 'diff-line--remove'
+    return 'diff-line--context'
 }
 
 const PRReview = () => {
@@ -153,7 +159,7 @@ const PRReview = () => {
                                     <Flex align="center" gap={8}>
                                         <GithubOutlined />
                                         <span>{r.full_name}</span>
-                                        {r.is_private && <Tag className="pr-review__tag--private">Private</Tag>}
+                                        {r.is_private && <Tag className="codebase-qa__repo-private-tag">Private</Tag>}
                                     </Flex>
                                     {r.language && (
                                         <Flex align="center" gap={4}>
@@ -229,12 +235,6 @@ const PRReview = () => {
                     </Button>
                 )}
 
-                {loading && (
-                    <Flex justify="center" className="pr-review__spin-wrap">
-                        <Spin indicator={<LoadingOutlined spin />} size="small" />
-                    </Flex>
-                )}
-
                 {result && !loading && (
                     <>
                         {/* Meta */}
@@ -270,16 +270,12 @@ const PRReview = () => {
                                     {result.issues.map((item: any, index: number) => (
                                         <div
                                             key={index}
-                                            className="pr-review__issue-item"
-                                            style={{
-                                                borderLeftColor: SEVERITY_COLORS[item.severity]?.border,
-                                                background: SEVERITY_COLORS[item.severity]?.bg,
-                                            }}
+                                            className={`pr-review__issue-item ${SEVERITY_CLASS[item.severity] || ''}`}
+
                                         >
                                             <Text
                                                 strong
-                                                className="pr-review__issue-title"
-                                                style={{ color: SEVERITY_COLORS[item.severity]?.text }}
+                                                className={`pr-review__issue-item ${SEVERITY_CLASS[item.severity] || ''}`}
                                             >
                                                 {item.title}
                                             </Text>
@@ -298,8 +294,7 @@ const PRReview = () => {
                                     {result.diff.map((item: any, index: number) => (
                                         <div
                                             key={index}
-                                            className="pr-review__diff-line"
-                                            style={{ color: diffColor(item.type) }}
+                                            className={`pr-review__diff-line ${diffLineClass(item.type)}`}
                                         >
                                             {item.content}
                                         </div>
