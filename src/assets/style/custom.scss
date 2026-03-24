@@ -1,58 +1,122 @@
-// @import "../style/variables";
+@import '../../assets/style/variables';
 
-// // Select
+.ant-input-compact-item {
+    background-color: $gh-light-bg-primary;
+    border-color: $gh-light-border;
+    color: $gh-light-text-primary;
 
-// .ant-select-single .ant-select-selector {
-//     &:hover {
-//         border: 1px solid $primary-color !important;
-//     }
-// }
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border dark:text-gh-text-primary;
 
-// .ant-select-selection-item {
-//     color: $dark-gray !important;
-//     font-size: 12px;
-//     @apply dark:text-lightColor !important;
-// }
+    &::placeholder {
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
 
-// .ant-select-selector {
-//     background-color: $light-gray4 !important;
-//     @apply dark:bg-darkColor !important;
-// }
+    &:focus,
+    &:hover {
+        border-color: $gh-light-blue;
+        box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.12);
 
-// .ant-select-dropdown {
-//     @apply dark:bg-darkColor !important;
-// }
+        @apply dark:border-gh-blue-border;
+    }
+}
 
-// .ant-select-item-option-content {
-//     @apply dark:text-lightColor !important;
-// }
+.ant-select-selector {
+    background-color: $gh-light-bg-primary;
+    border-color: $gh-light-border;
+    color: $gh-light-text-primary;
 
-// .ant-select-item-option-content {
-//     color: $dark-gray !important;
-// }
 
-// .ant-select-item-option-active {
-//     background-color: $light-primary-color !important;
+    @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-primary !important;
+}
 
-//     .ant-select-item-option-content {
-//         color: $primary-color !important;
-//     }
-// }
+.ant-select-arrow,
+.ant-select-selection-placeholder {
+    color: $gh-light-text-muted;
 
-// .ant-select-item-option-selected {
-//     background-color: $light-primary-color !important;
+    @apply dark:text-gh-text-muted;
+}
 
-//     .ant-select-item-option-content {
-//         color: $primary-color !important;
-//     }
-// }
+.ant-card {
+    background-color: $gh-light-bg-secondary;
+    border-color: $gh-light-border;
 
-// // Button
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border;
+}
 
-// .ant-btn {
-//     cursor: pointer;
+.ant-card-body {
+    background-color: $gh-light-bg-secondary;
 
-//     &:hover {
-//         background-color: #ffffff00 !important;
-//     }
-// }
+    @apply dark:bg-gh-bg-secondary;
+}
+
+.ant-typography {
+    color: $gh-light-text-primary;
+
+    @apply dark:text-gh-text-primary;
+}
+
+.ant-typography.ant-typography-secondary {
+    color: $gh-light-text-secondary;
+
+    @apply dark:text-gh-text-secondary;
+}
+
+.ant-list-split .ant-list-item {
+    border-bottom-color: $gh-light-border;
+
+    @apply dark:border-gh-border;
+}
+
+.ant-spin-dot-item {
+    background-color: $gh-light-blue;
+
+    @apply dark:bg-gh-blue-text;
+}
+
+.ant-input-affix-wrapper {
+    background-color: $gh-light-bg-primary;
+    border-color: $gh-light-border;
+
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border;
+}
+
+
+.ant-input-affix-wrapper {
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border dark:text-gh-text-primary;
+}
+
+
+.ant-typography {
+    @apply dark:text-gh-text-primary;
+}
+
+.ant-btn {
+    @apply dark:bg-gh-bg-secondary
+}
+
+.ant-input-disabled {
+    @apply  dark:text-gh-text-primary dark:bg-gh-bg-primary;
+
+}
+
+.anticon {
+    @apply dark:text-gh-text-primary;
+}
+
+.ant-select-selection-item {
+    span {
+        @apply dark:text-gh-text-primary;
+    }
+}
+
+input::placeholder {
+    color: $gh-light-text-secondary;
+    @apply dark:text-gh-text-secondary;
+}
+
+.ant-select-selection-placeholder {
+     color: $gh-light-text-secondary;
+    @apply dark:text-gh-text-secondary;
+
+} 

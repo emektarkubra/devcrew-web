@@ -4,21 +4,31 @@
     background: $gh-light-bg-secondary;
     min-height: 100vh;
 
+    @apply dark:bg-gh-bg-primary;
+
     &__user-card {
         border-radius: 0;
         border: none !important;
         border-bottom: 1px solid $gh-light-border !important;
         box-shadow: none !important;
+        background: $gh-light-bg-primary;
+
+        @apply dark:bg-gh-bg-secondary dark:border-gh-border #{!important};
     }
 
     &__user-avatar {
         border: 2px solid $gh-light-border;
         flex-shrink: 0;
+
+        @apply dark:border-gh-border;
     }
 
     &__user-name {
         margin: 0 !important;
         text-align: left !important;
+        color: $gh-light-text-primary;
+
+        @apply dark:text-gh-text-primary !important;
     }
 
     &__user-meta {
@@ -26,14 +36,21 @@
         color: $gh-light-text-secondary;
         text-align: left;
         display: block;
+
+        @apply dark:text-gh-text-secondary;
     }
 
     &__user-icon {
         color: $gh-light-text-secondary;
+
+        @apply dark:text-gh-text-secondary;
     }
 
     &__user-link {
         font-size: 13px;
+        color: $gh-light-blue;
+
+        @apply dark:text-gh-blue-text;
     }
 
     &__scroll-container {
@@ -56,18 +73,21 @@
 
     &__stat-value {
         margin: 0px !important;
+        color: $gh-light-text-primary;
 
+        @apply dark:text-gh-text-primary !important;
     }
 
     &__stats__card {
         height: 100%;
-
     }
 
     &__stat-label {
         font-size: 16px;
         color: $gh-light-text-secondary;
         text-align: left;
+
+        @apply dark:text-gh-text-primary;
     }
 
     &__filters {
@@ -80,19 +100,27 @@
         background: $gh-light-bg-primary;
         border-color: $gh-light-border;
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+
+        @apply dark:bg-gh-bg-secondary dark:border-gh-border dark:shadow-none;
     }
 
     .ant-statistic-title {
         color: $gh-light-text-secondary;
         font-size: 12px;
+
+        @apply dark:text-gh-text-secondary;
     }
 
     .ant-statistic-content-value {
         color: $gh-light-text-primary;
+
+        @apply dark:text-gh-text-primary;
     }
 
     .ant-table {
         background: $gh-light-bg-primary;
+
+        @apply dark:bg-gh-bg-secondary;
     }
 
     .ant-table-thead>tr>th {
@@ -100,25 +128,41 @@
         color: $gh-light-text-secondary;
         border-color: $gh-light-border;
         font-size: 12px;
+
+        @apply dark:bg-gh-bg-tertiary dark:text-gh-text-secondary dark:border-gh-border;
     }
 
     .ant-table-tbody>tr>td {
         background: $gh-light-bg-primary;
         color: $gh-light-text-primary;
         border-color: $gh-light-border;
+
+        @apply dark:bg-gh-bg-secondary dark:text-gh-text-primary dark:border-gh-border;
     }
 
     .ant-table-tbody>tr:hover>td {
         background: $gh-light-bg-secondary !important;
+
+        @apply dark:bg-gh-bg-tertiary #{!important};
     }
 
     .ant-input-affix-wrapper {
         background: $gh-light-bg-primary;
         border-color: $gh-light-border;
 
+        @apply dark:bg-gh-bg-secondary dark:border-gh-border;
+
         input {
             background: $gh-light-bg-primary;
             color: $gh-light-text-primary;
+
+            @apply dark:bg-gh-bg-secondary dark:text-gh-text-primary;
+
+            &::placeholder {
+                color: $gh-light-text-muted;
+
+                @apply dark:text-gh-text-muted;
+            }
         }
     }
 
@@ -126,11 +170,15 @@
         border-color: $gh-light-border;
         background: $gh-light-bg-primary;
         color: $gh-light-text-primary;
+
+        @apply dark:bg-gh-bg-secondary dark:border-gh-border dark:text-gh-text-primary;
     }
 
     .repo-name {
         color: $gh-light-blue;
         font-weight: 500;
+
+        @apply dark:text-gh-blue-text;
 
         &:hover {
             text-decoration: underline;
@@ -144,6 +192,8 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+
+        @apply dark:text-gh-text-secondary;
     }
 
     .lang-badge {
@@ -152,6 +202,8 @@
         gap: 5px;
         font-size: 12px;
         color: $gh-light-text-secondary;
+
+        @apply dark:text-gh-text-secondary;
     }
 
     .lang-dot {
@@ -163,6 +215,8 @@
     .date {
         color: $gh-light-text-secondary;
         font-size: 12px;
+
+        @apply dark:text-gh-text-secondary;
     }
 
     .visibility {
@@ -173,12 +227,16 @@
             background: $gh-light-blue-bg;
             color: $gh-light-blue;
             border-color: $gh-light-blue-border;
+
+            @apply dark:bg-gh-blue-bg dark:text-gh-blue-text dark:border-gh-blue-border;
         }
 
         &.private {
             background: $gh-light-red-bg;
             color: $gh-light-red;
             border-color: $gh-light-red-border;
+
+            @apply dark:bg-gh-red-bg dark:text-gh-red-text dark:border-gh-red-border;
         }
     }
 
@@ -186,6 +244,8 @@
         background: $gh-light-blue-bg;
         color: $gh-light-blue;
         border-color: $gh-light-blue-border;
+
+        @apply dark:bg-gh-blue-bg dark:text-gh-blue-text dark:border-gh-blue-border;
 
         &:hover {
             opacity: 0.85;
@@ -197,6 +257,8 @@
         color: $gh-light-green;
         border-color: $gh-light-green-border;
 
+        @apply dark:bg-gh-green-bg dark:text-gh-green-text dark:border-gh-green-border;
+
         &:hover {
             opacity: 0.85;
         }
@@ -207,8 +269,125 @@
         color: $gh-light-purple;
         border-color: $gh-light-purple-border;
 
+        @apply dark:bg-gh-purple-bg dark:text-gh-purple-text dark:border-gh-purple-border;
+
         &:hover {
             opacity: 0.85;
         }
+    }
+
+
+    // Webkit tabanlı tarayıcılar (Chrome, Safari, Edge)
+    &__scroll-container,
+    &__issues-scroll,
+    &__files-scroll,
+    &__history-scroll {
+
+        &::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: $gh-light-bg-secondary;
+            @apply dark:bg-gh-bg-secondary;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: $gh-light-border;
+            border-radius: 8px;
+            @apply dark:bg-gh-border;
+
+            &:hover {
+                background: $gh-light-text-muted;
+                @apply dark:bg-gh-text-muted;
+            }
+        }
+    }
+
+
+    &__stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        flex-shrink: 0;
+
+        // ── Blue ──────────────────────────────
+        &.stat-icon--blue {
+            background: $gh-light-blue-bg;
+            color: $gh-light-blue;
+
+            @apply dark:bg-gh-blue-bg dark:text-gh-blue-text;
+        }
+
+        // ── Purple ────────────────────────────
+        &.stat-icon--purple {
+            background: $gh-light-purple-bg;
+            color: $gh-light-purple;
+
+            @apply dark:bg-gh-purple-bg dark:text-gh-purple-text;
+        }
+
+        // ── Orange ────────────────────────────
+        &.stat-icon--orange {
+            background: $gh-light-orange-bg;
+            color: $gh-light-orange;
+
+            @apply dark:bg-gh-orange-bg dark:text-gh-orange-text;
+        }
+
+        // ── Pink ──────────────────────────────
+        &.stat-icon--pink {
+            background: $gh-light-pink-bg;
+            color: $gh-light-pink;
+
+            @apply dark:bg-gh-pink-bg dark:text-gh-pink-text;
+        }
+    }
+
+
+    .lang-dot {
+        width: 10px;
+        height: 10px;
+        display: inline-block;
+        border-radius: 50%;
+
+        &--python {
+            background: $gh-blue; // #418FF1 — mavi ton
+        }
+
+        &--typescript {
+            background: $gh-light-blue; // #0969da — koyu mavi
+        }
+
+        &--javascript {
+            background: $gh-yellow-text; // #d29922 — sarı/altın ton
+        }
+
+        &--go {
+            background: $gh-blue-text; // #58a6ff — açık mavi
+        }
+
+        &--rust {
+            background: $gh-orange-text; // #f0883e — turuncu ton
+        }
+
+        &--java {
+            background: $gh-orange; // #bd561d — koyu turuncu
+        }
+
+        &--default {
+            background: $gh-light-text-muted;
+            @apply dark:bg-gh-text-muted;
+        }
+    }
+
+    .branch-tag {
+        font-size: 11px !important;
+        border-radius: 20px !important;
+        background: $gh-light-bg-secondary !important;
+        color: $gh-light-text-secondary !important;
+        border-color: $gh-light-border !important;
+
+        @apply dark:bg-gh-bg-tertiary dark:text-gh-text-secondary dark:border-gh-border #{!important};
     }
 }

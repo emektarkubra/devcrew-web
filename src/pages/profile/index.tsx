@@ -14,12 +14,12 @@ import './index.scss'
 const { Text, Link } = Typography
 
 const languageColors: Record<string, string> = {
-    Python: '#3572A5',
-    TypeScript: '#2b7489',
-    JavaScript: '#f1e05a',
-    Go: '#00ADD8',
-    Rust: '#dea584',
-    Java: '#b07219',
+    Python: 'lang-dot--python',
+    TypeScript: 'lang-dot--typescript',
+    JavaScript: 'lang-dot--javascript',
+    Go: 'lang-dot--go',
+    Rust: 'lang-dot--rust',
+    Java: 'lang-dot--java',
 }
 
 const Profile = () => {
@@ -46,32 +46,28 @@ const Profile = () => {
             label: 'Total Repositories',
             value: repos.length,
             icon: <RiGitRepositoryLine size={20} />,
-            iconBg: '#ddf4ff',
-            iconColor: '#0969da',
+            iconClass: 'stat-icon--blue',
             sub: `${repos.filter(r => r.private).length} private`,
         },
         {
             label: 'Languages',
             value: [...new Set(repos.map(r => r.language).filter(Boolean))].length,
             icon: <VscCode size={20} />,
-            iconBg: '#fbefff',
-            iconColor: '#8250df',
+            iconClass: 'stat-icon--purple',
             sub: 'different languages',
         },
         {
             label: 'Total Stars',
             value: repos.reduce((a, r) => a + r.stargazers_count, 0),
             icon: <GoStar size={20} />,
-            iconBg: '#fff1e5',
-            iconColor: '#bc4c00',
+            iconClass: 'stat-icon--orange',
             sub: 'across all repos',
         },
         {
             label: 'Public Repos',
             value: repos.filter(r => !r.private).length,
             icon: <MdLockOpen size={20} />,
-            iconBg: '#ffeff7',
-            iconColor: '#bf3989',
+            iconClass: 'stat-icon--pink',
             sub: `${repos.filter(r => r.private).length} private repos`,
         },
     ]
@@ -103,7 +99,7 @@ const Profile = () => {
             key: 'language',
             render: (lang: string) => lang ? (
                 <span className="lang-badge">
-                    <span className="lang-dot" style={{ background: languageColors[lang] || '#8b949e' }} />
+                    <span className={`lang-dot ${languageColors[lang] || 'lang-dot--default'}`} />
                     {lang}
                 </span>
             ) : '—',
@@ -113,7 +109,7 @@ const Profile = () => {
             dataIndex: 'default_branch',
             key: 'default_branch',
             render: (branch: string) => (
-                <Tag style={{ fontSize: 11, borderRadius: 20, background: '#f6f8fa', color: '#656d76', borderColor: '#d0d7de' }}>
+                <Tag className="branch-tag">
                     {branch || 'main'}
                 </Tag>
             ),
@@ -215,7 +211,7 @@ const Profile = () => {
     ]
 
     return (
-        <div className="container profile-page">
+        <div className="profile-page">
             <Card className="profile-page__user-card">
                 <Flex align="flex-start" gap={20}>
                     <Avatar size={80} src={user?.avatar_url} className="profile-page__user-avatar" />
@@ -255,20 +251,19 @@ const Profile = () => {
 
             <div className="profile-page__scroll-container">
                 <Row gutter={12} className="profile-page__stat-row">
-                    {statItems.map(({ label, value, icon, iconBg, iconColor }) => (
+                    {statItems.map(({ label, value, icon, iconClass }) => (
                         <Col span={6} key={label}>
                             <Card className="profile-page__stats__card" loading={loading}>
                                 <Flex gap={12} align="flex-start">
                                     <Flex
                                         align="center"
                                         justify="center"
-                                        className="profile-page__stat-icon"
-                                        style={{ background: iconBg, color: iconColor }}
+                                        className={`profile-page__stat-icon ${iconClass}`}
                                     >
                                         {icon}
                                     </Flex>
                                     <Flex vertical justify="flex-start" align="flex-start" style={{ marginLeft: 10 }}>
-                                        <Typography.Title level= {3} className="profile-page__stat-value">{value}</Typography.Title>
+                                        <Typography.Title level={3} className="profile-page__stat-value">{value}</Typography.Title>
                                         <div className="profile-page__stat-label">{label}</div>
                                     </Flex>
                                 </Flex>

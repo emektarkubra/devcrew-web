@@ -252,9 +252,9 @@ const CodebaseQA = () => {
                                                     <Text code className="codebase-qa__file-name">
                                                         {filePath.split('/').pop()}
                                                     </Text>
-                                                    <Text type="secondary" className="codebase-qa__file-meta">
+                                                    {/* <Text type="secondary" className="codebase-qa__file-meta">
                                                         {filePath}
-                                                    </Text>
+                                                    </Text> */}
                                                 </Flex>
                                             </Flex>
                                         </Flex>

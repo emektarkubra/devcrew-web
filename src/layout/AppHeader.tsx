@@ -26,8 +26,8 @@ const AppHeader = () => {
             <Button
               type="text"
               icon={collapsed
-                ? <Icon className="collapse-icon" icon="ant-design:menu-fold-outline" width='15px' height='18px' />
-                : <Icon className="collapse-icon" icon="ant-design:menu-unfold-outlined" width='15px' height='18px' />
+                ? <Icon className="collapse-icon" icon="ant-design:menu-fold-outline" width='25px' height='18px' />
+                : <Icon className="collapse-icon" icon="ant-design:menu-unfold-outlined" width='25px' height='18px' />
               }
               onClick={() => dispatch(handleCollapsedMenu())}
             />
