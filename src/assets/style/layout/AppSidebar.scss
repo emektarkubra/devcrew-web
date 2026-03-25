@@ -3,9 +3,9 @@
 .sider-container {
     text-align: center;
     line-height: 120px;
-    flex: 0 0 200px;
-    min-width: 250px;
-    width: 250px;
+    flex: 0 0 200px !important;
+    min-width: 250px !important;
+    width: 250px !important;
 
     .ant-layout-sider-children {
         background-color: $gh-light-bg-primary;
@@ -31,15 +31,11 @@
         @apply dark:text-gh-text-secondary;
 
         &:hover {
-            background-color: $gh-light-bg-secondary;
+            background-color: $gh-light-bg-tertiary;
 
             @apply dark:bg-gh-bg-tertiary;
 
-            .ant-menu-title-content {
-                color: $gh-light-text-primary;
-                @apply dark:text-gh-text-primary;
-            }
-
+            .ant-menu-title-content,
             .ant-menu-item-icon {
                 color: $gh-light-text-primary;
                 @apply dark:text-gh-text-primary;
@@ -52,7 +48,9 @@
 
         @apply dark:bg-gh-bg-secondary;
 
-        li { padding-left: 35px; }
+        li {
+            padding-left: 35px;
+        }
     }
 
     .ant-menu-title-content {
@@ -71,7 +69,7 @@
 
         @apply dark:text-gh-text-secondary;
 
-        
+
 
         &:hover {
             background-color: $gh-light-bg-secondary;
@@ -90,7 +88,12 @@
         }
     }
 
+
+
+    // ─── SELECTED ─────────────────────────
     .ant-menu-item-selected {
+        position: relative;
+
         background-color: $gh-light-blue-bg;
 
         @apply dark:bg-gh-blue-bg;
@@ -104,7 +107,31 @@
             color: $gh-light-blue;
             @apply dark:text-gh-blue-text;
         }
+
+        &::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 6px;
+            bottom: 6px;
+            width: 3px;
+            border-radius: 2px;
+
+            background-color: $gh-light-blue;
+
+            @apply dark:bg-gh-blue-text;
+        }
     }
+
+
+    // ─── SELECTED + HOVER (override) ─────
+    .ant-menu-item-selected:hover {
+        background-color: $gh-light-blue-bg;
+
+        @apply dark:bg-gh-blue-bg;
+    }
+
+
 
     .ant-menu-item-icon {
         color: $gh-light-text-secondary;
@@ -114,7 +141,7 @@
     }
 
     .ant-menu-submenu-selected {
-        > .ant-menu-submenu-title {
+        >.ant-menu-submenu-title {
             background-color: $gh-light-blue-bg;
 
             @apply dark:bg-gh-blue-bg;
@@ -166,8 +193,13 @@
         @apply dark:bg-gh-bg-secondary;
     }
 
-    .ant-menu-title-content { display: none; }
-    .ant-menu-submenu-arrow { display: none; }
+    .ant-menu-title-content {
+        display: none;
+    }
+
+    .ant-menu-submenu-arrow {
+        display: none;
+    }
 
     .ant-menu-submenu-title {
         padding: 0 16px;

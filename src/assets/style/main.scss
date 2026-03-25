@@ -12,3 +12,7 @@ h5,
 h6 {
     color: $gh-light-text-secondary !important;
 }
+
+body {
+    @apply dark:bg-gh-bg-secondary
+}

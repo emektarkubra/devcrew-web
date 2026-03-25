@@ -133,9 +133,7 @@ input::placeholder {
 
 }
 
-
-
-/* ── Ant Design Custom Scrollbar ─────────────────────────── */
+// scroll bar
 
 .ant-card-body,
 .ant-list,
@@ -185,5 +183,12 @@ input::placeholder {
             background: $gh-light-text-muted;
             @apply dark:bg-gh-text-muted;
         }
+    }
+}
+
+// spin
+.ant-spin {
+    .ant-spin-dot-item {
+        @apply dark:bg-gh-light-text-link
     }
 }
