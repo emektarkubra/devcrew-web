@@ -80,6 +80,11 @@
 
     &__stats__card {
         height: 100%;
+
+
+        .ant-card-body {
+            border-radius: 8px;
+        }
     }
 
     &__stat-label {
@@ -382,12 +387,12 @@
     }
 
     .branch-tag {
-        font-size: 11px !important;
-        border-radius: 20px !important;
-        background: $gh-light-bg-secondary !important;
-        color: $gh-light-text-secondary !important;
-        border-color: $gh-light-border !important;
+    font-size: 11px !important;
+    border-radius: 20px !important;
+    background: $gh-light-bg-secondary !important;
+    color: $gh-light-text-secondary !important;
+    border-color: $gh-light-border !important;
 
-        @apply dark:bg-gh-bg-tertiary dark:text-gh-text-secondary dark:border-gh-border #{!important};
-    }
+    @apply dark:bg-gh-bg-tertiary dark:text-gh-text-secondary dark:border-gh-border #{!important};
+}
 }
