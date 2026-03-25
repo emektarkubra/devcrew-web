@@ -6,14 +6,15 @@ import { api } from '../../services/api'
 import toast from 'react-hot-toast'
 import { timeAgo } from '../../utils/timeAgo'
 import { getLanguageColor } from '../../utils/languageColors'
+import { FiGitPullRequest } from 'react-icons/fi'
 import './index.scss'
 
 const { Text } = Typography
 
-const RISK_CONFIG: Record<string, { color: string; label: string }> = {
-    high: { color: 'red', label: 'High risk' },
-    medium: { color: 'orange', label: 'Medium risk' },
-    low: { color: 'green', label: 'Low risk' },
+const RISK_CONFIG: Record<string, { label: string }> = {
+    high: { label: 'High risk' },
+    medium: { label: 'Medium risk' },
+    low: { label: 'Low risk' },
 }
 
 const SEVERITY_CLASS: Record<string, string> = {
@@ -37,18 +38,23 @@ const PRReview = () => {
     const [result, setResult] = useState<any>(null)
     const [loading, setLoading] = useState(false)
     const [history, setHistory] = useState<any[]>([])
+    const [selectedHistory, setSelectedHistory] = useState<string | null>(null)
 
     const token = localStorage.getItem('dt-token') || ''
 
     useEffect(() => {
         const fetchRepos = async () => {
             const { data, error } = await api.login.getRepos(token)
-            if (error) { toast.error(error); return }
-            setRepos(data)
+            if (error) {
+                toast.error(error);
+            } else {
+                setRepos(data)
+            }
         }
         fetchRepos()
     }, [])
 
+    // repo select
     const handleRepoSelect = async (value: string) => {
         setSelectedRepo(value)
         setSelectedPR(null)
@@ -59,18 +65,29 @@ const PRReview = () => {
         const [owner, repo] = value.split('/')
 
         const { data, error } = await api.agents.prList(token, owner, repo)
-        if (error) { toast.error(error); setPrsLoading(false); return }
-        setPrs(data)
-        setPrsLoading(false)
+        try {
+            if (error) {
+                toast.error(error);
+                setPrsLoading(false);
+            } else {
+                setPrs(data)
+                await fetchHistory(owner, repo)
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setPrsLoading(false)
+        }
 
-        await fetchHistory(owner, repo)
     }
 
+    // pr select
     const handlePRSelect = (prNumber: number) => {
         setSelectedPR(prNumber)
         setResult(null)
     }
 
+    // review
     const handleReview = async () => {
         if (!selectedRepo || !selectedPR) return
         setLoading(true)
@@ -79,27 +96,35 @@ const PRReview = () => {
         const [owner, repo] = selectedRepo.split('/')
 
         const { data, error } = await api.agents.prReview(token, owner, repo, selectedPR)
-        if (error) { toast.error(error); setLoading(false); return }
-        setResult(data)
-        await fetchHistory(owner, repo)
-
-        setLoading(false)
+        try {
+            if (error) {
+                toast.error(error);
+                setLoading(false);
+            } else {
+                setResult(data)
+                await fetchHistory(owner, repo)
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setLoading(false)
+        }
     }
 
+    // fetch history
     const fetchHistory = async (owner: string, repo: string) => {
         const { data, error } = await api.agents.prReviewHistory(token, owner, repo)
-        if (error) return
-        setHistory(data)
-    }
-
-    const diffColor = (type: string) => {
-        if (type === 'add') return '#16a34a'
-        if (type === 'remove') return '#dc2626'
-        return '#6b7280'
+        if (error) {
+            toast.error(error)
+        } else {
+            setHistory(data)
+        }
     }
 
 
-    const handleHistoryClick = async (item: any) => {
+    // history click
+    const handleHistoryClick = async (item: any, index: any) => {
+        setSelectedHistory(index)
         setSelectedPR(parseInt(item.pr.replace('#', '')))
         setResult({
             title: item.title,
@@ -116,10 +141,42 @@ const PRReview = () => {
         })
     }
 
+    const HistoryList = () => (
+        <Flex vertical gap={4} className="pr-review__col">
+            <Text className="pr-review__section-label">HISTORY</Text>
+            <div className="pr-review__history-scroll">
+                <List
+                    dataSource={history}
+                    split
+                    locale={{ emptyText: 'No review history yet' }}
+                    renderItem={(item: any, index: any) => (
+                        <List.Item style={{ padding: 0 }}>
+                            <Flex
+                                align="flex-start"
+                                gap={10}
+                                className={`pr-review__history-item ${selectedHistory === index ? 'pr-review__history-item--active' : ''}`}
+                                onClick={() => handleHistoryClick(item, index)}
+                            >
+                                <div className="pr-review__history-dot" />
+                                <Flex vertical gap={2}>
+                                    <Flex align="center" gap={8}>
+                                        <Text>{item.pr}</Text>
+                                        <Text className="pr-review__history-title">{item.title}</Text>
+                                    </Flex>
+                                    <Text type="secondary" className="pr-review__history-meta">
+                                        {item.issueCount} issues · {timeAgo(item.timeAgo)}
+                                    </Text>
+                                </Flex>
+                            </Flex>
+                        </List.Item>
+                    )}
+                />
+            </div>
+        </Flex>
+    )
+
     return (
         <div className="pr-review">
-
-            {/* Header */}
             <Flex align="center" justify="space-between" className="pr-review__header">
                 <Flex align="center" gap={10}>
                     <div className={`pr-review__dot pr-review__dot--${result ? 'ready' : selectedRepo ? 'active' : 'idle'}`} />
@@ -135,10 +192,7 @@ const PRReview = () => {
                 )}
             </Flex>
 
-            {/* Body */}
             <Flex vertical gap={16} className="pr-review__body">
-
-                {/* Repo */}
                 <Flex vertical gap={6}>
                     <Text className="pr-review__section-label">REPO</Text>
                     <Select
@@ -159,7 +213,7 @@ const PRReview = () => {
                                     <Flex align="center" gap={8}>
                                         <GithubOutlined />
                                         <span>{r.full_name}</span>
-                                        {r.is_private && <Tag className="codebase-qa__repo-private-tag">Private</Tag>}
+                                        {r.is_private && <Tag className="pr-review__tag--private">Private</Tag>}
                                     </Flex>
                                     {r.language && (
                                         <Flex align="center" gap={4}>
@@ -176,7 +230,6 @@ const PRReview = () => {
                     />
                 </Flex>
 
-                {/* PR */}
                 <Flex vertical gap={6}>
                     <Text className="pr-review__section-label">PULL REQUEST</Text>
                     <Select
@@ -222,22 +275,31 @@ const PRReview = () => {
                     />
                 </Flex>
 
-                {/* Review Button */}
-                {selectedPR && (
-                    <Button
-                        type="primary"
-                        onClick={handleReview}
-                        loading={loading}
-                        className="pr-review__btn"
-                        block
-                    >
-                        Review PR #{selectedPR}
-                    </Button>
+                <Button
+                    type="primary"
+                    onClick={handleReview}
+                    loading={loading}
+                    disabled={!selectedRepo || !selectedPR || loading}
+                    className="pr-review__btn"
+                    icon={<FiGitPullRequest />}
+                >
+                    Review PR
+                </Button>
+
+                {loading && (
+                    <Flex justify="center" style={{ padding: '24px 0' }}>
+                        <Spin indicator={<LoadingOutlined spin />} size="small" />
+                    </Flex>
+                )}
+
+                {selectedRepo && !result && !loading && (
+                    <Flex gap={16} className="pr-review__stretch-row">
+                        <HistoryList />
+                    </Flex>
                 )}
 
                 {result && !loading && (
                     <>
-                        {/* Meta */}
                         <Flex align="center" gap={8} className="pr-review__meta">
                             <Text code>{result.number}</Text>
                             <Text strong className="pr-review__meta-title">{result.title}</Text>
@@ -246,7 +308,6 @@ const PRReview = () => {
                             </Text>
                         </Flex>
 
-                        {/* Score Cards */}
                         <Flex gap={10}>
                             <Card size="small" className="pr-review__score-card pr-review__score-card--danger">
                                 <Text type="secondary" className="pr-review__score-label">Risk score</Text>
@@ -262,7 +323,6 @@ const PRReview = () => {
                             </Card>
                         </Flex>
 
-                        {/* Response + Diff */}
                         <Flex gap={16} className="pr-review__stretch-row">
                             <Flex vertical gap={8} className="pr-review__col">
                                 <Text className="pr-review__section-label">RESPONSE</Text>
@@ -271,12 +331,8 @@ const PRReview = () => {
                                         <div
                                             key={index}
                                             className={`pr-review__issue-item ${SEVERITY_CLASS[item.severity] || ''}`}
-
                                         >
-                                            <Text
-                                                strong
-                                                className={`pr-review__issue-item ${SEVERITY_CLASS[item.severity] || ''}`}
-                                            >
+                                            <Text strong className="pr-review__issue-title">
                                                 {item.title}
                                             </Text>
                                             <Text type="secondary" className="pr-review__issue-desc">
@@ -303,7 +359,6 @@ const PRReview = () => {
                             </Flex>
                         </Flex>
 
-                        {/* Files + History */}
                         <Flex gap={16} className="pr-review__stretch-row">
                             <Flex vertical gap={8} className="pr-review__col">
                                 <Text className="pr-review__section-label">FILES</Text>
@@ -321,8 +376,8 @@ const PRReview = () => {
                                                     {file.path} · {file.changes}
                                                 </Text>
                                             </Flex>
-                                            <Tag color={RISK_CONFIG[file.risk]?.color}>
-                                                {RISK_CONFIG[file.risk]?.label}
+                                            <Tag className={`pr-review__risk-tag pr-review__risk-tag--${file.risk}`}>
+                                                {RISK_CONFIG[file?.risk]?.label}
                                             </Tag>
                                         </Flex>
                                     ))}
@@ -335,31 +390,7 @@ const PRReview = () => {
                                 </Flex>
                             </Flex>
 
-                            <Flex vertical gap={4} className="pr-review__col">
-                                <Text className="pr-review__section-label">HISTORY</Text>
-                                <div className="pr-review__history-scroll">
-                                    <List
-                                        dataSource={history}
-                                        split
-                                        renderItem={(item: any) => (
-                                            <List.Item style={{ padding: 0 }}>
-                                                <Flex align="flex-start" gap={10} className="pr-review__history-item" onClick={() => handleHistoryClick(item)}>
-                                                    <div className="pr-review__history-dot" />
-                                                    <Flex vertical gap={2}>
-                                                        <Flex align="center" gap={8}>
-                                                            <Text code className="pr-review__history-pr">{item.pr}</Text>
-                                                            <Text className="pr-review__history-title">{item.title}</Text>
-                                                        </Flex>
-                                                        <Text type="secondary" className="pr-review__history-meta">
-                                                            {item.issueCount} issues · {timeAgo(item.timeAgo)}
-                                                        </Text>
-                                                    </Flex>
-                                                </Flex>
-                                            </List.Item>
-                                        )}
-                                    />
-                                </div>
-                            </Flex>
+                            <HistoryList />
                         </Flex>
                     </>
                 )}

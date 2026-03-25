@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Button, Card, Flex, Input, Space, Tag, Typography, List, Avatar, Spin, Select } from 'antd'
+import { Button, Card, Flex, Input, Tag, Typography, List, Avatar, Select } from 'antd'
 import { FileOutlined, SearchOutlined, GithubOutlined, LoadingOutlined, CheckCircleOutlined } from '@ant-design/icons'
+import { FiSearch } from 'react-icons/fi'
 import withLayout from '../../layout/withLayout'
 import { api } from '../../services/api'
 import toast from 'react-hot-toast'
@@ -25,7 +26,7 @@ const CodebaseQA = () => {
 
     const token = localStorage.getItem('dt-token') || ''
 
-    // repo list
+    // fetch repo
     const fetchRepos = async () => {
         const { data, error } = await api.login.getRepos(token)
         if (error) {
@@ -64,17 +65,18 @@ const CodebaseQA = () => {
         }
     }
 
-    // history
+    // fetch history
     const fetchHistory = async (owner: string, repo: string) => {
         const { data, error } = await api.agents.codebaseQAHistory(token, owner, repo)
         if (error) {
             toast.error(error)
             return
+        } else {
+            setHistory(data)
         }
-        setHistory(data)
     }
 
-    // query
+    // ask question
     const handleAsk = async () => {
         if (!query.trim() || indexStatus !== 'ready' || !selectedRepo) return
         setLoading(true)
@@ -84,17 +86,22 @@ const CodebaseQA = () => {
         const [owner, repo] = selectedRepo.split('/')
 
         const { data, error } = await api.agents.codebaseQA(token, owner, repo, query)
-        if (error) {
-            toast.error(error)
-        } else {
-            setResult(data)
-            await fetchHistory(owner, repo)
+        try {
+            if (error) {
+                toast.error(error)
+            } else {
+                setResult(data)
+                await fetchHistory(owner, repo)
+            }
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
         }
 
-        setLoading(false)
     }
 
-    // history click
+    // click history
     const handleHistoryClick = (item: any, index: number) => {
         setSelectedHistory(index)
         setQuery(item.question)
@@ -105,17 +112,33 @@ const CodebaseQA = () => {
         })
     }
 
-    // header tag
+    // status tag
     const renderStatusTag = () => {
-        if (indexStatus === 'idle') return <Tag className="codebase-qa__status-tag codebase-qa__status-tag--idle">No Repo Selected</Tag>
-        if (indexStatus === 'indexing') return <Tag className="codebase-qa__status-tag codebase-qa__status-tag--indexing" icon={<LoadingOutlined spin />}>Indexing...</Tag>
-        return <Tag className="codebase-qa__status-tag codebase-qa__status-tag--ready" icon={<CheckCircleOutlined />}>Ready</Tag>
+        if (indexStatus === 'idle') {
+            return <Tag className="codebase-qa__status-tag codebase-qa__status-tag--idle">No Repo Selected</Tag>
+        }
+        if (indexStatus === 'indexing') {
+            return (
+                <Tag
+                    className="codebase-qa__status-tag codebase-qa__status-tag--indexing"
+                    icon={<LoadingOutlined spin />}
+                >
+                    Indexing...
+                </Tag>
+            )
+        }
+        return (
+            <Tag
+                className="codebase-qa__status-tag codebase-qa__status-tag--ready"
+                icon={<CheckCircleOutlined />}
+            >
+                Ready
+            </Tag>
+        )
     }
 
     return (
         <div className="codebase-qa">
-
-            {/* Header */}
             <Flex align="center" justify="space-between" className="codebase-qa__header">
                 <Flex align="center" gap={10}>
                     <div className={`codebase-qa__dot codebase-qa__dot--${indexStatus}`} />
@@ -131,10 +154,7 @@ const CodebaseQA = () => {
                 {renderStatusTag()}
             </Flex>
 
-            {/* Body */}
             <Flex vertical gap={16} className="codebase-qa__body">
-
-                {/* Repo Select */}
                 <Flex vertical gap={6}>
                     <Text className="codebase-qa__section-label">REPO</Text>
                     <Select
@@ -161,17 +181,18 @@ const CodebaseQA = () => {
                                     <Flex align="center" gap={8}>
                                         {r.language && (
                                             <Flex align="center" gap={4}>
-                                                <div style={{
-                                                    width: 10,
-                                                    height: 10,
-                                                    borderRadius: '50%',
-                                                    background: getLanguageColor(r.language),
-                                                    flexShrink: 0,
-                                                }} />
+                                                <div
+                                                    style={{
+                                                        width: 10,
+                                                        height: 10,
+                                                        borderRadius: '50%',
+                                                        background: getLanguageColor(r.language),
+                                                        flexShrink: 0,
+                                                    }}
+                                                />
                                                 <Text style={{ fontSize: 12, color: '#6b7280' }}>{r.language}</Text>
                                             </Flex>
                                         )}
-
                                     </Flex>
                                 </Flex>
                             ),
@@ -179,36 +200,36 @@ const CodebaseQA = () => {
                     />
                 </Flex>
 
-                {/* Search */}
-                <Flex vertical gap={6}>
+                <Flex vertical gap={10}>
                     <Text className="codebase-qa__section-label">SEARCH</Text>
-                    <Space.Compact style={{ width: '100%' }}>
-                        <Input
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            onPressEnter={handleAsk}
-                            placeholder={
-                                indexStatus === 'idle' ? 'Select a repo first...' :
-                                    indexStatus === 'indexing' ? 'Indexing in progress...' :
-                                        'Ask anything about the repo...'
-                            }
-                            prefix={<SearchOutlined className="codebase-qa__search-prefix" />}
-                            disabled={indexStatus !== 'ready'}
-                            className={indexStatus !== 'ready' ? 'codebase-qa__input--disabled' : ''}
-                        />
-                        <Button
-                            type="primary"
-                            onClick={handleAsk}
-                            loading={loading}
-                            disabled={indexStatus !== 'ready'}
-                            className="codebase-qa__btn"
-                        >
-                            Ask
-                        </Button>
-                    </Space.Compact>
+                    <Input
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        onPressEnter={handleAsk}
+                        placeholder={
+                            indexStatus === 'idle'
+                                ? 'Select a repo first...'
+                                : indexStatus === 'indexing'
+                                    ? 'Indexing in progress...'
+                                    : 'Ask anything about the repo...'
+                        }
+                        prefix={<SearchOutlined className="codebase-qa__search-prefix" />}
+                        disabled={indexStatus !== 'ready'}
+                        className={indexStatus !== 'ready' ? 'codebase-qa__input--disabled' : ''}
+                    />
                 </Flex>
 
-                {/* Suggestions */}
+                <Button
+                    type="primary"
+                    onClick={handleAsk}
+                    loading={loading}
+                    disabled={indexStatus !== 'ready' || !query.trim() || loading}
+                    className="codebase-qa__btn"
+                    icon={<FiSearch />}
+                >
+                    Ask
+                </Button>
+
                 {result?.suggestions?.length > 0 && (
                     <Flex wrap gap={6}>
                         {result.suggestions.map((s: string) => (
@@ -223,48 +244,38 @@ const CodebaseQA = () => {
                     </Flex>
                 )}
 
-                {/* Response */}
-                {(loading || result) && (<>
+                {(loading || result) && (
                     <Flex vertical gap={8} className="codebase-qa__response">
                         <Text className="codebase-qa__section-label">RESPONSE</Text>
                         <Card size="small" className="codebase-qa__response-card">
-                            {loading ? (
-                                <Flex justify="center" className="codebase-qa__spin">
-                                    <Spin size="small" />
-                                </Flex>
-                            ) : result ? (
-                                <>
-                                    <Paragraph
-                                        className="codebase-qa__response-paragraph"
-                                        style={{ marginBottom: result.files?.length ? 12 : 0 }}
-                                    >
-                                        {result.answer}
-                                    </Paragraph>
-                                    {result.files?.map((filePath: string) => (
-                                        <Flex key={filePath} className="codebase-qa__file-item">
-                                            <Flex align="center" gap={10}>
-                                                <Avatar
-                                                    icon={<FileOutlined />}
-                                                    className="codebase-qa__file-avatar"
-                                                    size={32}
-                                                />
-                                                <Flex vertical gap={2} style={{ flex: 1 }}>
-                                                    <Text code className="codebase-qa__file-name">
-                                                        {filePath.split('/').pop()}
-                                                    </Text>
-                                                    {/* <Text type="secondary" className="codebase-qa__file-meta">
-                                                        {filePath}
-                                                    </Text> */}
-                                                </Flex>
-                                            </Flex>
+
+                            <Paragraph
+                                className="codebase-qa__response-paragraph"
+                                style={{ marginBottom: result?.files?.length ? 12 : 0 }}
+                            >
+                                {result.answer}
+                            </Paragraph>
+                            {result?.files?.map((filePath: string) => (
+                                <Flex key={filePath} className="codebase-qa__file-item">
+                                    <Flex align="center" gap={10}>
+                                        <Avatar
+                                            icon={<FileOutlined />}
+                                            className="codebase-qa__file-avatar"
+                                            size={32}
+                                        />
+                                        <Flex vertical gap={2} style={{ flex: 1 }}>
+                                            <Text code className="codebase-qa__file-name">
+                                                {filePath.split('/').pop()}
+                                            </Text>
                                         </Flex>
-                                    ))}
-                                </>
-                            ) : null}
+                                    </Flex>
+                                </Flex>
+                            ))}
+
+
                         </Card>
                     </Flex>
-                </>)}
-
+                )}
 
                 {indexStatus === 'ready' && history.length > 0 && (
                     <Flex vertical gap={4}>
@@ -282,9 +293,9 @@ const CodebaseQA = () => {
                                     >
                                         <div className={`codebase-qa__history-dot ${selectedHistory === index ? 'codebase-qa__history-dot--active' : ''}`} />
                                         <Flex align="center" gap={30}>
-                                            <Text className="codebase-qa__history-question">{item.question}</Text>
+                                            <Text className="codebase-qa__history-question">{item?.question}</Text>
                                             <Text type="secondary" className="codebase-qa__history-meta">
-                                                {item.filesFound} files · {timeAgo(item.timeAgo)}
+                                                {item?.filesFound} files · {timeAgo(item.timeAgo)}
                                             </Text>
                                         </Flex>
                                     </Flex>

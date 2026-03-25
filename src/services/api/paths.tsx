@@ -15,3 +15,7 @@ export const codebaseQAHistory = '/agents/codebase-qa/history'
 export const prList          = "/pr-list"
 export const prReview        = "/agents/pr-review"
 export const prReviewHistory = "/agents/pr-review/history"
+
+// debugging
+export const debug        = "/agents/debug"
+export const debugHistory = "/agents/debug/history"
