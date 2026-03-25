@@ -95,8 +95,20 @@
     @apply dark:bg-gh-bg-secondary
 }
 
+/* ── Disabled Button ─────────────────────────── */
+
+.ant-btn:disabled,
+.ant-btn[disabled] {
+    background-color: $gh-light-bg-secondary !important;
+    border-color: $gh-light-border !important;
+    color: $gh-light-text-muted !important;
+    cursor: not-allowed;
+
+    @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-muted;
+}
+
 .ant-input-disabled {
-    @apply  dark:text-gh-text-primary dark:bg-gh-bg-primary;
+    @apply dark:text-gh-text-primary dark:bg-gh-bg-primary;
 
 }
 
@@ -116,7 +128,62 @@ input::placeholder {
 }
 
 .ant-select-selection-placeholder {
-     color: $gh-light-text-secondary;
+    color: $gh-light-text-secondary;
     @apply dark:text-gh-text-secondary;
 
-} 
+}
+
+
+
+/* ── Ant Design Custom Scrollbar ─────────────────────────── */
+
+.ant-card-body,
+.ant-list,
+.ant-select-dropdown,
+.ant-table-body {
+    &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $gh-light-bg-secondary;
+        border-radius: 8px;
+        @apply dark:bg-gh-bg-secondary;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $gh-light-border;
+        border-radius: 8px;
+        @apply dark:bg-gh-border;
+
+        &:hover {
+            background: $gh-light-text-muted;
+            @apply dark:bg-gh-text-muted;
+        }
+    }
+}
+
+// scroll
+* {
+    &::-webkit-scrollbar {
+        width: 9px;
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $gh-light-border;
+        border-radius: 8px;
+        background-color: $gh-light-text-secondary !important;
+        @apply dark:bg-gh-border;
+
+        &:hover {
+            background: $gh-light-text-muted;
+            @apply dark:bg-gh-text-muted;
+        }
+    }
+}

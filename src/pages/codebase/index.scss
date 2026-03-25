@@ -9,7 +9,7 @@
 
   @apply dark:bg-gh-bg-secondary dark:border-gh-border;
 
-  // ─── Header ─────────────────────────────
+  // header
 
   &__header {
     padding: 14px 20px;
@@ -23,7 +23,7 @@
     padding: 20px;
   }
 
-  // ─── Status Dot ─────────────────────────
+  // status fot
 
   &__dot {
     width: 9px;
@@ -31,21 +31,24 @@
     border-radius: 50%;
 
     &--idle {
-      background: $gh-light-text-muted;
+      background: $gh-light-blue;
+      box-shadow: 0 0 6px rgba(9, 105, 218, 0.4);
+
       @apply dark:bg-gh-text-muted;
     }
 
     &--indexing {
-      background: $gh-light-yellow;
-      box-shadow: 0 0 6px rgba(154, 103, 0, 0.4);
+
+      background: $gh-light-blue;
+      box-shadow: 0 0 6px rgba(9, 105, 218, 0.4);
       animation: pulse 1.2s infinite;
 
       @apply dark:bg-gh-yellow-text;
     }
 
     &--ready {
-      background: $gh-light-green;
-      box-shadow: 0 0 6px rgba(26, 127, 55, 0.4);
+      background: $gh-light-blue;
+      box-shadow: 0 0 6px rgba(9, 105, 218, 0.4);
 
       @apply dark:bg-gh-green-text;
     }
@@ -63,7 +66,7 @@
     }
   }
 
-  // ─── Status Tag ─────────────────────────
+  // status tag
 
   &__status-tag {
     font-size: 13px;
@@ -79,24 +82,24 @@
     }
 
     &--indexing {
+      background-color: $gh-light-yellow-bg;
+      border-color: $gh-light-yellow-border;
+      color: $gh-light-yellow-text;
+
+      @apply dark:bg-gh-yellow-bg dark:border-gh-yellow-border dark:text-gh-yellow-text;
+
+      .anticon-loading {
+        @apply dark:text-gh-yellow-text;
+      }
+    }
+
+    &--ready {
+
       background-color: $gh-light-blue-bg;
       border-color: $gh-light-blue-border;
       color: $gh-light-blue;
 
       @apply dark:bg-gh-orange-bg dark:border-gh-orange-border dark:text-gh-orange-text;
-
-      .anticon-loading {
-        @apply dark:text-gh-orange-text;
-
-      }
-    }
-
-    &--ready {
-      background-color: $gh-light-green-bg;
-      border-color: $gh-light-green-border;
-      color: $gh-light-green;
-
-      @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
 
       .anticon-check-circle {
         @apply dark:text-gh-green-text;
@@ -104,7 +107,7 @@
     }
   }
 
-  // ─── Labels ─────────────────────────────
+  // labels
 
   &__section-label {
     font-size: 11px;
@@ -116,7 +119,7 @@
     @apply dark:text-gh-text-muted;
   }
 
-  // ─── Select ─────────────────────────────
+  // select
 
   &__repo-select {
     width: 100%;
@@ -131,11 +134,12 @@
     }
   }
 
-  // ─── Button ─────────────────────────────
+  // button
 
   &__btn {
     background: $gh-light-blue;
     border-color: $gh-light-blue;
+    align-self: flex-start;
 
     @apply dark:bg-gh-blue dark:border-gh-blue-border text-gh-text-primary !important;
 
@@ -154,7 +158,7 @@
     }
   }
 
-  // ─── Chips ─────────────────────────────
+  // chips
 
   &__chip {
     cursor: pointer;
@@ -169,7 +173,7 @@
     }
   }
 
-  // ─── Response ──────────────────────────
+  // response
 
   &__response-card {
     background: $gh-light-bg-secondary;
@@ -184,7 +188,7 @@
     @apply dark:text-gh-text-primary;
   }
 
-  // ─── File ─────────────────────────────
+  // file
 
   &__file-item {
     background-color: $gh-light-bg-primary;
@@ -222,7 +226,7 @@
     @apply dark:text-gh-text-muted;
   }
 
-  // ─── History ───────────────────────────
+  // history
 
   &__history-item {
     cursor: pointer;

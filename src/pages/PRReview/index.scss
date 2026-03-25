@@ -9,8 +9,7 @@
 
     @apply dark:bg-gh-bg-secondary dark:border-gh-border;
 
-    // ── Layout ──────────────────────────────────────────────
-
+    // layout
     &__header {
         padding: 14px 20px;
         border-bottom: 1px solid $gh-light-border;
@@ -31,35 +30,7 @@
         flex: 1;
     }
 
-    // ── Scrollbar ────────────────────────────────────────────
-
-    &__issues-scroll,
-    &__files-scroll,
-    &__history-scroll,
-    &__diff-card {
-
-        &::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        &::-webkit-scrollbar-track {
-            background: $gh-light-bg-secondary;
-            @apply dark:bg-gh-bg-secondary;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: $gh-light-border;
-            border-radius: 8px;
-            @apply dark:bg-gh-border;
-
-            &:hover {
-                background: $gh-light-text-muted;
-                @apply dark:bg-gh-text-muted;
-            }
-        }
-    }
-
-    // ── Dot ─────────────────────────────────────────────────
+    // dot
 
     &__dot {
         width: 9px;
@@ -88,11 +59,18 @@
     }
 
     @keyframes pr-pulse {
-        0%, 100% { opacity: 1; }
-        50%       { opacity: 0.4; }
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.4;
+        }
     }
 
-    // ── Typography ───────────────────────────────────────────
+    // typography
 
     &__title {
         font-size: 15px;
@@ -117,7 +95,7 @@
         @apply dark:text-gh-text-muted;
     }
 
-    // ── Tags ─────────────────────────────────────────────────
+    // tags
 
     &__tag--warning {
         background-color: $gh-light-yellow-bg;
@@ -127,17 +105,8 @@
         @apply dark:bg-gh-yellow-bg dark:border-gh-yellow-border dark:text-gh-yellow-text;
     }
 
-    &__tag--private {
-        font-size: 10px;
-        padding: 0 5px;
-        background-color: $gh-light-purple-bg;
-        border-color: $gh-light-purple-border;
-        color: $gh-light-purple-text;
 
-        @apply dark:bg-gh-purple-bg dark:border-gh-purple-border dark:text-gh-purple-text;
-    }
-
-    // ── Select ───────────────────────────────────────────────
+    // select
 
     &__select {
         width: 100%;
@@ -157,7 +126,7 @@
         @apply dark:text-gh-text-muted;
     }
 
-    // ── PR Select ────────────────────────────────────────────
+    // PR select 
 
     &__pr-number {
         font-size: 11px;
@@ -179,32 +148,31 @@
         @apply dark:bg-gh-green dark:text-gh-text-primary;
     }
 
-    // ── Spin ─────────────────────────────────────────────────
-
+    // spin
     &__spin-wrap {
         padding: 16px 0;
     }
 
-    // ── Button ───────────────────────────────────────────────
-
+    // button
     &__btn {
         background: $gh-light-orange;
         border-color: $gh-light-orange;
+        align-self: flex-start;
 
         &:hover {
-            background: $gh-light-orange;
-            border-color: $gh-light-orange;
+            background: $gh-light-orange !important;
+            border-color: $gh-light-orange !important;
         }
 
         &--flex {
             flex: 1;
         }
 
-        @apply dark:bg-gh-orange dark:border-gh-orange-border #{!important};
+        @apply dark:bg-gh-orange dark:border-gh-orange-border !important;
     }
 
-    // ── Meta ─────────────────────────────────────────────────
 
+    // meta
     &__meta {
         flex-wrap: wrap;
     }
@@ -223,8 +191,7 @@
         @apply dark:text-gh-text-secondary;
     }
 
-    // ── Score Cards ──────────────────────────────────────────
-
+    // score cards 
     &__score-card {
         flex: 1;
 
@@ -275,8 +242,7 @@
         }
     }
 
-    // ── Issues ───────────────────────────────────────────────
-
+    // issues
     &__issues-scroll {
         max-height: 300px;
         overflow-y: auto;
@@ -354,7 +320,7 @@
         @apply dark:text-gh-text-muted;
     }
 
-    // ── Diff ─────────────────────────────────────────────────
+    // diff
 
     &__diff-card {
         background: $gh-light-bg-secondary;
@@ -389,7 +355,7 @@
         }
     }
 
-    // ── Files ────────────────────────────────────────────────
+    // files
 
     &__files-scroll {
         max-height: 260px;
@@ -438,7 +404,7 @@
         margin-top: 4px;
     }
 
-    // ── History ──────────────────────────────────────────────
+    // history
 
     &__history-scroll {
         max-height: 260px;
@@ -455,8 +421,23 @@
         &:hover {
             background: $gh-light-bg-secondary;
             padding-left: 8px;
-
             @apply dark:bg-gh-bg-tertiary;
+        }
+
+        &--active {
+            background: $gh-light-orange-bg !important;
+            padding-left: 8px;
+            @apply dark:bg-gh-orange-bg;
+
+            .pr-review__history-title {
+                color: $gh-light-orange !important;
+                @apply dark:text-gh-orange-text;
+            }
+
+            .pr-review__history-pr {
+                color: $gh-light-orange !important;
+                @apply dark:text-gh-orange-text;
+            }
         }
     }
 

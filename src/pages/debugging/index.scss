@@ -1,107 +1,364 @@
+@import '../../assets/style/variables';
+
 .debugging {
   border-radius: 6px;
   overflow: hidden;
-  background-color: #fff;
+  border: 1px solid $gh-light-border;
+  background-color: $gh-light-bg-primary;
   margin: 20px;
+
+  @apply dark:bg-gh-bg-secondary dark:border-gh-border;
+
+  // layout
 
   &__header {
     padding: 14px 20px;
-    border-bottom: 1px solid #f0f0f0;
-  }
-
-  &__dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: #A32D2D;
-    flex-shrink: 0;
+    border-bottom: 1px solid $gh-light-border;
+    background-color: $gh-light-bg-secondary;
+    @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
   }
 
   &__body {
     padding: 20px;
   }
 
-  &__section-label {
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    display: block !important;
+  &__stretch-row {
+    align-items: stretch;
   }
+
+  &__col {
+    flex: 1;
+  }
+
+  &__spin-wrap {
+    padding: 8px 0;
+  }
+
+  &__actions-row {
+    display: flex;
+  }
+
+
+  // dot
+
+  &__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+
+    &--idle {
+      background: $gh-light-text-muted;
+      @apply dark:bg-gh-text-muted;
+    }
+
+    &--active {
+      background: $gh-light-red;
+      box-shadow: 0 0 6px rgba(209, 36, 47, 0.4);
+      animation: debug-pulse 1.2s ease-in-out infinite;
+      @apply dark:bg-gh-red-text;
+    }
+
+    &--ready {
+      background: $gh-light-red;
+      box-shadow: 0 0 6px rgba(209, 36, 47, 0.4);
+      @apply dark:bg-gh-red-text;
+    }
+  }
+
+  @keyframes debug-pulse {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.4;
+    }
+  }
+
+  // typography
+
+  &__title {
+    font-size: 15px;
+    color: $gh-light-text-primary;
+    @apply dark:text-gh-text-primary;
+  }
+
+  &__subtitle {
+    font-size: 12px;
+    color: $gh-light-text-secondary;
+    @apply dark:text-gh-text-secondary;
+  }
+
+  &__section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    display: block;
+    align-self: flex-start;
+    color: $gh-light-text-muted;
+    @apply dark:text-gh-text-muted;
+  }
+
+  &__card-label {
+    font-size: 11px;
+    display: block;
+    color: $gh-light-text-secondary;
+    @apply dark:text-gh-text-secondary;
+  }
+
+  // severity tag
+
+  &__severity-tag {
+    font-size: 11px;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-weight: 500;
+
+    &--critical {
+      background-color: $gh-light-red-bg !important;
+      border-color: $gh-light-red-border !important;
+      color: #7f1d1d !important;
+      @apply dark:bg-gh-red-bg dark:border-gh-red-border dark:text-gh-red-text;
+    }
+
+    &--high {
+      background-color: $gh-light-red-bg !important;
+      border-color: $gh-light-red-border !important;
+      color: $gh-light-red !important;
+      @apply dark:bg-gh-red-bg dark:border-gh-red-border dark:text-gh-red-text;
+    }
+
+    &--medium {
+      background-color: $gh-light-orange-bg !important;
+      border-color: $gh-light-orange-border !important;
+      color: $gh-light-orange !important;
+      @apply dark:bg-gh-orange-bg dark:border-gh-orange-border dark:text-gh-orange-text;
+    }
+
+    &--low {
+      background-color: $gh-light-green-bg !important;
+      border-color: $gh-light-green-border !important;
+      color: $gh-light-green !important;
+      @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
+    }
+  }
+
+  // select
+
+  &__select {
+    width: 100%;
+  }
+
+  &__lang-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__lang-text {
+    font-size: 12px;
+    color: $gh-light-text-muted;
+    @apply dark:text-gh-text-muted;
+  }
+
+  // text-area
 
   &__textarea {
     font-family: monospace;
     font-size: 12px;
+    background-color: $gh-light-bg-primary;
+    border-color: $gh-light-border;
+    color: $gh-light-text-primary;
+    resize: none;
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border dark:text-gh-text-primary;
+
+    &:focus {
+      border-color: $gh-light-blue;
+      box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.12);
+    }
   }
+
+  // buttons
 
   &__analyze-btn {
-    background: #A32D2D !important;
+    background: $gh-light-red;
+    border-color: $gh-light-red;
     align-self: flex-start;
-  }
 
-  &__root-card {
-    flex: 2;
-    background: #fef2f2 !important;
-    border: 1px solid #fecaca !important;
-  }
-
-  &__root-text {
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    color: #dc2626 !important;
-  }
-
-  &__stat-card {
-    flex: 1;
-    background: #f9fafb !important;
-  }
-
-  &__confidence {
-    font-size: 22px !important;
-    font-weight: 500 !important;
-    color: #16a34a !important;
-  }
-
-  &__explanation-card {
-    background: #f9fafb !important;
-    flex: 1;
-  }
-
-  &__explanation-text {
-    font-size: 13px !important;
-    line-height: 1.7 !important;
-    margin: 0 !important;
-  }
-
-  &__fix-card {
-    background: #f9fafb !important;
-    flex: 1;
-    max-height: 220px;
-    overflow-y: auto;
-  }
-
-  &__diff-line {
-    font-family: monospace;
-    font-size: 12px;
-    line-height: 1.8;
+    &:hover {
+      background: $gh-light-red-hover !important;
+      border-color: $gh-light-red-hover !important;
+    }
   }
 
   &__action-btn-primary {
     flex: 1;
-    background: #A32D2D !important;
+    background: $gh-light-red;
+    border-color: $gh-light-red;
+
+    &:hover {
+      background: $gh-light-red-hover;
+      border-color: $gh-light-red-hover;
+    }
   }
 
   &__action-btn {
     flex: 1;
   }
 
+  // cards
+
+  &__root-card {
+    flex: 2;
+    background: $gh-light-red-bg;
+    border: 1px solid $gh-light-red-border;
+    @apply dark:bg-gh-red-bg dark:border-gh-red-border;
+  }
+
+  &__root-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: $gh-light-red;
+    @apply dark:text-gh-red-text;
+  }
+
+  &__stat-card {
+    flex: 1;
+    background: $gh-light-bg-secondary;
+    @apply dark:bg-gh-bg-tertiary;
+  }
+
+  &__confidence {
+    font-size: 22px;
+    font-weight: 500;
+    color: $gh-light-green;
+    @apply dark:text-gh-green-text;
+  }
+
+  &__file-name {
+    font-size: 12px;
+    display: block;
+    color: $gh-light-blue;
+    background: transparent;
+    border: none;
+    @apply dark:text-gh-blue-text;
+  }
+
+  // explanation
+
+  &__explanation-card {
+    background: $gh-light-bg-secondary;
+    flex: 1;
+    @apply dark:bg-gh-bg-tertiary;
+  }
+
+  &__explanation-text {
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 0;
+    color: $gh-light-text-primary;
+    @apply dark:text-gh-text-primary;
+  }
+
+  // fix / diff
+
+  &__fix-card {
+    background: $gh-light-bg-secondary;
+    flex: 1;
+    max-height: 220px;
+    overflow-y: auto;
+    @apply dark:bg-gh-bg-tertiary;
+  }
+
+  &__diff-line {
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.8;
+
+    &--add {
+      color: $gh-light-green;
+      @apply dark:text-gh-green-text;
+    }
+
+    &--remove {
+      color: $gh-light-red;
+      @apply dark:text-gh-red-text;
+    }
+
+    &--context {
+      color: $gh-light-text-muted;
+      @apply dark:text-gh-text-muted;
+    }
+  }
+
+  // files
+
+  &__files-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  &__file-item {
+    padding: 8px 10px;
+    border: 1px solid $gh-light-border;
+    border-radius: 6px;
+    @apply dark:border-gh-border;
+  }
+
+  &__file-avatar {
+    background: $gh-light-red-bg !important;
+    color: $gh-light-red !important;
+    flex-shrink: 0;
+    @apply dark:bg-gh-red-bg dark:text-gh-red-text;
+  }
+
+  &__file-info {
+    flex: 1;
+  }
+
+  &__file-meta {
+    font-size: 11px;
+    color: $gh-light-text-muted;
+    @apply dark:text-gh-text-muted;
+  }
+
+  // history
+
   &__history-scroll {
     max-height: 200px;
     overflow-y: auto;
   }
 
+
   &__history-item {
-    padding: 10px 0;
     cursor: pointer;
+    border-radius: 6px;
+    padding: 10px;
     width: 100%;
+    transition: background 0.15s;
+
+    &:hover {
+      background: $gh-light-bg-tertiary;
+      @apply dark:bg-gh-bg-tertiary;
+    }
+
+    &--active {
+      background: $gh-light-red-bg;
+      @apply dark:bg-gh-red-bg;
+
+      .debugging__history-error {
+        color: $gh-light-red;
+        @apply dark:text-gh-red-text;
+      }
+    }
   }
 
   &__history-dot {
@@ -110,22 +367,30 @@
     border-radius: 50%;
     margin-top: 6px;
     flex-shrink: 0;
+    background: $gh-light-text-muted;
+    @apply dark:bg-gh-text-muted;
 
     &--resolved {
-      background: #16a34a;
+      background: $gh-light-green;
     }
 
     &--unresolved {
-      background: #dc2626;
+      background: $gh-light-red;
     }
   }
 
   &__history-error {
-    font-size: 12px !important;
-    font-family: monospace !important;
+    font-size: 12px;
+    font-family: monospace;
+    color: $gh-light-text-primary;
+    text-align: left;
+    @apply dark:text-gh-text-primary;
   }
 
   &__history-meta {
-    font-size: 11px !important;
+    font-size: 11px;
+    white-space: nowrap;
+    color: $gh-light-text-muted;
+    @apply dark:text-gh-text-muted;
   }
 }

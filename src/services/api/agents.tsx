@@ -46,6 +46,20 @@ class agents {
     static prReviewHistory = async (token: string, owner: string, repo: string) => {
         return await request.post(paths.prReviewHistory, { token, owner, repo })
     }
+
+    /**
+     * debug error
+     */
+    static debug = async (token: string, owner: string, repo: string, error: string) => {
+        return await request.post(paths.debug, { token, owner, repo, error })
+    }
+
+    /**
+     * debug history
+     */
+    static debugHistory = async (token: string, owner: string, repo: string) => {
+        return await request.post(paths.debugHistory, { token, owner, repo })
+    }
 }
 
 export { agents }
