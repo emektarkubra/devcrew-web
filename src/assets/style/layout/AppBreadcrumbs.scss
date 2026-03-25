@@ -2,15 +2,19 @@
 
 .ant-breadcrumb-link {
     display: flex;
-    justify-content: center !important;
-    align-items: center !important;
-    color: $primary-color !important;
+    justify-content: center;
+    align-items: center;
+    color: $gh-light-blue;
+
+    @apply dark:text-gh-blue-text;
 
     a {
-        color: $light-gray1 !important;
+        color: $gh-light-text-muted;
+
+        @apply dark:text-gh-text-muted;
 
         &:hover {
-            background-color: #ffffff00;
+            background-color: transparent;
         }
     }
 }
@@ -18,12 +22,16 @@
 .custom-breadcrumbs {
     li {
         display: flex;
-        color: $light-gray1 !important;
+        color: $gh-light-text-muted;
+
+        @apply dark:text-gh-text-muted;
     }
 }
 
 .current-breadcrumb {
     a {
-        color: $primary-color !important;
+        color: $gh-light-blue;
+
+        @apply dark:text-gh-blue-text;
     }
 }

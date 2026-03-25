@@ -4,34 +4,47 @@
     .ant-layout-header {
         display: flex;
         align-items: center;
-        background-color: $white;
+        background-color: $gh-light-bg-primary;
         height: 64px;
         padding: 0px;
         line-height: 64px;
-        // box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 20px -10px;
-        border-bottom: 1px solid $light-gray3;
+        border-bottom: 1px solid $gh-light-border;
         position: fixed;
         z-index: 2;
         width: 100%;
+
+        @apply dark:bg-gh-bg-secondary dark:border-gh-border;
     }
 
     .ant-btn-icon {
         display: flex;
         align-items: center;
-        color: $primary-color;
+        color: $gh-light-blue;
+
+        @apply dark:text-gh-blue-text;
 
         .exit-icon {
-            color: $dark-gray !important;
+            color: $gh-light-text-secondary !important;
+
+            @apply dark:text-gh-text-muted;
         }
     }
 }
 
 .title-container {
-    background-color: $white;
+    background-color: $gh-light-bg-primary;
 
+    @apply dark:bg-gh-bg-primary;
 }
 
 .page-title {
     text-align: start;
     padding: 15px 15px 0px 15px;
+    color: $gh-light-text-primary;
+
+    @apply dark:text-gh-text-primary;
+}
+
+.collapse-icon {
+    @apply dark:text-gh-text-primary;
 }

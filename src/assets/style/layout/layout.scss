@@ -5,18 +5,30 @@
     width: 100%;
     max-width: 100%;
     min-height: 100vh;
+    background-color: $gh-light-bg-secondary;
+
+    @apply dark:bg-gh-bg-primary;
 }
 
 .app-inside-container {
     margin-top: 64px;
+    background-color: $gh-light-bg-secondary;
+
+    @apply dark:bg-gh-bg-primary;
 }
 
 .content-container {
     text-align: center;
     min-height: 120px;
     line-height: 120px;
+    background-color: $gh-light-bg-secondary;
+
+    @apply dark:bg-gh-bg-primary;
 }
 
 .sidebar-container {
-    background-color: $white;
+    background-color: $gh-light-bg-primary;
+    border-right: 1px solid $gh-light-border;
+
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border;
 }

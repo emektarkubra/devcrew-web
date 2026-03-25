@@ -19,45 +19,45 @@ export const MENU_ROUTES = [
 
   // Profile
   {
-    path: "/profile",
+    path: "/overview",
     title: "Main title",
     element: <Profile />,
   },
   {
     path: "/agents/codebase-qa",
     title: "Codebase Q&A",
-    element: <CodebaseQA/>,  // ilerleyen aşamada component gelir
-},
-{
+    element: <CodebaseQA />,
+  },
+  {
     path: "/agents/pr-review",
     title: "PR Review",
-    element: <PrReview/>,
-},
-{
+    element: <PrReview />,
+  },
+  {
     path: "/agents/debugging",
     title: "Debugging",
-    element: <Debugging/>,
-},
-{
+    element: <Debugging />,
+  },
+  {
     path: "/agents/test-generator",
     title: "Test Generator",
-    element: <TestGenerator/>,
-},
-{
+    element: <TestGenerator />,
+  },
+  {
     path: "/agents/documentation",
     title: "Documentation",
-    element: <Documentation/>,
-},
-{
+    element: <Documentation />,
+  },
+  {
     path: "/analysis/architecture",
     title: "Architecture Graph",
-    element: <ArchitectureGraph/>,
-},
-{
+    element: <ArchitectureGraph />,
+  },
+  {
     path: "/analysis/intelligence",
     title: "Repo Intelligence",
-    element: <RepoIntelligence/>,
-},
+    element: <RepoIntelligence />,
+  },
 ];
 
 const getRoutes = () => {

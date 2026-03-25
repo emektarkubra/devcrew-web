@@ -252,9 +252,9 @@ const CodebaseQA = () => {
                                                     <Text code className="codebase-qa__file-name">
                                                         {filePath.split('/').pop()}
                                                     </Text>
-                                                    <Text type="secondary" className="codebase-qa__file-meta">
+                                                    {/* <Text type="secondary" className="codebase-qa__file-meta">
                                                         {filePath}
-                                                    </Text>
+                                                    </Text> */}
                                                 </Flex>
                                             </Flex>
                                         </Flex>
@@ -263,10 +263,10 @@ const CodebaseQA = () => {
                             ) : null}
                         </Card>
                     </Flex>
+                </>)}
 
 
-
-                    {/* History */}
+                {indexStatus === 'ready' && history.length > 0 && (
                     <Flex vertical gap={4}>
                         <Text className="codebase-qa__section-label">HISTORY</Text>
                         <List
@@ -292,10 +292,7 @@ const CodebaseQA = () => {
                             )}
                         />
                     </Flex>
-                </>)}
-
-
-
+                )}
             </Flex>
         </div>
     )

@@ -7,105 +7,28 @@
   background-color: $gh-light-bg-primary;
   margin: 20px;
 
-  @apply dark:bg-darkColor dark:border-lightGray;
+  @apply dark:bg-gh-bg-secondary dark:border-gh-border;
 
-  // custom
-  .ant-input-compact-item {
-    background-color: $gh-light-bg-primary !important;
-    border-color: $gh-light-border !important;
-    color: $gh-light-text-primary !important;
-
-    @apply dark:bg-softDarkColor dark:border-lightGray dark:text-lightColor;
-
-    &::placeholder {
-      color: $gh-light-text-muted !important;
-      @apply dark:text-softLightColor;
-    }
-
-    &:focus,
-    &:hover {
-      border-color: $gh-light-blue !important;
-      box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.12) !important;
-
-      @apply dark:border-gh-blue-border;
-    }
-  }
-
-  .ant-select-selector {
-    background-color: $gh-light-bg-primary !important;
-    border-color: $gh-light-border !important;
-    color: $gh-light-text-primary !important;
-
-    @apply dark:bg-softDarkColor dark:border-lightGray dark:text-lightColor;
-  }
-
-  .ant-select-arrow,
-  .ant-select-selection-placeholder {
-    color: $gh-light-text-muted !important;
-    @apply dark:text-softLightColor;
-  }
-
-  .ant-tag-blue {
-    background-color: $gh-light-blue-bg !important;
-    border-color: $gh-light-blue-border !important;
-    color: $gh-light-blue-text !important;
-
-    @apply dark:bg-gh-blue-bg dark:border-gh-blue-border dark:text-gh-blue-text;
-  }
-
-  .ant-card {
-    background-color: $gh-light-bg-secondary !important;
-    border-color: $gh-light-border !important;
-
-    @apply dark:bg-softDarkColor dark:border-lightGray;
-  }
-
-  .ant-card-body {
-    background-color: $gh-light-bg-secondary !important;
-    @apply dark:bg-softDarkColor;
-  }
-
-  .ant-typography {
-    color: $gh-light-text-primary !important;
-    @apply dark:text-lightColor;
-  }
-
-  .ant-typography.ant-typography-secondary {
-    color: $gh-light-text-secondary !important;
-    @apply dark:text-softLightColor;
-  }
-
-  .ant-list-split .ant-list-item {
-    border-bottom-color: $gh-light-border !important;
-    @apply dark:border-lightGray;
-  }
-
-  .ant-spin-dot-item {
-    background-color: $gh-light-blue !important;
-    @apply dark:bg-gh-blue-text;
-  }
-
+  // ─── Header ─────────────────────────────
 
   &__header {
     padding: 14px 20px;
     border-bottom: 1px solid $gh-light-border;
     background-color: $gh-light-bg-secondary;
 
-    @apply dark:bg-softDarkColor dark:border-lightGray;
+    @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
   }
 
   &__body {
     padding: 20px;
   }
 
-  // dot
+  // ─── Status Dot ─────────────────────────
 
   &__dot {
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    flex-shrink: 0;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
 
     &--idle {
       background: $gh-light-text-muted;
@@ -115,7 +38,7 @@
     &--indexing {
       background: $gh-light-yellow;
       box-shadow: 0 0 6px rgba(154, 103, 0, 0.4);
-      animation: pulse 1.2s ease-in-out infinite;
+      animation: pulse 1.2s infinite;
 
       @apply dark:bg-gh-yellow-text;
     }
@@ -140,191 +63,134 @@
     }
   }
 
-  // status
+  // ─── Status Tag ─────────────────────────
 
-&__status-tag {
-    font-size: 11px !important;
-    padding: 2px 10px !important;
-    font-weight: 500 !important;
+  &__status-tag {
+    font-size: 13px;
+    padding: 4px 10px;
+    font-weight: 500;
 
     &--idle {
-        background-color: $gh-light-bg-tertiary !important;
-        border-color: $gh-light-border !important;
-        color: $gh-light-text-muted !important;
-        @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted;
+      background-color: $gh-light-bg-tertiary;
+      border-color: $gh-light-border;
+      color: $gh-light-text-muted;
+
+      @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-secondary;
     }
 
     &--indexing {
-        background-color: $gh-light-blue-bg !important;
-        border-color: $gh-light-blue-border !important;
-        color: $gh-light-blue !important;
-        @apply dark:bg-gh-blue-bg dark:border-gh-blue-border dark:text-gh-blue-text;
+      background-color: $gh-light-blue-bg;
+      border-color: $gh-light-blue-border;
+      color: $gh-light-blue;
+
+      @apply dark:bg-gh-orange-bg dark:border-gh-orange-border dark:text-gh-orange-text;
+
+      .anticon-loading {
+        @apply dark:text-gh-orange-text;
+
+      }
     }
 
     &--ready {
-        background-color: $gh-light-green-bg !important;
-        border-color: $gh-light-green-border !important;
-        color: $gh-light-green !important;
-        @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
+      background-color: $gh-light-green-bg;
+      border-color: $gh-light-green-border;
+      color: $gh-light-green;
+
+      @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
+
+      .anticon-check-circle {
+        @apply dark:text-gh-green-text;
+      }
     }
-}
+  }
 
-
-  // select
+  // ─── Labels ─────────────────────────────
 
   &__section-label {
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.06em !important;
-    display: block !important;
-    align-self: flex-start;
-    color: $gh-light-text-muted !important;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: $gh-light-text-muted;
+    text-align: left;
 
-    @apply dark:text-softLightColor;
+    @apply dark:text-gh-text-muted;
   }
+
+  // ─── Select ─────────────────────────────
 
   &__repo-select {
     width: 100%;
 
     &:hover .ant-select-selector,
     &.ant-select-focused .ant-select-selector {
-      border-color: $gh-light-blue !important;
-      box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.12) !important;
+      border-color: $gh-light-blue;
+      box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.12);
 
-      @apply dark:border-gh-blue-border;
+      @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-primary;
+
     }
   }
 
-  &__repo-lang-tag {
-    font-size: 10px !important;
-    padding: 0 5px !important;
-    background-color: $gh-light-blue-bg !important;
-    border-color: $gh-light-blue-border !important;
-    color: $gh-light-blue-text !important;
-
-    @apply dark:bg-gh-blue-bg dark:border-gh-blue-border dark:text-gh-blue-text;
-  }
-
-  &__repo-private-tag {
-    font-size: 10px !important;
-    padding: 0 5px !important;
-    background-color: $gh-light-purple-bg !important;
-    border-color: $gh-light-purple-border !important;
-    color: $gh-light-purple-text !important;
-
-    @apply dark:bg-gh-purple-bg dark:border-gh-purple-border dark:text-gh-purple-text;
-  }
-
-  // status
-
-  &__indexing-status {
-    padding: 10px 14px;
-    background-color: $gh-light-yellow-bg;
-    border: 1px solid $gh-light-yellow-border;
-    // border-radius: 6px;
-
-    @apply dark:bg-gh-yellow-bg dark:border-gh-yellow-border;
-  }
-
-  &__indexing-text {
-    font-size: 13px !important;
-    color: $gh-light-yellow !important;
-
-    @apply dark:text-gh-yellow-text;
-  }
-
-
-  &__search-prefix {
-    color: $gh-light-text-muted;
-    @apply dark:text-softLightColor;
-  }
+  // ─── Button ─────────────────────────────
 
   &__btn {
-    background: $gh-light-blue !important;
-    border-color: $gh-light-blue !important;
+    background: $gh-light-blue;
+    border-color: $gh-light-blue;
 
-    @apply dark:bg-gh-blue dark:border-gh-blue-border;
+    @apply dark:bg-gh-blue dark:border-gh-blue-border text-gh-text-primary !important;
 
     &:hover {
-      background: $gh-light-blue-hover !important;
+      background: $gh-light-blue-hover;
       @apply dark:bg-gh-blue-light;
     }
 
     &.ant-btn-disabled,
     &[disabled] {
-      background: $gh-light-bg-tertiary !important;
-      border-color: $gh-light-border !important;
-      color: $gh-light-text-muted !important;
-      opacity: 0.6;
+      background: $gh-light-bg-tertiary;
+      border-color: $gh-light-border;
+      color: $gh-light-text-muted;
 
-      @apply dark:bg-softDarkColor dark:border-lightGray dark:text-softLightColor;
+      @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted;
     }
   }
 
-  // ─── Chips ────────────────────────────────────────────────
+  // ─── Chips ─────────────────────────────
 
   &__chip {
     cursor: pointer;
-    border-radius: 20px !important;
-    padding: 2px 10px !important;
-    transition: all 0.15s ease !important;
+    border-radius: 20px;
 
     &:hover {
-      background-color: $gh-light-blue-bg !important;
-      border-color: $gh-light-blue-border !important;
-      color: $gh-light-blue-text !important;
+      background-color: $gh-light-blue-bg;
+      border-color: $gh-light-blue-border;
+      color: $gh-light-blue-text;
 
       @apply dark:bg-gh-blue-bg dark:border-gh-blue-border dark:text-gh-blue-text;
     }
-
-    &--disabled {
-      cursor: not-allowed !important;
-      opacity: 0.4;
-
-      &:hover {
-        background-color: $gh-light-bg-secondary !important;
-        border-color: $gh-light-border !important;
-        color: $gh-light-text-secondary !important;
-
-        @apply dark:bg-softDarkColor dark:border-lightGray dark:text-softLightColor;
-      }
-    }
   }
 
-
-  &__placeholder-text {
-    font-size: 13px !important;
-    font-style: italic;
-    color: $gh-light-text-muted !important;
-
-    @apply dark:text-softLightColor;
-  }
-
+  // ─── Response ──────────────────────────
 
   &__response-card {
-    background: $gh-light-bg-secondary !important;
-    border-color: $gh-light-border !important;
+    background: $gh-light-bg-secondary;
+    border-color: $gh-light-border;
 
-    @apply dark:bg-softDarkColor dark:border-lightGray;
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border;
   }
 
   &__response-paragraph {
-    font-size: 14px !important;
-    line-height: 1.6 !important;
-    color: $gh-light-text-primary !important;
+    color: $gh-light-text-primary;
 
-    @apply dark:text-lightColor;
+    @apply dark:text-gh-text-primary;
   }
 
+  // ─── File ─────────────────────────────
+
   &__file-item {
-    margin-bottom: 6px;
     background-color: $gh-light-bg-primary;
     border: 1px solid $gh-light-border;
-    border-radius: 6px;
-    padding: 12px 16px;
-    transition: border-color 0.15s ease;
 
-    @apply dark:bg-softDarkColor dark:border-lightGray;
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border;
 
     &:hover {
       border-color: $gh-light-blue;
@@ -333,118 +199,71 @@
   }
 
   &__file-avatar {
-    background: $gh-light-blue-bg !important;
-    color: $gh-light-blue !important;
-    flex-shrink: 0;
+    background: $gh-light-blue-bg;
+    color: $gh-light-blue;
 
-    @apply dark:bg-gh-blue-bg dark:text-gh-blue-text;
+    @apply dark:bg-gh-blue-light !important;
+
+    .anticon {
+
+      @apply dark:text-gh-light-blue !important;
+    }
   }
 
-  &__file-name {
-    font-size: 12px !important;
-    font-weight: 500 !important;
-    background-color: transparent !important;
-    border: none !important;
-    color: $gh-light-blue !important;
+  // gh-light-blue
 
+  &__file-name {
+    color: $gh-light-blue;
     @apply dark:text-gh-blue-text;
   }
 
   &__file-meta {
-    font-size: 11px !important;
-    color: $gh-light-text-muted !important;
-
-    @apply dark:text-softLightColor;
+    color: $gh-light-text-muted;
+    @apply dark:text-gh-text-muted;
   }
 
-  &__spin {
-    padding: 12px 0;
-  }
+  // ─── History ───────────────────────────
 
   &__history-item {
-    padding: 10px 0;
     cursor: pointer;
+    border-radius: 6px;
+    padding: 10px;
     width: 100%;
-    transition: opacity 0.15s ease;
 
     &:hover {
-      opacity: 0.8;
+      background: $gh-light-bg-tertiary;
+      @apply dark:bg-gh-blue-bg;
+    }
 
-      .codebase-qa__history-dot {
-        background: $gh-light-blue;
-        @apply dark:bg-gh-blue-text;
-      }
+    &--active {
+      background: $gh-light-blue-bg;
+      @apply dark:bg-gh-blue-bg;
 
       .codebase-qa__history-question {
-        color: $gh-light-blue !important;
+        color: $gh-light-blue;
         @apply dark:text-gh-blue-text;
       }
     }
   }
 
   &__history-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
     background: $gh-light-text-muted;
-    margin-top: 6px;
-    flex-shrink: 0;
-    transition: background 0.15s ease;
 
     @apply dark:bg-gh-text-muted;
+
+    &--active {
+      background: $gh-light-blue;
+      @apply dark:bg-gh-blue-text;
+    }
   }
 
   &__history-question {
-    font-size: 13px !important;
-    color: $gh-light-text-primary !important;
-    transition: color 0.15s ease;
-
-    @apply dark:text-lightColor;
+    color: $gh-light-text-primary;
+    @apply dark:text-gh-text-primary;
   }
 
   &__history-meta {
-    font-size: 11px !important;
-    white-space: nowrap;
-    color: $gh-light-text-muted !important;
-
-    @apply dark:text-softLightColor;
-  }
-
-
-  &__history-item {
-    padding: 10px 0;
-    cursor: pointer;
-    width: 100%;
-    border-radius: 6px;
-    transition: background 0.15s;
-
-    &:hover {
-      background: #f5f5f5;
-      padding-left: 8px;
-    }
-
-    &--active {
-      background: #f0f7ff;
-      padding-left: 8px;
-
-      .codebase-qa__history-question {
-        color: #185FA5 !important;
-        font-weight: 500 !important;
-      }
-    }
-  }
-
-  &__history-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #d1d5db;
-    margin-top: 6px;
-    flex-shrink: 0;
-    transition: background 0.15s;
-
-    &--active {
-      background: #185FA5;
-    }
+    color: $gh-light-text-muted;
+    @apply dark:text-gh-text-muted;
   }
 }

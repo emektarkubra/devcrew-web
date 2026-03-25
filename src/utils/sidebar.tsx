@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { MdOutlineSpaceDashboard } from 'react-icons/md';
 import { VscAccount, VscSearch, VscBug, VscBook, VscGraph } from 'react-icons/vsc';
 import { GoGitPullRequest } from 'react-icons/go';
 import { TbTestPipe, TbHierarchy } from 'react-icons/tb';
+import { RiTeamLine } from 'react-icons/ri';
 
 export type MenuTypes = {
     key: string;
@@ -63,23 +63,23 @@ export const createModifiedMenu = () => {
 export const MENU_ELEMENTS: MenuTypes[] = [
     {
         key: 'group-general',
-        label: 'Genel',
-        title: 'Genel',
+        label: 'General',
+        title: 'General',
         type: 'group',
         children: [
             {
-                key: '/dashboard',
-                label: 'Dashboard',
-                title: 'Dashboard',
-                href: '/',
-                icon: <MdOutlineSpaceDashboard size={18} />,
+                key: '/overview',
+                label: 'Overview',
+                title: 'Overview',
+                href: '/overview',
+                icon: <VscAccount size={18} />,
             },
             {
-                key: '/profile',
-                label: 'Profile',
-                title: 'Profile',
-                href: '/profile',
-                icon: <VscAccount size={18} />,
+                key: '/team-mode',
+                label: 'Team Mode',
+                title: 'Team Mode',
+                href: '/team-mode',
+                icon: <RiTeamLine size={18} />,
             },
         ]
     },
@@ -128,8 +128,8 @@ export const MENU_ELEMENTS: MenuTypes[] = [
     },
     {
         key: 'group-analysis',
-        label: 'Analiz',
-        title: 'Analiz',
+        label: 'Analysis',
+        title: 'Analysis',
         type: 'group',
         children: [
             {

@@ -15,4 +15,18 @@
 
 </body>
 
+
+<script>
+  (function () {
+    try {
+      const theme = localStorage.getItem('theme');
+      const parsed = theme ? theme : 'dark';
+
+      document.documentElement.classList.toggle('dark', parsed === 'dark');
+    } catch (e) {
+      document.documentElement.classList.add('dark');
+    }
+  })();
+</script>
+
 </html>
