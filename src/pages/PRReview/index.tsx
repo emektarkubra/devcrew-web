@@ -11,10 +11,10 @@ import './index.scss'
 
 const { Text } = Typography
 
-const RISK_CONFIG: Record<string, { color: string; label: string }> = {
-    high: { color: 'red', label: 'High risk' },
-    medium: { color: 'orange', label: 'Medium risk' },
-    low: { color: 'green', label: 'Low risk' },
+const RISK_CONFIG: Record<string, { label: string }> = {
+    high: { label: 'High risk' },
+    medium: { label: 'Medium risk' },
+    low: { label: 'Low risk' },
 }
 
 const SEVERITY_CLASS: Record<string, string> = {
@@ -376,8 +376,8 @@ const PRReview = () => {
                                                     {file.path} · {file.changes}
                                                 </Text>
                                             </Flex>
-                                            <Tag color={RISK_CONFIG[file.risk]?.color}>
-                                                {RISK_CONFIG[file.risk]?.label}
+                                            <Tag className={`pr-review__risk-tag pr-review__risk-tag--${file.risk}`}>
+                                                {RISK_CONFIG[file?.risk]?.label}
                                             </Tag>
                                         </Flex>
                                     ))}

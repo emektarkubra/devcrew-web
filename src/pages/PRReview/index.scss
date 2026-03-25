@@ -159,6 +159,8 @@
         border-color: $gh-light-orange;
         align-self: flex-start;
 
+        @apply dark:bg-gh-orange dark:border-gh-orange-border !important;
+
         &:hover {
             background: $gh-light-orange !important;
             border-color: $gh-light-orange !important;
@@ -168,7 +170,47 @@
             flex: 1;
         }
 
-        @apply dark:bg-gh-orange dark:border-gh-orange-border !important;
+        &.ant-btn-disabled,
+        &[disabled] {
+            background: $gh-light-bg-tertiary;
+            border-color: $gh-light-border;
+            color: $gh-light-text-muted;
+
+            @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
+        }
+    }
+
+    // risk tags
+
+    &__risk-tag {
+        font-size: 11px;
+        border-radius: 5px;
+        padding: 2px 10px;
+        font-weight: 500;
+
+        &--high {
+            background-color: $gh-light-red-bg;
+            border-color: $gh-light-red-border;
+            color: $gh-light-red;
+
+            @apply dark:bg-gh-red-bg dark:border-gh-red-border dark:text-gh-red-text;
+        }
+
+        &--medium {
+            background-color: $gh-light-orange-bg;
+            border-color: $gh-light-orange-border;
+            color: $gh-light-orange;
+
+            @apply dark:bg-gh-orange-bg dark:border-gh-orange-border dark:text-gh-orange-text;
+        }
+
+        &--low {
+            background-color: $gh-light-green-bg;
+            border-color: $gh-light-green-border;
+            color: $gh-light-green;
+
+            @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
+        }
     }
 
 
@@ -335,23 +377,23 @@
         font-family: monospace;
         font-size: 12px;
         line-height: 1.8;
-        color: $gh-light-text-secondary;
+        color: $gh-light-text-primary !important;
 
-        @apply dark:text-gh-text-secondary;
+        @apply dark:text-gh-text-secondary !important;
 
         &.diff-line--add {
-            color: $gh-light-green;
-            @apply dark:text-gh-green-text;
+            color: $gh-light-green !important;
+            @apply dark:text-gh-green-text !important;
         }
 
         &.diff-line--remove {
-            color: $gh-light-red;
-            @apply dark:text-gh-red-text;
+            color: $gh-light-red !important;
+            @apply dark:text-gh-red-text !important;
         }
 
         &.diff-line--context {
-            color: $gh-light-text-muted;
-            @apply dark:text-gh-text-primary;
+            color: $gh-light-text-muted !important;
+            @apply dark:text-gh-text-primary !important;
         }
     }
 
@@ -412,31 +454,31 @@
     }
 
     &__history-item {
-        padding: 10px 0;
         cursor: pointer;
-        width: 100%;
         border-radius: 6px;
+        padding: 10px;
+        width: 100%;
+        cursor: pointer;
         transition: background 0.15s;
 
         &:hover {
-            background: $gh-light-bg-secondary;
-            padding-left: 8px;
+            background: $gh-light-bg-tertiary;
             @apply dark:bg-gh-bg-tertiary;
         }
 
         &--active {
-            background: $gh-light-orange-bg !important;
-            padding-left: 8px;
-            @apply dark:bg-gh-orange-bg;
+            background: $gh-light-bg-tertiary !important;
+            @apply dark:bg-gh-bg-tertiary !important;
+
 
             .pr-review__history-title {
-                color: $gh-light-orange !important;
-                @apply dark:text-gh-orange-text;
+                color: $gh-bg-primary !important;
+                @apply dark:text-gh-text-primary !important;
             }
 
             .pr-review__history-pr {
                 color: $gh-light-orange !important;
-                @apply dark:text-gh-orange-text;
+                @apply dark:text-gh-text-primary !important;
             }
         }
     }

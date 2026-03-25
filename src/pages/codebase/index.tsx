@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Button, Card, Flex, Input, Tag, Typography, List, Avatar, Spin, Select } from 'antd'
+import { Button, Card, Flex, Input, Tag, Typography, List, Avatar, Select } from 'antd'
 import { FileOutlined, SearchOutlined, GithubOutlined, LoadingOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import { FiSearch } from 'react-icons/fi'
 import withLayout from '../../layout/withLayout'
@@ -200,7 +200,7 @@ const CodebaseQA = () => {
                     />
                 </Flex>
 
-                <Flex vertical gap={6}>
+                <Flex vertical gap={10}>
                     <Text className="codebase-qa__section-label">SEARCH</Text>
                     <Input
                         value={query}
@@ -217,18 +217,18 @@ const CodebaseQA = () => {
                         disabled={indexStatus !== 'ready'}
                         className={indexStatus !== 'ready' ? 'codebase-qa__input--disabled' : ''}
                     />
-
-                    <Button
-                        type="primary"
-                        onClick={handleAsk}
-                        loading={loading}
-                        disabled={indexStatus !== 'ready' || !query.trim() || loading}
-                        className="codebase-qa__btn"
-                        icon={<FiSearch />}
-                    >
-                        Ask
-                    </Button>
                 </Flex>
+
+                <Button
+                    type="primary"
+                    onClick={handleAsk}
+                    loading={loading}
+                    disabled={indexStatus !== 'ready' || !query.trim() || loading}
+                    className="codebase-qa__btn"
+                    icon={<FiSearch />}
+                >
+                    Ask
+                </Button>
 
                 {result?.suggestions?.length > 0 && (
                     <Flex wrap gap={6}>
@@ -248,36 +248,31 @@ const CodebaseQA = () => {
                     <Flex vertical gap={8} className="codebase-qa__response">
                         <Text className="codebase-qa__section-label">RESPONSE</Text>
                         <Card size="small" className="codebase-qa__response-card">
-                            {loading ? (
-                                <Flex justify="center" className="codebase-qa__spin">
-                                    <Spin size="small" />
-                                </Flex>
-                            ) : result ? (
-                                <>
-                                    <Paragraph
-                                        className="codebase-qa__response-paragraph"
-                                        style={{ marginBottom: result.files?.length ? 12 : 0 }}
-                                    >
-                                        {result.answer}
-                                    </Paragraph>
-                                    {result.files?.map((filePath: string) => (
-                                        <Flex key={filePath} className="codebase-qa__file-item">
-                                            <Flex align="center" gap={10}>
-                                                <Avatar
-                                                    icon={<FileOutlined />}
-                                                    className="codebase-qa__file-avatar"
-                                                    size={32}
-                                                />
-                                                <Flex vertical gap={2} style={{ flex: 1 }}>
-                                                    <Text code className="codebase-qa__file-name">
-                                                        {filePath.split('/').pop()}
-                                                    </Text>
-                                                </Flex>
-                                            </Flex>
+
+                            <Paragraph
+                                className="codebase-qa__response-paragraph"
+                                style={{ marginBottom: result?.files?.length ? 12 : 0 }}
+                            >
+                                {result.answer}
+                            </Paragraph>
+                            {result?.files?.map((filePath: string) => (
+                                <Flex key={filePath} className="codebase-qa__file-item">
+                                    <Flex align="center" gap={10}>
+                                        <Avatar
+                                            icon={<FileOutlined />}
+                                            className="codebase-qa__file-avatar"
+                                            size={32}
+                                        />
+                                        <Flex vertical gap={2} style={{ flex: 1 }}>
+                                            <Text code className="codebase-qa__file-name">
+                                                {filePath.split('/').pop()}
+                                            </Text>
                                         </Flex>
-                                    ))}
-                                </>
-                            ) : null}
+                                    </Flex>
+                                </Flex>
+                            ))}
+
+
                         </Card>
                     </Flex>
                 )}
@@ -298,9 +293,9 @@ const CodebaseQA = () => {
                                     >
                                         <div className={`codebase-qa__history-dot ${selectedHistory === index ? 'codebase-qa__history-dot--active' : ''}`} />
                                         <Flex align="center" gap={30}>
-                                            <Text className="codebase-qa__history-question">{item.question}</Text>
+                                            <Text className="codebase-qa__history-question">{item?.question}</Text>
                                             <Text type="secondary" className="codebase-qa__history-meta">
-                                                {item.filesFound} files · {timeAgo(item.timeAgo)}
+                                                {item?.filesFound} files · {timeAgo(item.timeAgo)}
                                             </Text>
                                         </Flex>
                                     </Flex>

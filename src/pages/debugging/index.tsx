@@ -10,12 +10,12 @@ import './index.scss'
 
 const { Text, Paragraph } = Typography
 
-const SEVERITY_CONFIG: Record<string, { color: string; label: string }> = {
-    critical: { color: '#7f1d1d', label: 'Critical' },
-    high: { color: '#dc2626', label: 'High' },
-    medium: { color: '#d97706', label: 'Medium' },
-    low: { color: '#16a34a', label: 'Low' },
-    unknown: { color: '#6b7280', label: 'Unknown' },
+const SEVERITY_CONFIG: Record<string, { label: string }> = {
+    critical: { label: 'Critical' },
+    high: { label: 'High' },
+    medium: { label: 'Medium' },
+    low: { label: 'Low' },
+    unknown: { label: 'Unknown' },
 }
 
 const Debugging = () => {
@@ -168,17 +168,18 @@ const Debugging = () => {
                         disabled={!selectedRepo}
                         className="debugging__textarea"
                     />
-                    <Button
-                        type="primary"
-                        onClick={handleAnalyze}
-                        loading={loading}
-                        disabled={!selectedRepo || !input.trim()}
-                        className="debugging__analyze-btn"
-                        icon={<SearchOutlined />}
-                    >
-                        Analyze
-                    </Button>
                 </Flex>
+
+                <Button
+                    type="primary"
+                    onClick={handleAnalyze}
+                    loading={loading}
+                    disabled={!selectedRepo || !input.trim()}
+                    className="debugging__analyze-btn"
+                    icon={<SearchOutlined />}
+                >
+                    Analyze
+                </Button>
 
                 {loading && (
                     <Flex justify="center" className="debugging__spin-wrap">

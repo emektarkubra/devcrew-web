@@ -32,23 +32,23 @@
 
     &--idle {
       background: $gh-light-blue;
-      box-shadow: 0 0 6px rgba(9, 105, 218, 0.4);
+      box-shadow: 0 0 6px $gh-light-blue(9, 105, 218, 0.4);
 
       @apply dark:bg-gh-text-muted;
     }
 
     &--indexing {
 
-      background: $gh-light-blue;
-      box-shadow: 0 0 6px rgba(9, 105, 218, 0.4);
+      background: $gh-light-yellow;
+      box-shadow: 0 0 6px gh-light-yellow(9, 105, 218, 0.4);
       animation: pulse 1.2s infinite;
 
       @apply dark:bg-gh-yellow-text;
     }
 
     &--ready {
-      background: $gh-light-blue;
-      box-shadow: 0 0 6px rgba(9, 105, 218, 0.4);
+      background: $gh-light-green;
+      box-shadow: 0 0 6px $gh-light-green(9, 105, 218, 0.4);
 
       @apply dark:bg-gh-green-text;
     }
@@ -95,11 +95,11 @@
 
     &--ready {
 
-      background-color: $gh-light-blue-bg;
-      border-color: $gh-light-blue-border;
-      color: $gh-light-blue;
+      background-color: $gh-light-green-bg;
+      border-color: $gh-light-green-border;
+      color: $gh-light-green;
 
-      @apply dark:bg-gh-orange-bg dark:border-gh-orange-border dark:text-gh-orange-text;
+      @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
 
       .anticon-check-circle {
         @apply dark:text-gh-green-text;
@@ -137,15 +137,15 @@
   // button
 
   &__btn {
-    background: $gh-light-blue;
-    border-color: $gh-light-blue;
+    background: $gh-light-green;
+    border-color: $gh-light-green;
     align-self: flex-start;
 
-    @apply dark:bg-gh-blue dark:border-gh-blue-border text-gh-text-primary !important;
+    @apply dark:bg-gh-green dark:border-gh-green-border text-gh-text-primary !important;
 
     &:hover {
-      background: $gh-light-blue-hover;
-      @apply dark:bg-gh-blue-light;
+      background: $gh-light-green-hover !important;
+      @apply dark:bg-gh-light-green !important;
     }
 
     &.ant-btn-disabled,
@@ -154,7 +154,7 @@
       border-color: $gh-light-border;
       color: $gh-light-text-muted;
 
-      @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted;
+      @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
     }
   }
 
@@ -226,29 +226,30 @@
     @apply dark:text-gh-text-muted;
   }
 
-  // history
+// history
 
-  &__history-item {
-    cursor: pointer;
-    border-radius: 6px;
-    padding: 10px;
-    width: 100%;
+&__history-item {
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 10px;
+  width: 100%;
+  cursor: pointer;
 
-    &:hover {
-      background: $gh-light-bg-tertiary;
-      @apply dark:bg-gh-blue-bg;
-    }
+  &:hover {
+    background: $gh-light-bg-tertiary;
+    @apply dark:bg-gh-bg-tertiary;
+  }
 
-    &--active {
-      background: $gh-light-blue-bg;
-      @apply dark:bg-gh-blue-bg;
+  &--active {
+    background: $gh-light-bg-tertiary;
+    @apply dark:bg-gh-bg-tertiary;
 
-      .codebase-qa__history-question {
-        color: $gh-light-blue;
-        @apply dark:text-gh-blue-text;
-      }
+    .codebase-qa__history-question {
+      color: $gh-light-text-primary;
+      @apply dark:text-gh-text-primary;
     }
   }
+}
 
   &__history-dot {
     background: $gh-light-text-muted;

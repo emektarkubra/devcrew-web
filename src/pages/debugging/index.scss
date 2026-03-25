@@ -119,31 +119,43 @@
     font-weight: 500;
 
     &--critical {
-      background-color: $gh-light-red-bg !important;
-      border-color: $gh-light-red-border !important;
-      color: #7f1d1d !important;
-      @apply dark:bg-gh-red-bg dark:border-gh-red-border dark:text-gh-red-text;
+      background-color: $gh-light-coral-bg !important;
+      border-color: $gh-light-coral-border !important;
+      color: $gh-light-coral !important;
+
+      @apply dark:bg-gh-coral-bg dark:border-gh-coral-border dark:text-gh-coral-text !important;
     }
 
     &--high {
       background-color: $gh-light-red-bg !important;
       border-color: $gh-light-red-border !important;
       color: $gh-light-red !important;
-      @apply dark:bg-gh-red-bg dark:border-gh-red-border dark:text-gh-red-text;
+
+      @apply dark:bg-gh-red-bg dark:border-gh-red-border dark:text-gh-red-text !important;
     }
 
     &--medium {
       background-color: $gh-light-orange-bg !important;
       border-color: $gh-light-orange-border !important;
       color: $gh-light-orange !important;
-      @apply dark:bg-gh-orange-bg dark:border-gh-orange-border dark:text-gh-orange-text;
+
+      @apply dark:bg-gh-orange-bg dark:border-gh-orange-border dark:text-gh-orange-text !important;
     }
 
     &--low {
       background-color: $gh-light-green-bg !important;
       border-color: $gh-light-green-border !important;
       color: $gh-light-green !important;
-      @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
+
+      @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text !important;
+    }
+
+    &--unknown {
+      background-color: $gh-light-bg-tertiary !important;
+      border-color: $gh-light-border !important;
+      color: $gh-light-text-secondary !important;
+
+      @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-secondary !important;
     }
   }
 
@@ -186,24 +198,33 @@
   // buttons
 
   &__analyze-btn {
-    background: $gh-light-red;
-    border-color: $gh-light-red;
+    background: $gh-light-red !important;
+    border-color: $gh-light-red !important;
     align-self: flex-start;
 
     &:hover {
       background: $gh-light-red-hover !important;
       border-color: $gh-light-red-hover !important;
     }
+
+    &.ant-btn-disabled,
+    &[disabled] {
+      background: $gh-light-bg-tertiary;
+      border-color: $gh-light-border;
+      color: $gh-light-text-muted;
+
+      @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
+    }
   }
 
   &__action-btn-primary {
     flex: 1;
-    background: $gh-light-red;
-    border-color: $gh-light-red;
+    background: $gh-light-red !important;
+    border-color: $gh-light-red !important;
 
     &:hover {
-      background: $gh-light-red-hover;
-      border-color: $gh-light-red-hover;
+      background: $gh-light-red-hover !important;
+      border-color: $gh-light-red-hover !important;
     }
   }
 
@@ -317,7 +338,7 @@
     background: $gh-light-red-bg !important;
     color: $gh-light-red !important;
     flex-shrink: 0;
-    @apply dark:bg-gh-red-bg dark:text-gh-red-text;
+    @apply dark:bg-gh-red-bg dark:text-gh-red-text !important;
   }
 
   &__file-info {
@@ -337,12 +358,12 @@
     overflow-y: auto;
   }
 
-
   &__history-item {
     cursor: pointer;
     border-radius: 6px;
     padding: 10px;
     width: 100%;
+    cursor: pointer;
     transition: background 0.15s;
 
     &:hover {
@@ -351,12 +372,14 @@
     }
 
     &--active {
-      background: $gh-light-red-bg;
-      @apply dark:bg-gh-red-bg;
+      background: $gh-light-bg-tertiary !important;
+      @apply dark:bg-gh-bg-tertiary !important;
+
+
 
       .debugging__history-error {
         color: $gh-light-red;
-        @apply dark:text-gh-red-text;
+        @apply dark:text-gh-text-primary !important;
       }
     }
   }

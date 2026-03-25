@@ -361,6 +361,6 @@
         color: $gh-light-text-secondary !important;
         border-color: $gh-light-border !important;
 
-        @apply dark:bg-gh-bg-tertiary dark:text-gh-text-secondary dark:border-gh-border
+        @apply dark:bg-gh-bg-tertiary dark:text-gh-text-secondary dark:border-gh-border !important
     }
 }
