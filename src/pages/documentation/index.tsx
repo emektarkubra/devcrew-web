@@ -1,137 +1,215 @@
-import React, { useState } from 'react'
-import { Button, Card, Flex, Input, Tag, Typography, List, Steps, Select, Badge } from 'antd'
+import { useEffect, useState } from 'react'
+import { Button, Card, Flex, Input, Tag, Typography, List, Select, Spin, Avatar } from 'antd'
+import { GithubOutlined, LoadingOutlined, FileOutlined } from '@ant-design/icons'
 import withLayout from '../../layout/withLayout'
+import { api } from '../../services/api'
+import toast from 'react-hot-toast'
+import { getLanguageColor } from '../../utils/languageColors'
 import './index.scss'
 
 const { Text } = Typography
 
-const MOCK_FILE_STATUS = [
-    { name: 'auth_service.py', status: 'done' },
-    { name: 'jwt_middleware.py', status: 'done' },
-    { name: 'payment_service.py', status: 'pending' },
-    { name: 'user_controller.py', status: 'pending' },
-]
-
-const MOCK_HISTORY = [
-    { target: 'auth_service.py', docType: 'Fonksiyon docs', timeAgo: '15 dk önce' },
-    { target: 'user_controller.py', docType: 'API referansı', timeAgo: '1 saat önce' },
-    { target: 'Tüm repo', docType: 'README', timeAgo: '1 gün önce' },
-]
-
-const PIPELINE_STEPS = [
-    { title: 'Kod analizi' },
-    { title: 'AST parse' },
-    { title: 'Doc üret' },
-    { title: 'Format' },
-]
-
 const DOC_TYPES = [
-    { value: 'function', label: 'Fonksiyon docs' },
+    { value: 'function', label: 'Function docs' },
     { value: 'readme', label: 'README' },
-    { value: 'api', label: 'API referansı' },
+    { value: 'api', label: 'API reference' },
     { value: 'onboard', label: 'Onboarding' },
+    { value: 'guide', label: 'User guide' },
+    { value: 'arch', label: 'Architecture' },
+    { value: 'changelog', label: 'Changelog' },
 ]
 
-const DEFAULT_RESULT = {
+const MOCK_RESULT = {
     fileName: 'auth_service.py',
-    description: 'Kullanıcı kimlik doğrulama ve oturum yönetimi işlemlerini yürütür. JWT tabanlı stateless auth pattern kullanır.',
+    description: 'Handles user authentication and session management using JWT-based stateless auth pattern.',
     methods: [
-        { name: 'login', params: 'email: str, password: str', returns: 'str', description: 'Email ve şifre ile giriş yapar, başarılıysa JWT token döner.' },
-        { name: 'logout', params: 'token: str', returns: 'None', description: "Token'ı blacklist'e ekler, oturumu sonlandırır." },
-        { name: 'refresh', params: 'token: str', returns: 'str', description: "Süresi dolmak üzere olan token'ı yeniler." },
-        { name: 'verify', params: 'token: str', returns: 'dict', description: 'Token geçerliliğini kontrol eder, payload döner.' },
+        { name: 'login', params: 'email: str, password: str', returns: 'str', description: 'Authenticates user with email and password, returns JWT token on success.' },
+        { name: 'logout', params: 'token: str', returns: 'None', description: 'Adds token to blacklist and terminates the session.' },
+        { name: 'refresh', params: 'token: str', returns: 'str', description: 'Renews a token that is about to expire.' },
+        { name: 'verify', params: 'token: str', returns: 'dict', description: 'Validates token and returns payload.' },
     ],
-    markdown: `# AuthService\n\nKullanıcı kimlik doğrulama ve oturum yönetimi işlemlerini yürütür.\n\n## Methods\n\n### login(email, password)\nEmail ve şifre ile giriş yapar, başarılıysa JWT token döner.\n\n**Params:** email: str, password: str\n**Returns:** str (JWT token)\n\n### logout(token)\nToken'ı blacklist'e ekler, oturumu sonlandırır.\n\n**Params:** token: str\n**Returns:** None\n\n### refresh(token)\nSüresi dolmak üzere olan token'ı yeniler.\n\n**Params:** token: str\n**Returns:** str (yeni JWT token)\n\n### verify(token)\nToken geçerliliğini kontrol eder, payload döner.\n\n**Params:** token: str\n**Returns:** dict`,
+    markdown: `# AuthService\n\nHandles user authentication and session management.\n\n## Methods\n\n### login(email, password)\nAuthenticates user, returns JWT token.\n\n**Params:** email: str, password: str\n**Returns:** str (JWT token)\n\n### logout(token)\nAdds token to blacklist.\n\n**Params:** token: str\n**Returns:** None`,
 }
 
-const Documentation: React.FC = () => {
-    const [input, setInput] = useState('auth_service.py')
-    const [result, setResult] = useState<any>(DEFAULT_RESULT)
-    const [loading, setLoading] = useState(false)
-    const [currentStep, setCurrentStep] = useState(3)
+const MOCK_HISTORY = [
+    { target: 'auth_service.py', docType: 'function', timeAgo: '15 dk önce' },
+    { target: 'user_controller.py', docType: 'api', timeAgo: '1 saat önce' },
+    { target: 'Full repo', docType: 'readme', timeAgo: '1 gün önce' },
+]
+
+const Documentation = () => {
+    const [repos, setRepos] = useState<any[]>([])
+    const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
+    const [input, setInput] = useState('')
     const [docType, setDocType] = useState('function')
+    const [result, setResult] = useState<any>(null)
+    const [loading, setLoading] = useState(false)
+    const [history, setHistory] = useState<any[]>([])
     const [view, setView] = useState<'preview' | 'markdown'>('preview')
 
+    const token = localStorage.getItem('dt-token') || ''
+
+    useEffect(() => {
+        const fetchRepos = async () => {
+            const { data, error } = await api.login.getRepos(token)
+            if (error) { toast.error(error); return }
+            setRepos(data)
+        }
+        fetchRepos()
+    }, [])
+
+    const handleRepoSelect = (value: string) => {
+        setSelectedRepo(value)
+        setResult(null)
+        setInput('')
+        setHistory([])
+        // TODO: fetchHistory(owner, repo)
+    }
+
     const handleGenerate = async () => {
-        if (!input.trim()) return
+        if (!input.trim() || !selectedRepo) return
         setLoading(true)
         setResult(null)
-        setCurrentStep(0)
-        for (let i = 0; i <= 3; i++) {
-            await new Promise((r) => setTimeout(r, 400))
-            setCurrentStep(i)
-        }
-        setResult(DEFAULT_RESULT)
+
+        // TODO: API CALL
+        // const [owner, repo] = selectedRepo.split('/')
+        // const { data, error } = await api.agents.documentation(token, owner, repo, input, docType)
+        // if (error) { toast.error(error); setLoading(false); return }
+        // setResult(data)
+
+        await new Promise((r) => setTimeout(r, 800))
+        setResult(MOCK_RESULT)
         setLoading(false)
+    }
+
+    const handleHistoryClick = (item: any) => {
+        setInput(item.target)
+        setDocType(item.docType)
     }
 
     return (
         <div className="documentation">
 
+            {/* Header */}
             <Flex align="center" justify="space-between" className="documentation__header">
                 <Flex align="center" gap={10}>
-                    <div className="documentation__dot" />
+                    <div className={`documentation__dot documentation__dot--${result ? 'ready' : selectedRepo ? 'active' : 'idle'}`} />
                     <Flex vertical align="flex-start" gap={2}>
-                        <Text strong style={{ fontSize: 15 }}>Documentation Agent</Text>
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                            Fonksiyon · mimari · onboarding dokümanı
+                        <Text strong className="documentation__title">Documentation Agent</Text>
+                        <Text type="secondary" className="documentation__subtitle">
+                            {selectedRepo ?? 'Select a repo to generate documentation'}
                         </Text>
                     </Flex>
                 </Flex>
-                <Tag color="purple">Oluşturuldu</Tag>
+                {result && (
+                    <Tag className="documentation__tag--ready">Generated</Tag>
+                )}
             </Flex>
 
+            {/* Body */}
             <Flex vertical gap={16} className="documentation__body">
 
-                <Steps current={currentStep} size="small" items={PIPELINE_STEPS} />
+                {/* Repo */}
+                <Flex vertical gap={6}>
+                    <Text className="documentation__section-label">REPO</Text>
+                    <Select
+                        className="documentation__select"
+                        placeholder={
+                            <Flex align="center" gap={8}>
+                                <GithubOutlined />
+                                <span>Select repo...</span>
+                            </Flex>
+                        }
+                        value={selectedRepo}
+                        onChange={handleRepoSelect}
+                        showSearch
+                        options={repos.map((r) => ({
+                            value: r.full_name,
+                            label: (
+                                <Flex align="center" justify="space-between">
+                                    <Flex align="center" gap={8}>
+                                        <GithubOutlined />
+                                        <span>{r.full_name}</span>
+                                    </Flex>
+                                    {r.language && (
+                                        <Flex align="center" gap={4}>
+                                            <div
+                                                className="documentation__lang-dot"
+                                                style={{ background: getLanguageColor(r.language) }}
+                                            />
+                                            <Text className="documentation__lang-text">{r.language}</Text>
+                                        </Flex>
+                                    )}
+                                </Flex>
+                            ),
+                        }))}
+                    />
+                </Flex>
 
-                <Flex vertical gap={8}>
-                    <Text className="documentation__section-label">INPUT</Text>
+                {/* Input */}
+                <Flex vertical gap={6}>
+                    <Text className="documentation__section-label">TARGET</Text>
                     <Flex gap={8}>
                         <Input
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onPressEnter={handleGenerate}
-                            placeholder="Dosya adı veya fonksiyon girin... (ör: auth_service.py)"
+                            placeholder={
+                                !selectedRepo
+                                    ? 'Select a repo first...'
+                                    : 'Enter file name or function... (e.g. auth_service.py)'
+                            }
+                            disabled={!selectedRepo}
                             className="documentation__input"
                         />
                         <Select
                             value={docType}
                             onChange={setDocType}
-                            style={{ width: 160 }}
+                            disabled={!selectedRepo}
+                            className="documentation__type-select"
                             options={DOC_TYPES}
                         />
-                        <Button
-                            type="primary"
-                            onClick={handleGenerate}
-                            loading={loading}
-                            className="documentation__generate-btn"
-                        >
-                            Üret
-                        </Button>
+
                     </Flex>
                 </Flex>
 
-                {result && !loading && (
-                    <Flex gap={16} style={{ alignItems: 'stretch' }}>
+                <Button
+                    type="primary"
+                    onClick={handleGenerate}
+                    loading={loading}
+                    disabled={!selectedRepo || !input.trim()}
+                    className="documentation__generate-btn"
+                >
+                    Generate
+                </Button>
 
-                        <Flex vertical gap={8} style={{ flex: 2 }}>
+                {loading && (
+                    <Flex justify="center" className="documentation__spin-wrap">
+                        <Spin indicator={<LoadingOutlined spin />} size="small" />
+                    </Flex>
+                )}
+
+                {result && !loading && (
+                    <Flex gap={16} className="documentation__stretch-row">
+
+                        {/* Preview */}
+                        <Flex vertical gap={8} className="documentation__preview-col">
                             <Flex align="center" justify="space-between">
-                                <Text className="documentation__section-label">ÖNİZLEME</Text>
+                                <Text className="documentation__section-label">PREVIEW</Text>
                                 <Flex gap={6}>
                                     <Button
                                         size="small"
                                         type={view === 'preview' ? 'primary' : 'default'}
                                         onClick={() => setView('preview')}
-                                        className={view === 'preview' ? 'documentation__preview-btn--active' : ''}
+                                        className={`documentation__view-btn ${view === 'preview' ? 'documentation__view-btn--active' : ''}`}
                                     >
-                                        Önizleme
+                                        Preview
                                     </Button>
                                     <Button
                                         size="small"
                                         type={view === 'markdown' ? 'primary' : 'default'}
                                         onClick={() => setView('markdown')}
-                                        className={view === 'markdown' ? 'documentation__preview-btn--active' : ''}
+                                        className={`documentation__view-btn ${view === 'markdown' ? 'documentation__view-btn--active' : ''}`}
                                     >
                                         Markdown
                                     </Button>
@@ -150,19 +228,19 @@ const Documentation: React.FC = () => {
                                         <div>
                                             <Text className="documentation__methods-label">Methods</Text>
                                             <Flex vertical gap={6}>
-                                                {result.methods.map((item: any) => (
-                                                    <div key={item?.name} className="documentation__method-item">
+                                                {result.methods?.map((item: any) => (
+                                                    <div key={item.name} className="documentation__method-item">
                                                         <Flex align="center" gap={8} className="documentation__method-header">
-                                                            <Text code className="documentation__method-name">{item?.name}</Text>
+                                                            <Text code className="documentation__method-name">{item.name}</Text>
                                                             <Text type="secondary" className="documentation__method-params">
-                                                                ({item?.params})
+                                                                ({item.params})
                                                             </Text>
                                                             <Text className="documentation__method-returns">
-                                                                → {item?.returns}
+                                                                → {item.returns}
                                                             </Text>
                                                         </Flex>
                                                         <Text type="secondary" className="documentation__method-desc">
-                                                            {item?.description}
+                                                            {item.description}
                                                         </Text>
                                                     </div>
                                                 ))}
@@ -176,33 +254,35 @@ const Documentation: React.FC = () => {
 
                             <Flex gap={8}>
                                 <Button type="primary" className="documentation__export-btn">
-                                    Markdown olarak dışa aktar
+                                    Export as Markdown
                                 </Button>
                                 <Button className="documentation__repo-btn">
-                                    Tüm repo'yu belgele
+                                    Document full repo
                                 </Button>
                             </Flex>
                         </Flex>
 
                         {/* File Status + History */}
-                        <Flex vertical gap={16} style={{ flex: 1 }}>
+                        <Flex vertical gap={16} className="documentation__side-col">
 
                             <Flex vertical gap={8}>
-                                <Text className="documentation__section-label">DOSYA DURUMU</Text>
+                                <Text className="documentation__section-label">FILE STATUS</Text>
                                 <div className="documentation__file-status-scroll">
                                     <List
-                                        dataSource={MOCK_FILE_STATUS}
+                                        dataSource={MOCK_RESULT.methods}
                                         split
-                                        renderItem={(item) => (
+                                        renderItem={(item: any) => (
                                             <List.Item style={{ padding: 0 }}>
                                                 <Flex align="center" justify="space-between" className="documentation__file-status-item">
                                                     <Flex align="center" gap={8}>
-                                                        <Badge status={item.status === 'done' ? 'success' : 'default'} />
+                                                        <Avatar
+                                                            icon={<FileOutlined />}
+                                                            className="documentation__file-avatar"
+                                                            size={24}
+                                                        />
                                                         <Text code className="documentation__file-code">{item.name}</Text>
                                                     </Flex>
-                                                    <Tag color={item.status === 'done' ? 'green' : 'default'}>
-                                                        {item.status === 'done' ? 'Tamamlandı' : 'Bekliyor'}
-                                                    </Tag>
+                                                    <Tag className="documentation__tag--done">Done</Tag>
                                                 </Flex>
                                             </List.Item>
                                         )}
@@ -214,16 +294,22 @@ const Documentation: React.FC = () => {
                                 <Text className="documentation__section-label">HISTORY</Text>
                                 <div className="documentation__history-scroll">
                                     <List
-                                        dataSource={MOCK_HISTORY}
+                                        dataSource={history.length > 0 ? history : MOCK_HISTORY}
                                         split
-                                        renderItem={(item) => (
+                                        locale={{ emptyText: 'No documentation history yet' }}
+                                        renderItem={(item: any) => (
                                             <List.Item style={{ padding: 0 }}>
-                                                <Flex align="flex-start" gap={10} className="documentation__history-item">
+                                                <Flex
+                                                    align="flex-start"
+                                                    gap={10}
+                                                    className="documentation__history-item"
+                                                    onClick={() => handleHistoryClick(item)}
+                                                >
                                                     <div className="documentation__history-dot" />
                                                     <Flex vertical gap={2}>
                                                         <Text code className="documentation__history-file">{item.target}</Text>
                                                         <Text type="secondary" className="documentation__history-meta">
-                                                            {item.docType} · {item.timeAgo}
+                                                            {DOC_TYPES.find(d => d.value === item.docType)?.label ?? item.docType} · {item.timeAgo}
                                                         </Text>
                                                     </Flex>
                                                 </Flex>
@@ -234,7 +320,38 @@ const Documentation: React.FC = () => {
                             </Flex>
 
                         </Flex>
+                    </Flex>
+                )}
 
+                {/* History — repo seçilince her zaman görünür */}
+                {selectedRepo && !result && !loading && (
+                    <Flex vertical gap={8}>
+                        <Text className="documentation__section-label">HISTORY</Text>
+                        <div className="documentation__history-scroll">
+                            <List
+                                dataSource={history}
+                                split
+                                locale={{ emptyText: 'No documentation history yet' }}
+                                renderItem={(item: any) => (
+                                    <List.Item style={{ padding: 0 }}>
+                                        <Flex
+                                            align="flex-start"
+                                            gap={10}
+                                            className="documentation__history-item"
+                                            onClick={() => handleHistoryClick(item)}
+                                        >
+                                            <div className="documentation__history-dot" />
+                                            <Flex vertical gap={2}>
+                                                <Text code className="documentation__history-file">{item.target}</Text>
+                                                <Text type="secondary" className="documentation__history-meta">
+                                                    {DOC_TYPES.find(d => d.value === item.docType)?.label ?? item.docType} · {item.timeAgo}
+                                                </Text>
+                                            </Flex>
+                                        </Flex>
+                                    </List.Item>
+                                )}
+                            />
+                        </div>
                     </Flex>
                 )}
 

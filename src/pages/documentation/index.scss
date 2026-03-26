@@ -1,73 +1,255 @@
+@import '../../assets/style/variables';
+
 .documentation {
     border-radius: 6px;
     overflow: hidden;
-    background-color: #fff;
+    border: 1px solid $gh-light-border;
+    background-color: $gh-light-bg-primary;
     margin: 20px;
+
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border;
+
+    // layout
 
     &__header {
         padding: 14px 20px;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-    &__dot {
-        width: 9px;
-        height: 9px;
-        border-radius: 50%;
-        background: #534AB7;
-        flex-shrink: 0;
+        border-bottom: 1px solid $gh-light-border;
+        background-color: $gh-light-bg-secondary;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
     }
 
     &__body {
         padding: 20px;
     }
 
-    &__section-label {
-        font-size: 14px !important;
-        font-weight: 500 !important;
-        display: block !important;
+    &__spin-wrap {
+        padding: 8px 0;
     }
 
-    &__input {
+    &__stretch-row {
+        align-items: stretch;
+    }
+
+    &__preview-col {
+        flex: 2;
+    }
+
+    &__side-col {
         flex: 1;
     }
 
-    &__generate-btn {
-        background: #534AB7 !important;
+    // dot
+
+    &__dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+
+        &--idle {
+            background: $gh-light-text-muted;
+            @apply dark:bg-gh-text-muted;
+        }
+
+        &--active {
+            background: $gh-light-purple;
+            box-shadow: 0 0 6px rgba(130, 80, 223, 0.4);
+            animation: doc-pulse 1.2s ease-in-out infinite;
+            @apply dark:bg-gh-purple-text;
+        }
+
+        &--ready {
+            background: $gh-light-purple;
+            box-shadow: 0 0 6px rgba(130, 80, 223, 0.4);
+            @apply dark:bg-gh-purple-text;
+        }
     }
 
-    &__preview-btn--active {
-        background: #534AB7 !important;
+    @keyframes doc-pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.4;
+        }
     }
+
+    // typography
+
+    &__title {
+        font-size: 15px;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
+    }
+
+    &__subtitle {
+        font-size: 12px;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
+    }
+
+    &__section-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        display: block;
+        align-self: flex-start;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    // tag
+
+    &__tag--ready {
+        background-color: $gh-light-purple-bg;
+        border-color: $gh-light-purple-border;
+        color: $gh-light-purple;
+        font-size: 11px;
+        border-radius: 20px;
+        padding: 2px 10px;
+        @apply dark:bg-gh-purple-bg dark:border-gh-purple-border dark:text-gh-purple-text !important;
+    }
+
+    &__tag--done {
+        background-color: $gh-light-green-bg !important;
+        border-color: $gh-light-green-border !important;
+        color: $gh-light-green !important;
+        font-size: 11px;
+        @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text !important;
+    }
+
+    // select
+
+    &__select {
+        width: 100%;
+    }
+
+    &__type-select {
+        width: 160px;
+        flex-shrink: 0;
+    }
+
+    &__lang-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__lang-text {
+        font-size: 12px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    // input
+
+    &__input {
+        flex: 1;
+        background-color: $gh-light-bg-primary;
+        border-color: $gh-light-border;
+        color: $gh-light-text-primary;
+        @apply dark:bg-gh-bg-secondary dark:border-gh-border dark:text-gh-text-primary;
+
+        &:focus {
+            border-color: $gh-light-purple;
+            box-shadow: 0 0 0 2px rgba(130, 80, 223, 0.12);
+        }
+    }
+
+    // buttons
+
+    &__generate-btn {
+        background: $gh-light-purple !important;
+        border-color: $gh-light-purple !important;
+        flex-shrink: 0;
+        align-self: flex-start;
+
+        @apply dark:bg-gh-purple dark:border-gh-purple-border !important;
+
+        &:hover {
+            background: $gh-light-purple-hover !important;
+            border-color: $gh-light-purple-hover !important;
+        }
+
+        &.ant-btn-disabled,
+        &[disabled] {
+            background: $gh-light-bg-tertiary;
+            border-color: $gh-light-border;
+            color: $gh-light-text-muted;
+
+            @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
+        }
+    }
+
+    &__export-btn {
+        flex: 1;
+        background: $gh-light-purple !important;
+        border-color: $gh-light-purple !important;
+        @apply dark:bg-gh-purple dark:border-gh-purple-border !important;
+
+        &:hover {
+            background: $gh-light-purple-hover !important;
+            border-color: $gh-light-purple-hover !important;
+        }
+    }
+
+    &__repo-btn {
+        flex: 1;
+    }
+
+    &__view-btn {
+        &--active {
+            background: $gh-light-purple !important;
+            border-color: $gh-light-purple !important;
+            @apply dark:bg-gh-purple dark:border-gh-purple-border !important;
+        }
+    }
+
+    // preview card
 
     &__preview-card {
-        background: #f9fafb !important;
+        background: $gh-light-bg-secondary !important;
+        border-color: $gh-light-border !important;
         max-height: 420px;
         overflow-y: auto;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border !important;
     }
 
     &__file-title {
-        font-size: 17px !important;
-        font-weight: 500 !important;
-        display: block !important;
+        font-size: 17px;
+        font-weight: 500;
+        display: block;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
     }
 
     &__file-desc {
-        font-size: 13px !important;
-        line-height: 1.65 !important;
+        font-size: 13px;
+        line-height: 1.65;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
     }
 
     &__methods-label {
-        font-size: 13px !important;
-        font-weight: 500 !important;
-        display: block !important;
-        margin-bottom: 8px !important;
+        font-size: 13px;
+        font-weight: 500;
+        display: block;
+        margin-bottom: 8px;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
     }
 
     &__method-item {
-        background: #fff;
-        border: 1px solid #f0f0f0;
+        background: $gh-light-bg-primary;
+        border: 1px solid $gh-light-border;
         border-radius: 6px;
         padding: 10px 12px;
+        @apply dark:bg-gh-bg-secondary dark:border-gh-border;
     }
 
     &__method-header {
@@ -75,42 +257,43 @@
     }
 
     &__method-name {
-        font-size: 12px !important;
-        font-weight: 500 !important;
+        font-size: 12px;
+        font-weight: 500;
+        color: $gh-light-blue;
+        @apply dark:text-gh-blue-text;
     }
 
     &__method-params {
-        font-size: 11px !important;
-        font-family: monospace !important;
+        font-size: 11px;
+        font-family: monospace;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
     }
 
     &__method-returns {
-        font-size: 11px !important;
-        color: #534AB7 !important;
-        font-family: monospace !important;
+        font-size: 11px;
+        font-family: monospace;
+        color: $gh-light-purple;
+        @apply dark:text-gh-purple-text;
     }
 
     &__method-desc {
-        font-size: 12px !important;
+        font-size: 12px;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
     }
 
     &__markdown {
         font-family: monospace;
         font-size: 12px;
         line-height: 1.7;
-        color: #111;
+        color: $gh-light-text-primary;
         margin: 0;
         white-space: pre-wrap;
+        @apply dark:text-gh-text-primary;
     }
 
-    &__export-btn {
-        flex: 1;
-        background: #534AB7 !important;
-    }
-
-    &__repo-btn {
-        flex: 1;
-    }
+    // file status
 
     &__file-status-scroll {
         max-height: 180px;
@@ -122,9 +305,20 @@
         width: 100%;
     }
 
-    &__file-code {
-        font-size: 12px !important;
+    &__file-avatar {
+        background: $gh-light-purple-bg !important;
+        color: $gh-light-purple !important;
+        flex-shrink: 0;
+        @apply dark:bg-gh-purple-bg dark:text-gh-purple-text !important;
     }
+
+    &__file-code {
+        font-size: 12px;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
+    }
+
+    // history
 
     &__history-scroll {
         max-height: 200px;
@@ -132,25 +326,37 @@
     }
 
     &__history-item {
-        padding: 10px 0;
         cursor: pointer;
+        border-radius: 6px;
+        padding: 10px;
         width: 100%;
+        transition: background 0.15s;
+
+        &:hover {
+            background: $gh-light-bg-tertiary;
+            @apply dark:bg-gh-bg-tertiary;
+        }
     }
 
     &__history-dot {
         width: 7px;
         height: 7px;
         border-radius: 50%;
-        background: #534AB7;
+        background: $gh-light-purple;
         margin-top: 6px;
         flex-shrink: 0;
+        @apply dark:bg-gh-purple-text;
     }
 
     &__history-file {
-        font-size: 12px !important;
+        font-size: 12px;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
     }
 
     &__history-meta {
-        font-size: 11px !important;
+        font-size: 11px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
     }
 }
