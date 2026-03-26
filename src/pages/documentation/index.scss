@@ -359,4 +359,18 @@
         color: $gh-light-text-muted;
         @apply dark:text-gh-text-muted;
     }
+
+
+
+    &__info-icon {
+        font-size: 12px;
+        color: $gh-light-text-muted;
+        cursor: pointer;
+        @apply dark:text-gh-text-muted;
+
+        &:hover {
+            color: $gh-light-purple;
+            @apply dark:text-gh-purple-text;
+        }
+    }
 }
