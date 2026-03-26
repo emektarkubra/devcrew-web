@@ -1,137 +1,300 @@
-import React, { useState } from 'react'
-import { Button, Card, Flex, Input, Tag, Typography, List, Steps, Select, Badge } from 'antd'
+import { useEffect, useState } from 'react'
+import { Button, Card, Flex, Tag, Typography, List, Select, Spin, Tooltip } from 'antd'
+import { GithubOutlined, LoadingOutlined, FileOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import withLayout from '../../layout/withLayout'
+import { api } from '../../services/api'
+import toast from 'react-hot-toast'
+import { timeAgo } from '../../utils/timeAgo'
+import { getLanguageColor } from '../../utils/languageColors'
 import './index.scss'
 
 const { Text } = Typography
 
-const MOCK_FILE_STATUS = [
-    { name: 'auth_service.py', status: 'done' },
-    { name: 'jwt_middleware.py', status: 'done' },
-    { name: 'payment_service.py', status: 'pending' },
-    { name: 'user_controller.py', status: 'pending' },
-]
-
-const MOCK_HISTORY = [
-    { target: 'auth_service.py', docType: 'Fonksiyon docs', timeAgo: '15 dk önce' },
-    { target: 'user_controller.py', docType: 'API referansı', timeAgo: '1 saat önce' },
-    { target: 'Tüm repo', docType: 'README', timeAgo: '1 gün önce' },
-]
-
-const PIPELINE_STEPS = [
-    { title: 'Kod analizi' },
-    { title: 'AST parse' },
-    { title: 'Doc üret' },
-    { title: 'Format' },
-]
-
 const DOC_TYPES = [
-    { value: 'function', label: 'Fonksiyon docs' },
-    { value: 'readme', label: 'README' },
-    { value: 'api', label: 'API referansı' },
-    { value: 'onboard', label: 'Onboarding' },
+    { value: 'function', label: 'Function docs', tooltip: 'Generates detailed documentation for functions and classes with params, returns, and usage examples.' },
+    { value: 'readme', label: 'README', tooltip: 'Generates a full README.md with installation steps, usage guide, and architecture overview for the entire repo.' },
+    { value: 'api', label: 'API reference', tooltip: 'Generates API reference documentation listing all endpoints, request params, and response formats.' },
+    { value: 'onboard', label: 'Onboarding', tooltip: 'Generates an onboarding guide to help new developers quickly understand and set up the project.' },
+    { value: 'guide', label: 'User guide', tooltip: 'Generates a user-facing guide explaining how to use the application or library.' },
+    { value: 'arch', label: 'Architecture', tooltip: 'Generates an architecture document explaining system design, components, and their relationships.' },
+    { value: 'changelog', label: 'Changelog', tooltip: 'Generates a changelog summarizing recent code changes and their impact.' },
 ]
 
-const DEFAULT_RESULT = {
-    fileName: 'auth_service.py',
-    description: 'Kullanıcı kimlik doğrulama ve oturum yönetimi işlemlerini yürütür. JWT tabanlı stateless auth pattern kullanır.',
-    methods: [
-        { name: 'login', params: 'email: str, password: str', returns: 'str', description: 'Email ve şifre ile giriş yapar, başarılıysa JWT token döner.' },
-        { name: 'logout', params: 'token: str', returns: 'None', description: "Token'ı blacklist'e ekler, oturumu sonlandırır." },
-        { name: 'refresh', params: 'token: str', returns: 'str', description: "Süresi dolmak üzere olan token'ı yeniler." },
-        { name: 'verify', params: 'token: str', returns: 'dict', description: 'Token geçerliliğini kontrol eder, payload döner.' },
-    ],
-    markdown: `# AuthService\n\nKullanıcı kimlik doğrulama ve oturum yönetimi işlemlerini yürütür.\n\n## Methods\n\n### login(email, password)\nEmail ve şifre ile giriş yapar, başarılıysa JWT token döner.\n\n**Params:** email: str, password: str\n**Returns:** str (JWT token)\n\n### logout(token)\nToken'ı blacklist'e ekler, oturumu sonlandırır.\n\n**Params:** token: str\n**Returns:** None\n\n### refresh(token)\nSüresi dolmak üzere olan token'ı yeniler.\n\n**Params:** token: str\n**Returns:** str (yeni JWT token)\n\n### verify(token)\nToken geçerliliğini kontrol eder, payload döner.\n\n**Params:** token: str\n**Returns:** dict`,
-}
+const REPO_LEVEL_TYPES = ['readme', 'arch', 'onboard', 'changelog']
 
-const Documentation: React.FC = () => {
-    const [input, setInput] = useState('auth_service.py')
-    const [result, setResult] = useState<any>(DEFAULT_RESULT)
-    const [loading, setLoading] = useState(false)
-    const [currentStep, setCurrentStep] = useState(3)
+const Documentation = () => {
+    const [repos, setRepos] = useState<any[]>([])
+    const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
+    const [repoFiles, setRepoFiles] = useState<string[]>([])
+    const [filesLoading, setFilesLoading] = useState(false)
+    const [selectedFile, setSelectedFile] = useState<string | null>(null)
     const [docType, setDocType] = useState('function')
+    const [result, setResult] = useState<any>(null)
+    const [loading, setLoading] = useState(false)
+    const [history, setHistory] = useState<any[]>([])
     const [view, setView] = useState<'preview' | 'markdown'>('preview')
 
-    const handleGenerate = async () => {
-        if (!input.trim()) return
-        setLoading(true)
-        setResult(null)
-        setCurrentStep(0)
-        for (let i = 0; i <= 3; i++) {
-            await new Promise((r) => setTimeout(r, 400))
-            setCurrentStep(i)
+    const token = localStorage.getItem('dt-token') || ''
+    const isRepoLevel = REPO_LEVEL_TYPES?.includes(docType)
+
+    // get repo list
+    const getRepos = async () => {
+        const { data, error } = await api.login.getRepos(token)
+        if (error) {
+            toast.error(error);
+        } else {
+            setRepos(data)
         }
-        setResult(DEFAULT_RESULT)
-        setLoading(false)
+
     }
+
+    useEffect(() => {
+        getRepos()
+    }, [])
+
+    // get history
+    const getHistory = async (owner: string, repo: string) => {
+        const { data, error } = await api.agents.documentationHistory(token, owner, repo)
+        if (error) {
+            toast.error(error);
+        } else {
+            setHistory(data)
+        }
+    }
+
+    // repo select
+    const handleRepoSelect = async (value: string) => {
+
+        try {
+            setSelectedRepo(value)
+            setSelectedFile(null)
+            setResult(null)
+            setRepoFiles([])
+            setHistory([])
+
+            const [owner, repo] = value.split('/')
+
+            setFilesLoading(true)
+
+            const { data, error } = await api.agents.repoFiles(token, owner, repo)
+            if (error) {
+                toast.error(error);
+                setFilesLoading(false);
+            } else {
+                setRepoFiles(data.files ?? [])
+                await getHistory(owner, repo)
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setFilesLoading(false)
+        }
+    }
+
+    // onchange doc types
+    const handleDocTypeChange = (value: string) => {
+        setDocType(value)
+        if (REPO_LEVEL_TYPES.includes(value)) {
+            setSelectedFile(selectedRepo)
+        }
+    }
+
+    // generate documentation
+    const handleGenerate = async () => {
+        if (!selectedRepo) return
+        if (!isRepoLevel && !selectedFile) return
+
+        try {
+            setLoading(true)
+            setResult(null)
+
+            const [owner, repo] = selectedRepo.split('/')
+            const target = selectedFile === selectedRepo ? selectedRepo : selectedFile!
+
+            const { data, error } = await api.agents.documentation(token, owner, repo, target, docType)
+            if (error) {
+                toast.error(error);
+                setLoading(false);
+            } else {
+                setResult(data)
+                await getHistory(owner, repo)
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    // history click
+    const handleHistoryClick = (item: any) => {
+        setSelectedFile(item.target)
+        setDocType(item.docType)
+        setResult({
+            fileName: item.target,
+            description: item.description,
+            markdown: item.content,
+            methods: [],
+        })
+    }
+
+
+    const fileOptions = selectedRepo ? [
+        {
+            value: selectedRepo,
+            label: (
+                <Flex align="center" gap={8}>
+                    <GithubOutlined style={{ fontSize: 12, color: '#8250df' }} />
+                    <Text style={{ color: '#8250df' }}>Full repo</Text>
+                </Flex>
+            ),
+        },
+        ...repoFiles.map((f) => ({
+            value: f,
+            label: (
+                <Flex align="center" gap={8}>
+                    <FileOutlined style={{ fontSize: 12, color: '#8c959f' }} />
+                    <span>{f}</span>
+                </Flex>
+            ),
+        })),
+    ] : []
 
     return (
         <div className="documentation">
 
             <Flex align="center" justify="space-between" className="documentation__header">
                 <Flex align="center" gap={10}>
-                    <div className="documentation__dot" />
+                    <div className={`documentation__dot documentation__dot--${result ? 'ready' : selectedRepo ? 'active' : 'idle'}`} />
                     <Flex vertical align="flex-start" gap={2}>
-                        <Text strong style={{ fontSize: 15 }}>Documentation Agent</Text>
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                            Fonksiyon · mimari · onboarding dokümanı
+                        <Text strong className="documentation__title">Documentation Agent</Text>
+                        <Text type="secondary" className="documentation__subtitle">
+                            {selectedRepo ?? 'Select a repo to generate documentation'}
                         </Text>
                     </Flex>
                 </Flex>
-                <Tag color="purple">Oluşturuldu</Tag>
+                {result && (
+                    <Tag className="documentation__tag--ready">Generated</Tag>
+                )}
             </Flex>
 
             <Flex vertical gap={16} className="documentation__body">
-
-                <Steps current={currentStep} size="small" items={PIPELINE_STEPS} />
-
-                <Flex vertical gap={8}>
-                    <Text className="documentation__section-label">INPUT</Text>
-                    <Flex gap={8}>
-                        <Input
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onPressEnter={handleGenerate}
-                            placeholder="Dosya adı veya fonksiyon girin... (ör: auth_service.py)"
-                            className="documentation__input"
-                        />
-                        <Select
-                            value={docType}
-                            onChange={setDocType}
-                            style={{ width: 160 }}
-                            options={DOC_TYPES}
-                        />
-                        <Button
-                            type="primary"
-                            onClick={handleGenerate}
-                            loading={loading}
-                            className="documentation__generate-btn"
-                        >
-                            Üret
-                        </Button>
-                    </Flex>
+                <Flex vertical gap={6}>
+                    <Text className="documentation__section-label">REPO</Text>
+                    <Select
+                        className="documentation__select"
+                        placeholder={
+                            <Flex align="center" gap={8}>
+                                <GithubOutlined />
+                                <span>Select repo...</span>
+                            </Flex>
+                        }
+                        value={selectedRepo}
+                        onChange={handleRepoSelect}
+                        showSearch
+                        options={repos.map((r) => ({
+                            value: r.full_name,
+                            label: (
+                                <Flex align="center" justify="space-between">
+                                    <Flex align="center" gap={8}>
+                                        <GithubOutlined />
+                                        <span>{r.full_name}</span>
+                                    </Flex>
+                                    {r.language && (
+                                        <Flex align="center" gap={4}>
+                                            <div
+                                                className="documentation__lang-dot"
+                                                style={{ background: getLanguageColor(r.language) }}
+                                            />
+                                            <Text className="documentation__lang-text">{r.language}</Text>
+                                        </Flex>
+                                    )}
+                                </Flex>
+                            ),
+                        }))}
+                    />
                 </Flex>
 
-                {result && !loading && (
-                    <Flex gap={16} style={{ alignItems: 'stretch' }}>
+                <Flex vertical gap={6}>
+                    <Flex align="center" gap={6}>
+                        <Text className="documentation__section-label">DOC TYPE</Text>
 
-                        <Flex vertical gap={8} style={{ flex: 2 }}>
+                    </Flex>
+                    <Select
+                        value={docType}
+                        onChange={handleDocTypeChange}
+                        disabled={!selectedRepo}
+                        className="documentation__select"
+                        options={DOC_TYPES.map((d) => ({
+                            value: d.value,
+                            label: (
+                                <Flex align="center" justify="space-between">
+                                    <span>{d.label}</span>
+                                    <Tooltip title={d.tooltip} placement="right">
+                                        <InfoCircleOutlined className="documentation__info-icon" />
+                                    </Tooltip>
+                                </Flex>
+                            ),
+                        }))}
+                    />
+                </Flex>
+
+                <Flex vertical gap={6}>
+                    <Text className="documentation__section-label">TARGET</Text>
+                    <Select
+                        className="documentation__select"
+                        placeholder={
+                            !selectedRepo
+                                ? 'Select a repo first...'
+                                : filesLoading
+                                    ? 'Loading files...'
+                                    : 'Select a file or full repo...'
+                        }
+                        value={selectedFile}
+                        onChange={setSelectedFile}
+                        disabled={!selectedRepo || filesLoading}
+                        loading={filesLoading}
+                        showSearch
+                        suffixIcon={
+                            filesLoading
+                                ? <Spin indicator={<LoadingOutlined spin />} size="small" />
+                                : <FileOutlined />
+                        }
+                        options={fileOptions}
+                    />
+                </Flex>
+
+                <Button
+                    type="primary"
+                    onClick={handleGenerate}
+                    loading={loading}
+                    disabled={!selectedRepo || !selectedFile}
+                    className="documentation__generate-btn"
+                    style={{ alignSelf: 'flex-start' }}
+                >
+                    Generate
+                </Button>
+
+                {result && !loading && (
+                    <Flex gap={16} className="documentation__stretch-row">
+
+                        <Flex vertical gap={8} className="documentation__preview-col">
                             <Flex align="center" justify="space-between">
-                                <Text className="documentation__section-label">ÖNİZLEME</Text>
+                                <Text className="documentation__section-label">PREVIEW</Text>
                                 <Flex gap={6}>
                                     <Button
                                         size="small"
                                         type={view === 'preview' ? 'primary' : 'default'}
                                         onClick={() => setView('preview')}
-                                        className={view === 'preview' ? 'documentation__preview-btn--active' : ''}
+                                        className={`documentation__view-btn ${view === 'preview' ? 'documentation__view-btn--active' : ''}`}
                                     >
-                                        Önizleme
+                                        Preview
                                     </Button>
                                     <Button
                                         size="small"
                                         type={view === 'markdown' ? 'primary' : 'default'}
                                         onClick={() => setView('markdown')}
-                                        className={view === 'markdown' ? 'documentation__preview-btn--active' : ''}
+                                        className={`documentation__view-btn ${view === 'markdown' ? 'documentation__view-btn--active' : ''}`}
                                     >
                                         Markdown
                                     </Button>
@@ -147,27 +310,31 @@ const Documentation: React.FC = () => {
                                                 {result.description}
                                             </Text>
                                         </div>
-                                        <div>
-                                            <Text className="documentation__methods-label">Methods</Text>
-                                            <Flex vertical gap={6}>
-                                                {result.methods.map((item: any) => (
-                                                    <div key={item?.name} className="documentation__method-item">
-                                                        <Flex align="center" gap={8} className="documentation__method-header">
-                                                            <Text code className="documentation__method-name">{item?.name}</Text>
-                                                            <Text type="secondary" className="documentation__method-params">
-                                                                ({item?.params})
+                                        {result.methods?.length > 0 ? (
+                                            <div>
+                                                <Text className="documentation__methods-label">Methods</Text>
+                                                <Flex vertical gap={6}>
+                                                    {result.methods.map((item: any) => (
+                                                        <div key={item.name} className="documentation__method-item">
+                                                            <Flex align="center" gap={8} className="documentation__method-header">
+                                                                <Text code className="documentation__method-name">{item.name}</Text>
+                                                                <Text type="secondary" className="documentation__method-params">
+                                                                    ({item.params})
+                                                                </Text>
+                                                                <Text className="documentation__method-returns">
+                                                                    → {item.returns}
+                                                                </Text>
+                                                            </Flex>
+                                                            <Text type="secondary" className="documentation__method-desc">
+                                                                {item.description}
                                                             </Text>
-                                                            <Text className="documentation__method-returns">
-                                                                → {item?.returns}
-                                                            </Text>
-                                                        </Flex>
-                                                        <Text type="secondary" className="documentation__method-desc">
-                                                            {item?.description}
-                                                        </Text>
-                                                    </div>
-                                                ))}
-                                            </Flex>
-                                        </div>
+                                                        </div>
+                                                    ))}
+                                                </Flex>
+                                            </div>
+                                        ) : (
+                                            <pre className="documentation__markdown">{result.markdown}</pre>
+                                        )}
                                     </Flex>
                                 ) : (
                                     <pre className="documentation__markdown">{result.markdown}</pre>
@@ -176,65 +343,71 @@ const Documentation: React.FC = () => {
 
                             <Flex gap={8}>
                                 <Button type="primary" className="documentation__export-btn">
-                                    Markdown olarak dışa aktar
-                                </Button>
-                                <Button className="documentation__repo-btn">
-                                    Tüm repo'yu belgele
+                                    Export as Markdown
                                 </Button>
                             </Flex>
                         </Flex>
 
-                        {/* File Status + History */}
-                        <Flex vertical gap={16} style={{ flex: 1 }}>
-
-                            <Flex vertical gap={8}>
-                                <Text className="documentation__section-label">DOSYA DURUMU</Text>
-                                <div className="documentation__file-status-scroll">
-                                    <List
-                                        dataSource={MOCK_FILE_STATUS}
-                                        split
-                                        renderItem={(item) => (
-                                            <List.Item style={{ padding: 0 }}>
-                                                <Flex align="center" justify="space-between" className="documentation__file-status-item">
-                                                    <Flex align="center" gap={8}>
-                                                        <Badge status={item.status === 'done' ? 'success' : 'default'} />
-                                                        <Text code className="documentation__file-code">{item.name}</Text>
-                                                    </Flex>
-                                                    <Tag color={item.status === 'done' ? 'green' : 'default'}>
-                                                        {item.status === 'done' ? 'Tamamlandı' : 'Bekliyor'}
-                                                    </Tag>
+                        <Flex vertical gap={8} className="documentation__side-col">
+                            <Text className="documentation__section-label">HISTORY</Text>
+                            <div className="documentation__history-scroll">
+                                <List
+                                    dataSource={history}
+                                    split
+                                    locale={{ emptyText: 'No documentation history yet' }}
+                                    renderItem={(item: any) => (
+                                        <List.Item style={{ padding: 0 }}>
+                                            <Flex
+                                                align="flex-start"
+                                                gap={10}
+                                                className="documentation__history-item"
+                                                onClick={() => handleHistoryClick(item)}
+                                            >
+                                                <div className="documentation__history-dot" />
+                                                <Flex vertical gap={2}>
+                                                    <Text code className="documentation__history-file">{item.target}</Text>
+                                                    <Text type="secondary" className="documentation__history-meta">
+                                                        {DOC_TYPES.find(d => d.value === item.docType)?.label ?? item.docType} · {timeAgo(item.timeAgo)}
+                                                    </Text>
                                                 </Flex>
-                                            </List.Item>
-                                        )}
-                                    />
-                                </div>
-                            </Flex>
-
-                            <Flex vertical gap={8}>
-                                <Text className="documentation__section-label">HISTORY</Text>
-                                <div className="documentation__history-scroll">
-                                    <List
-                                        dataSource={MOCK_HISTORY}
-                                        split
-                                        renderItem={(item) => (
-                                            <List.Item style={{ padding: 0 }}>
-                                                <Flex align="flex-start" gap={10} className="documentation__history-item">
-                                                    <div className="documentation__history-dot" />
-                                                    <Flex vertical gap={2}>
-                                                        <Text code className="documentation__history-file">{item.target}</Text>
-                                                        <Text type="secondary" className="documentation__history-meta">
-                                                            {item.docType} · {item.timeAgo}
-                                                        </Text>
-                                                    </Flex>
-                                                </Flex>
-                                            </List.Item>
-                                        )}
-                                    />
-                                </div>
-                            </Flex>
-
+                                            </Flex>
+                                        </List.Item>
+                                    )}
+                                />
+                            </div>
                         </Flex>
 
+                    </Flex>
+                )}
+
+                {selectedRepo && !result && !loading && (
+                    <Flex vertical gap={8}>
+                        <Text className="documentation__section-label">HISTORY</Text>
+                        <div className="documentation__history-scroll">
+                            <List
+                                dataSource={history}
+                                split
+                                locale={{ emptyText: 'No documentation history yet' }}
+                                renderItem={(item: any) => (
+                                    <List.Item style={{ padding: 0 }}>
+                                        <Flex
+                                            align="flex-start"
+                                            gap={10}
+                                            className="documentation__history-item"
+                                            onClick={() => handleHistoryClick(item)}
+                                        >
+                                            <div className="documentation__history-dot" />
+                                            <Flex vertical gap={2}>
+                                                <Text code className="documentation__history-file">{item.target}</Text>
+                                                <Text type="secondary" className="documentation__history-meta">
+                                                    {DOC_TYPES.find(d => d.value === item.docType)?.label ?? item.docType} · {timeAgo(item.timeAgo)}
+                                                </Text>
+                                            </Flex>
+                                        </Flex>
+                                    </List.Item>
+                                )}
+                            />
+                        </div>
                     </Flex>
                 )}
 
