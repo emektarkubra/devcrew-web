@@ -76,12 +76,25 @@ class agents {
         return await request.post(paths.documentationHistory, { token, owner, repo })
     }
 
-
     /**
      * repo file list
      */
     static repoFiles = async (token: string, owner: string, repo: string) => {
         return await request.post(paths.repoFiles, { token, owner, repo })
+    }
+
+    /**
+     * generate tests
+     */
+    static generateTests = async (token: string, owner: string, repo: string, target: string, framework: string) => {
+        return await request.post(paths.generateTests, { token, owner, repo, target, framework })
+    }
+
+    /**
+     * test generator history
+     */
+    static testHistory = async (token: string, owner: string, repo: string) => {
+        return await request.post(paths.testHistory, { token, owner, repo })
     }
 }
 
