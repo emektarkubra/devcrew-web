@@ -20,8 +20,13 @@ export const prReviewHistory = "/agents/pr-review/history"
 export const debug = "/agents/debug"
 export const debugHistory = "/agents/debug/history"
 
+// test generator
+export const generateTests = "/agents/test-generator"
+export const testHistory = "/agents/test-generator/history"
+
 // documentation
 export const documentation = "/agents/documentation"
 export const documentationHistory = "/agents/documentation/history"
+
 
 export const repoFiles = "/agents/repo-files"
