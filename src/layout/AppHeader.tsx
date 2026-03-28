@@ -1,28 +1,27 @@
-import { Button, Flex, Layout } from "antd"
-import { Icon } from '@iconify-icon/react';
-import AppBreadcrumb from "./AppBreadcrumb";
-import ThemeSwitch from "../components/ThemeSwitch";
-import LanguageSelect from "../components/LanguageSelect";
+import { Button, Flex, Layout, Tooltip } from "antd"
+import { Icon } from '@iconify-icon/react'
+import AppBreadcrumb from "./AppBreadcrumb"
+import ThemeSwitch from "../components/ThemeSwitch"
+import LanguageSelect from "../components/LanguageSelect"
+import { useDispatch, useSelector } from "react-redux"
+import { handleCollapsedMenu } from "../redux/Sidebar/sidebarSlice"
+import { useContext } from "react"
+import { AuthContext } from "../context/authContext"
+import { TbLogout } from "react-icons/tb"
 import "../assets/style/layout/AppHeader.scss"
-import { useDispatch, useSelector } from "react-redux";
-import { handleCollapsedMenu } from "../redux/Sidebar/sidebarSlice";
-import { useContext } from "react";
-import { AuthContext } from "../context/authContext";
 
-const { Header } = Layout;
+const { Header } = Layout
 
 const AppHeader = () => {
-
   const dispatch = useDispatch()
-  const collapsed = useSelector((state: any) => state.collapsed.collapsed);
-
-  const { logout } = useContext(AuthContext);  // ← keycloak yerine logout al
+  const collapsed = useSelector((state: any) => state.collapsed.collapsed)
+  const { logout } = useContext(AuthContext)
 
   return (
     <div className="header-container">
-      <Header className='dark:bg-darkColor dark:text-lightColor'>
-        <Flex justify="space-between" align="center" style={{ width: '100%' }}>
-          <Flex className="p-2" justify="space-between" align="center">
+      <Header>
+        <Flex className="header-container__inner" justify="space-between" align="center">
+          <Flex className="header-container__left" align="center">
             <Button
               type="text"
               icon={collapsed
@@ -33,14 +32,18 @@ const AppHeader = () => {
             />
             <AppBreadcrumb />
           </Flex>
-          <Flex className="p-2" justify="space-between" align="center">
-            <ThemeSwitch />
+          <Flex className="header-container__right" align="center">
             <LanguageSelect />
-            <Button
-              onClick={logout}  // ← direkt logout
-              type="text"
-              icon={<Icon className="exit-icon" icon="ci:exit" width='25px' />}
-            />
+            <ThemeSwitch />
+
+            <Tooltip title="Logout" placement="bottom">
+              <button
+                className="header-container__icon-btn"
+                onClick={logout}
+              >
+                <TbLogout size={18} />
+              </button>
+            </Tooltip>
           </Flex>
         </Flex>
       </Header>

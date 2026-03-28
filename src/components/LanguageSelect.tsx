@@ -1,33 +1,26 @@
 import { Select } from 'antd'
-import i18next from 'i18next';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import i18next from 'i18next'
+import { useState } from 'react'
 
 const LanguageSelect = () => {
-  const { t } = useTranslation();
-  const [selectedLanguage, setSelectedLanguage] = useState<string>()
+    const [selectedLanguage, setSelectedLanguage] = useState<string>(i18next.language || 'en')
 
-  const handleChangeLanguage = (value: string) => {
-    console.log(`selected ${value}`);
-    i18next.changeLanguage(t(value));
-    setSelectedLanguage(value)
-  };
+    const handleChangeLanguage = (value: string) => {
+        i18next.changeLanguage(value)
+        localStorage.setItem('lang', value)
+        setSelectedLanguage(value)
+    }
 
-  return (
-    <div className='p-2'>
-      <Select
-        size="middle"
-        defaultValue={t("Languages.English")}
-        value={selectedLanguage}
-        style={{ width: 100 }}
-        onChange={handleChangeLanguage}
-        options={[
-          { value: 'tr', label: t("Languages.Turkish") },
-          { value: 'en', label: t("Languages.English") },
-        ]}
-      />
-    </div>
-  )
+    return (
+        <Select
+            value={selectedLanguage}
+            onChange={handleChangeLanguage}
+            options={[
+                { value: 'en', label: '🇬🇧 EN' },
+                { value: 'tr', label: '🇹🇷 TR' },
+            ]}
+        />
+    )
 }
 
-export default LanguageSelect;
+export default LanguageSelect
