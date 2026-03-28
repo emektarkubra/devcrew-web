@@ -1,6 +1,15 @@
 {
-    "Languages" : {
-        "English" : "English",
-        "Turkish" : "Turkish"
+    "login": {
+        "welcome": "Welcome",
+        "subtitle": "Sign in with your GitHub account to continue",
+        "accessTitle": "This app will have access to:",
+        "permissions": [
+            "Profile information (username, avatar)",
+            "Public and private repositories",
+            "Email address"
+        ],
+        "signIn": "Sign in with GitHub",
+        "redirecting": "Redirecting...",
+        "footer": "By signing in, you agree to GitHub's terms of service"
     }
 }

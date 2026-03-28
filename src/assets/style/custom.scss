@@ -27,7 +27,19 @@
     color: $gh-light-text-primary;
     text-align: left;
 
-    @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-primary !important;
+    @apply dark:bg-gh-bg-primary dark:border-gh-bg-secondary dark:text-gh-text-primary !important;
+}
+
+.ant-select-item {
+    @apply dark:bg-gh-bg-secondary dark:border-gh-bg-secondary dark:text-gh-text-primary !important;
+
+    &:hover {
+        @apply dark:bg-gh-bg-primary !important;
+    }
+}
+
+.ant-select-dropdown {
+    @apply dark:bg-gh-bg-secondary dark:border-gh-bg-secondary dark:text-gh-text-primary !important;
 }
 
 .ant-select-arrow,
@@ -35,6 +47,14 @@
     color: $gh-light-text-muted;
 
     @apply dark:text-gh-text-muted;
+}
+
+.ant-select-open {
+    .ant-select-selection-item {
+        color: $gh-light-text-primary !important;
+        @apply dark:text-gh-text-primary !important;
+    }
+
 }
 
 .ant-card {

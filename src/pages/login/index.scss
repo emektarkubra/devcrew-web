@@ -8,12 +8,43 @@
     background: $gh-light-bg-secondary;
     @apply dark:bg-gh-bg-primary;
 
+    &__controls {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        gap: 8px;
+    }
+
+    &__theme-toggle {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: 1px solid $gh-light-border;
+        background: $gh-light-bg-primary;
+        color: $gh-light-text-secondary;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        flex-shrink: 0;
+        @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-secondary;
+
+        &:hover {
+            background: $gh-light-bg-secondary;
+            color: $gh-light-text-primary;
+            @apply dark:bg-gh-bg-tertiary dark:text-gh-text-primary;
+        }
+    }
+
     &__card {
         background: $gh-light-bg-primary;
         border: 1px solid $gh-light-border;
         border-radius: 14px;
         padding: 3rem;
         width: 460px;
+        min-height: 560px;
         @apply dark:bg-gh-bg-secondary dark:border-gh-border;
     }
 
@@ -29,7 +60,7 @@
             font-weight: 500;
             margin: 0;
             color: $gh-light-text-primary;
-            @apply dark:text-gh-text-primary;
+            @apply dark:text-gh-text-primary !important;
         }
 
         p {
@@ -37,13 +68,13 @@
             color: $gh-light-text-secondary;
             margin: 0;
             text-align: center;
-            @apply dark:text-gh-text-secondary;
+            @apply dark:text-gh-text-secondary !important;
         }
+    }
 
-        svg {
-            fill: $gh-light-text-primary;
-            @apply dark:fill-gh-text-primary;
-        }
+    &__github-icon {
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
     }
 
     &__permissions {
@@ -73,6 +104,11 @@
         }
     }
 
+    &__check-icon {
+        color: $gh-light-green;
+        flex-shrink: 0;
+    }
+
     &__button {
         width: 100%;
         padding: 13px;
@@ -87,6 +123,7 @@
         background: $gh-light-green;
         color: white;
         border: 1px solid $gh-light-green-border;
+        transition: background 0.2s;
         @apply dark:bg-gh-green dark:border-gh-green-border;
 
         &:hover {
@@ -114,6 +151,11 @@
 }
 
 @keyframes spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }

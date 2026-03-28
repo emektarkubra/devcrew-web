@@ -1,6 +1,15 @@
 {
-    "Languages" : {
-        "English" : "İngilizce",
-        "Turkish" : "Türkçe"
+    "login": {
+        "welcome": "Hoş Geldiniz",
+        "subtitle": "Devam etmek için GitHub hesabınızla giriş yapın",
+        "accessTitle": "Bu uygulama şunlara erişecek:",
+        "permissions": [
+            "Profil bilgileri (kullanıcı adı, avatar)",
+            "Public ve private repolar",
+            "E-posta adresi"
+        ],
+        "signIn": "GitHub ile Giriş Yap",
+        "redirecting": "Yönlendiriliyor...",
+        "footer": "Giriş yaparak GitHub'ın hizmet şartlarını kabul etmiş olursunuz"
     }
 }
