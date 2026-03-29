@@ -16,6 +16,18 @@
         @apply dark:bg-gh-bg-secondary dark:border-gh-border !important;
     }
 
+    &__user-header {
+        width: 100%;
+    }
+
+    &__user-info {
+        min-width: 0;
+    }
+
+    &__user-link-wrap {
+        flex-shrink: 0;
+    }
+
     &__user-avatar {
         border: 2px solid $gh-light-border;
         flex-shrink: 0;
@@ -36,6 +48,7 @@
         color: $gh-light-text-secondary;
         text-align: left;
         display: block;
+        word-break: break-word;
 
         @apply dark:text-gh-text-secondary;
     }
@@ -54,8 +67,8 @@
     }
 
     &__scroll-container {
-        padding: 10px;
-        height: calc(100vh - 280px);
+        padding: 16px;
+        height: calc(100vh - 230px);
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -81,7 +94,6 @@
     &__stats__card {
         height: 100%;
 
-
         .ant-card-body {
             border-radius: 8px;
         }
@@ -99,6 +111,11 @@
         display: flex;
         gap: 8px;
         align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .repo-search {
+        min-width: 180px;
     }
 
     .ant-card {
@@ -107,6 +124,19 @@
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 
         @apply dark:bg-gh-bg-secondary dark:border-gh-border dark:shadow-none;
+    }
+
+    .ant-card-head {
+        border-color: $gh-light-border;
+        background: $gh-light-bg-primary;
+        color: $gh-light-text-primary;
+
+        @apply dark:bg-gh-bg-secondary dark:border-gh-border dark:text-gh-text-primary;
+
+        .ant-card-head-wrapper {
+            align-items: flex-start;
+            gap: 12px;
+        }
     }
 
     .ant-statistic-title {
@@ -120,6 +150,10 @@
         color: $gh-light-text-primary;
 
         @apply dark:text-gh-text-primary;
+    }
+
+    .ant-table-wrapper {
+        overflow-x: auto;
     }
 
     .ant-table {
@@ -171,17 +205,10 @@
         }
     }
 
-    .ant-card-head {
-        border-color: $gh-light-border;
-        background: $gh-light-bg-primary;
-        color: $gh-light-text-primary;
-
-        @apply dark:bg-gh-bg-secondary dark:border-gh-border dark:text-gh-text-primary;
-    }
-
     .repo-name {
         color: $gh-light-blue;
         font-weight: 500;
+        word-break: break-word;
 
         @apply dark:text-gh-blue-text;
 
@@ -281,7 +308,6 @@
         }
     }
 
-
     &__stat-icon {
         width: 40px;
         height: 40px;
@@ -316,7 +342,6 @@
             @apply dark:bg-gh-pink-bg dark:text-gh-pink-text;
         }
     }
-
 
     .lang-dot {
         width: 10px;
@@ -362,5 +387,121 @@
         border-color: $gh-light-border !important;
 
         @apply dark:bg-gh-bg-tertiary dark:text-gh-text-secondary dark:border-gh-border !important
+    }
+
+&__clear-btn {
+    font-size: 14px;
+    color: $gh-light-text-muted !important;
+    @apply dark:text-gh-text-muted;
+
+    &:hover {
+        color: $gh-light-red !important;
+        background: transparent !important;
+        @apply dark:text-gh-red-text;
+    }
+
+    &:disabled {
+        color: $gh-light-text-muted !important;
+        background: transparent !important;
+        cursor: not-allowed;
+
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
+    }
+}
+
+    @media (max-width: 992px) {
+        &__scroll-container {
+            height: auto;
+            min-height: calc(100vh - 220px);
+        }
+
+        &__stat-label {
+            font-size: 14px;
+        }
+
+        .repo-desc {
+            max-width: 180px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        &__user-card {
+            .ant-card-body {
+                padding: 16px;
+            }
+        }
+
+        &__user-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+
+        &__user-link-wrap {
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        &__scroll-container {
+            padding: 12px;
+            min-height: auto;
+        }
+
+        &__filters {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .repo-search,
+        .ant-select {
+            width: 100% !important;
+        }
+
+        .ant-card-head {
+            .ant-card-head-wrapper {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        .repo-desc {
+            max-width: 100%;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
+        }
+    }
+
+    @media (max-width: 576px) {
+        &__filters {
+            grid-template-columns: 1fr;
+        }
+
+        &__user-avatar {
+            width: 64px !important;
+            height: 64px !important;
+        }
+
+        &__user-name {
+            font-size: 22px !important;
+        }
+
+        &__stat-value {
+            font-size: 22px !important;
+        }
+
+        &__stat-label {
+            font-size: 13px;
+        }
+
+        .ant-table {
+            font-size: 12px;
+        }
+
+        .branch-tag,
+        .visibility {
+            font-size: 10px !important;
+        }
     }
 }

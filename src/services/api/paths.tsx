@@ -1,10 +1,12 @@
-// dashboard
-export const dashboard = '/dashboard';
-
 // gitHub auth
 export const githubCallback = '/auth/github/callback';
+
+//profile
 export const profile = '/profile';
+
+//repo
 export const repos = '/repos';
+export const repoSearch = "/repos/search"
 
 // codebase-qa
 export const indexRepo = '/agents/index'
@@ -28,5 +30,5 @@ export const testHistory = "/agents/test-generator/history"
 export const documentation = "/agents/documentation"
 export const documentationHistory = "/agents/documentation/history"
 
-
+// agents
 export const repoFiles = "/agents/repo-files"

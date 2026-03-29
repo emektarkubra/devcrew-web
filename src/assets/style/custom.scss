@@ -190,6 +190,7 @@ input::placeholder {
     }
 
     &::-webkit-scrollbar-track {
+        background-color: $gh-bg-secondary !important;
         background: transparent;
     }
 
