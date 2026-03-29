@@ -68,5 +68,24 @@
         "analysis": "Analysis",
         "architectureGraph": "Architecture Graph",
         "repoIntelligence": "Repo Intelligence"
-    }
+    },
+    "codebase": {
+        "title": "Codebase Q&A",
+        "subtitle": "Select a repo to start asking questions",
+        "subtitleReady": "{{repo}} · {{count}} files indexed",
+        "noRepoSelected": "No Repo Selected",
+        "indexing": "Indexing...",
+        "ready": "Ready",
+        "repoLabel": "REPO",
+        "selectRepo": "Select repo...",
+        "searchLabel": "SEARCH",
+        "placeholderIdle": "Select a repo first...",
+        "placeholderIndexing": "Indexing in progress...",
+        "placeholderReady": "Ask anything about the repo...",
+        "ask": "Ask",
+        "responseLabel": "RESPONSE",
+        "historyLabel": "HISTORY",
+        "indexingFailed": "Indexing failed",
+        "files": "files"
+    }   
 }

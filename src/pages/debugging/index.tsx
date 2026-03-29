@@ -31,7 +31,7 @@ const Debugging = () => {
 
     useEffect(() => {
         const fetchRepos = async () => {
-            const { data, error } = await api.login.getRepos(token)
+            const { data, error } = await api.profile.getRepos(token)
             if (error) {
                 toast.error(error);
             } else {

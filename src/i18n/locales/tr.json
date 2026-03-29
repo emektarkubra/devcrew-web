@@ -68,5 +68,24 @@
         "analysis": "Analiz",
         "architectureGraph": "Mimari Grafik",
         "repoIntelligence": "Repo Zekası"
+    },
+    "codebase": {
+        "title": "Kod Tabanı S&C",
+        "subtitle": "Soru sormaya başlamak için bir repo seçin",
+        "subtitleReady": "{{repo}} · {{count}} dosya indekslendi",
+        "noRepoSelected": "Repo Seçilmedi",
+        "indexing": "İndeksleniyor...",
+        "ready": "Hazır",
+        "repoLabel": "REPO",
+        "selectRepo": "Repo seçin...",
+        "searchLabel": "ARAMA",
+        "placeholderIdle": "Önce bir repo seçin...",
+        "placeholderIndexing": "İndeksleme devam ediyor...",
+        "placeholderReady": "Repo hakkında herhangi bir şey sorun...",
+        "ask": "Sor",
+        "responseLabel": "YANIT",
+        "historyLabel": "GEÇMİŞ",
+        "indexingFailed": "İndeksleme başarısız",
+        "files": "dosya"
     }
 }
