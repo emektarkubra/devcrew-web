@@ -238,15 +238,17 @@ const Profile = () => {
     return (
         <div className="profile-page">
             <Card className="profile-page__user-card">
-                <Flex align="flex-start" gap={20} wrap="wrap" className="profile-page__user-header">
-                    <Avatar size={80} src={user?.avatar_url} className="profile-page__user-avatar" />
-                    <Flex vertical className="profile-page__user-info">
-                        <Typography.Title level={3} className="profile-page__user-name">{user?.name || user?.username}</Typography.Title>
-                        <Text className="profile-page__user-meta">@{user?.username}</Text>
-                        {user?.bio && <Text className="profile-page__user-meta profile-page__user-bio">{user.bio}</Text>}
-                        {user?.email && <Flex align="center" gap={6} wrap="wrap"><GoMail size={14} className="profile-page__user-icon" /><Text className="profile-page__user-meta">{user.email}</Text></Flex>}
-                        {user?.location && <Flex align="center" gap={6} wrap="wrap"><GoLocation size={14} className="profile-page__user-icon" /><Text className="profile-page__user-meta">{user.location}</Text></Flex>}
-                        {user?.company && <Flex align="center" gap={6} wrap="wrap"><GoOrganization size={14} className="profile-page__user-icon" /><Text className="profile-page__user-meta">{user.company}</Text></Flex>}
+                <Flex align="flex-start" justify='space-between' className="profile-page__user-header">
+                    <Flex gap={20}>
+                        <Avatar size={80} src={user?.avatar_url} className="profile-page__user-avatar" />
+                        <Flex vertical className="profile-page__user-info">
+                            <Typography.Title level={3} className="profile-page__user-name">{user?.name || user?.username}</Typography.Title>
+                            <Text className="profile-page__user-meta">@{user?.username}</Text>
+                            {user?.bio && <Text className="profile-page__user-meta profile-page__user-bio">{user.bio}</Text>}
+                            {user?.email && <Flex align="center" gap={6} wrap="wrap"><GoMail size={14} className="profile-page__user-icon" /><Text className="profile-page__user-meta">{user.email}</Text></Flex>}
+                            {user?.location && <Flex align="center" gap={6} wrap="wrap"><GoLocation size={14} className="profile-page__user-icon" /><Text className="profile-page__user-meta">{user.location}</Text></Flex>}
+                            {user?.company && <Flex align="center" gap={6} wrap="wrap"><GoOrganization size={14} className="profile-page__user-icon" /><Text className="profile-page__user-meta">{user.company}</Text></Flex>}
+                        </Flex>
                     </Flex>
                     <Flex align="center" gap={6} className="profile-page__user-link-wrap">
                         <GoLinkExternal size={14} className="profile-page__user-icon" />
