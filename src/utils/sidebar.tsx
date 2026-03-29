@@ -1,83 +1,84 @@
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { VscAccount, VscSearch, VscBug, VscBook, VscGraph } from 'react-icons/vsc';
-import { GoGitPullRequest } from 'react-icons/go';
-import { TbTestPipe, TbHierarchy } from 'react-icons/tb';
-import { RiTeamLine } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { Tooltip } from 'antd'
+import { useTranslation } from 'react-i18next'
+import { VscAccount, VscSearch, VscBug, VscBook, VscGraph } from 'react-icons/vsc'
+import { GoGitPullRequest } from 'react-icons/go'
+import { TbTestPipe, TbHierarchy } from 'react-icons/tb'
+import { RiTeamLine } from 'react-icons/ri'
 
 export type MenuTypes = {
-    key: string;
-    label: string | React.ReactNode;
-    title: string;
-    href?: string;
-    icon?: React.ReactNode;
-    children?: MenuTypes[];
-    type?: 'group';
+    key: string
+    label: string | React.ReactNode
+    title: string
+    href?: string
+    icon?: React.ReactNode
+    children?: MenuTypes[]
+    type?: 'group'
 }
 
 export const createModifiedMenu = () => {
-    const navigate = useNavigate();
-    const collapsed = useSelector((state: any) => state.collapsed.collapsed);
+    const navigate = useNavigate()
+    const collapsed = useSelector((state: any) => state.collapsed.collapsed)
+    const { t } = useTranslation()
+
+    const wrapIcon = (icon: React.ReactNode, title: string) =>
+        collapsed
+            ? <Tooltip title={title} placement="right">{icon as React.ReactElement}</Tooltip>
+            : icon
 
     return MENU_ELEMENTS.map((element) => {
         if (element.type === 'group') {
             return {
                 key: element.key,
-                label: element.label,
+                label: t(element.label as string),
                 type: 'group',
                 children: element.children?.map((subElement) => ({
                     key: subElement.key,
-                    label: subElement.label,
-                    title: subElement.title,
-                    icon: subElement.icon,
-                    onClick: () => {
-                        if (subElement?.href) navigate(subElement.href);
-                    }
+                    label: t(subElement.label as string),
+                    title: t(subElement.title),
+                    icon: wrapIcon(subElement.icon, t(subElement.title)),
+                    onClick: () => { if (subElement?.href) navigate(subElement.href) }
                 })) || null,
-            };
+            }
         }
 
         return {
             key: element.key,
-            label: element.label,
-            title: element.title,
+            label: t(element.label as string),
+            title: t(element.title),
             href: element.href,
-            icon: element.icon,
-            onClick: () => {
-                if (!element.children && element.href) navigate(element.href);
-            },
+            icon: wrapIcon(element.icon, t(element.title)),
+            onClick: () => { if (!element.children && element.href) navigate(element.href) },
             children: element.children?.map((subElement) => ({
                 key: subElement.key,
-                label: subElement.label,
-                title: subElement.title,
-                icon: subElement.icon,
-                onClick: () => {
-                    if (subElement?.href) navigate(subElement.href);
-                }
+                label: t(subElement.label as string),
+                title: t(subElement.title),
+                icon: wrapIcon(subElement.icon, t(subElement.title)),
+                onClick: () => { if (subElement?.href) navigate(subElement.href) }
             })) || null,
-        };
-    });
-};
-
+        }
+    })
+}
 
 export const MENU_ELEMENTS: MenuTypes[] = [
     {
         key: 'group-general',
-        label: 'General',
-        title: 'General',
+        label: 'layout.general',
+        title: 'layout.general',
         type: 'group',
         children: [
             {
                 key: '/overview',
-                label: 'Overview',
-                title: 'Overview',
+                label: 'layout.overview',
+                title: 'layout.overview',
                 href: '/overview',
                 icon: <VscAccount size={18} />,
             },
             {
                 key: '/team-mode',
-                label: 'Team Mode',
-                title: 'Team Mode',
+                label: 'layout.teamMode',
+                title: 'layout.teamMode',
                 href: '/team-mode',
                 icon: <RiTeamLine size={18} />,
             },
@@ -85,42 +86,42 @@ export const MENU_ELEMENTS: MenuTypes[] = [
     },
     {
         key: 'group-agents',
-        label: 'AI Agents',
-        title: 'AI Agents',
+        label: 'layout.aiAgents',
+        title: 'layout.aiAgents',
         type: 'group',
         children: [
             {
                 key: '/agents/codebase-qa',
-                label: 'Codebase Q&A',
-                title: 'Codebase Q&A',
+                label: 'layout.codebaseQA',
+                title: 'layout.codebaseQA',
                 href: '/agents/codebase-qa',
                 icon: <VscSearch size={18} />,
             },
             {
                 key: '/agents/pr-review',
-                label: 'PR Review',
-                title: 'PR Review',
+                label: 'layout.prReview',
+                title: 'layout.prReview',
                 href: '/agents/pr-review',
                 icon: <GoGitPullRequest size={18} />,
             },
             {
                 key: '/agents/debugging',
-                label: 'Debugging',
-                title: 'Debugging',
+                label: 'layout.debugging',
+                title: 'layout.debugging',
                 href: '/agents/debugging',
                 icon: <VscBug size={18} />,
             },
             {
                 key: '/agents/test-generator',
-                label: 'Test Generator',
-                title: 'Test Generator',
+                label: 'layout.testGenerator',
+                title: 'layout.testGenerator',
                 href: '/agents/test-generator',
                 icon: <TbTestPipe size={18} />,
             },
             {
                 key: '/agents/documentation',
-                label: 'Documentation',
-                title: 'Documentation',
+                label: 'layout.documentation',
+                title: 'layout.documentation',
                 href: '/agents/documentation',
                 icon: <VscBook size={18} />,
             },
@@ -128,24 +129,24 @@ export const MENU_ELEMENTS: MenuTypes[] = [
     },
     {
         key: 'group-analysis',
-        label: 'Analysis',
-        title: 'Analysis',
+        label: 'layout.analysis',
+        title: 'layout.analysis',
         type: 'group',
         children: [
             {
                 key: '/analysis/architecture',
-                label: 'Architecture Graph',
-                title: 'Architecture Graph',
+                label: 'layout.architectureGraph',
+                title: 'layout.architectureGraph',
                 href: '/analysis/architecture',
                 icon: <TbHierarchy size={18} />,
             },
             {
                 key: '/analysis/intelligence',
-                label: 'Repo Intelligence',
-                title: 'Repo Intelligence',
+                label: 'layout.repoIntelligence',
+                title: 'layout.repoIntelligence',
                 href: '/analysis/intelligence',
                 icon: <VscGraph size={18} />,
             },
         ]
     },
-];
+]

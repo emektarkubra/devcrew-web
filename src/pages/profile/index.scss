@@ -61,9 +61,9 @@
 
     &__user-link {
         font-size: 13px;
-        color: $gh-light-blue;
+        color: $gh-light-text-link;
 
-        @apply dark:text-gh-blue-text;
+        @apply dark:text-gh-light-text-link !important;
     }
 
     &__scroll-container {
@@ -389,25 +389,186 @@
         @apply dark:bg-gh-bg-tertiary dark:text-gh-text-secondary dark:border-gh-border !important
     }
 
-&__clear-btn {
-    font-size: 14px;
-    color: $gh-light-text-muted !important;
-    @apply dark:text-gh-text-muted;
-
-    &:hover {
-        color: $gh-light-red !important;
-        background: transparent !important;
-        @apply dark:text-gh-red-text;
-    }
-
-    &:disabled {
+    &__clear-btn {
+        font-size: 14px;
         color: $gh-light-text-muted !important;
-        background: transparent !important;
-        cursor: not-allowed;
+        @apply dark:text-gh-text-muted;
 
-        @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
+        &:hover {
+            color: $gh-light-red !important;
+            background: transparent !important;
+            @apply dark:text-gh-red-text;
+        }
+
+        &:disabled {
+            color: $gh-light-text-muted !important;
+            background: transparent !important;
+            cursor: not-allowed;
+
+            @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
+        }
     }
-}
+
+
+    &__stat-content {
+        margin-left: 10px;
+    }
+
+    &__user-bio {
+        margin-bottom: 10px;
+    }
+
+    &__search-icon {
+        color: #8b949e;
+    }
+
+    &__search-clear {
+        color: #8b949e;
+        cursor: pointer;
+    }
+
+    &__filter-select {
+        &--sm {
+            width: 120px;
+        }
+
+        &--md {
+            width: 140px;
+        }
+    }
+
+    &__cell {
+        &-icon {
+            &--orange {
+                color: #bc4c00;
+            }
+
+            &--purple {
+                color: #8250df;
+            }
+
+            &--blue {
+                color: #0969da;
+            }
+
+            &--muted {
+                color: #8c959f;
+            }
+        }
+
+        &-text {
+            font-size: 12px;
+            color: $gh-light-text-secondary;
+            @apply dark:text-gh-text-secondary;
+
+            &--blue {
+                color: #0969da;
+                @apply dark:text-gh-blue-text;
+            }
+        }
+    }
+
+    .repo-topics {
+        margin-top: 4px;
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+
+    .repo-topic-tag {
+        font-size: 11px !important;
+        border-radius: 20px !important;
+        margin: 0 !important;
+        background: #ddf4ff !important;
+        color: #0550ae !important;
+        border-color: #54aeff66 !important;
+    }
+
+    &__stat-content {
+        margin-left: 10px;
+    }
+
+    &__user-bio {
+        margin-bottom: 10px;
+    }
+
+    &__search-icon {
+        color: #8b949e;
+    }
+
+    &__search-clear {
+        color: #8b949e;
+        cursor: pointer;
+    }
+
+    &__filters {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    &__filter-select {
+        &--sm {
+            width: 120px;
+        }
+
+        &--md {
+            width: 140px;
+        }
+    }
+
+    .repo-search {
+        width: 180px;
+        min-width: 140px;
+    }
+
+    &__cell {
+        &-icon {
+            &--orange {
+                color: #bc4c00;
+            }
+
+            &--purple {
+                color: #8250df;
+            }
+
+            &--blue {
+                color: #0969da;
+            }
+
+            &--muted {
+                color: #8c959f;
+            }
+        }
+
+        &-text {
+            font-size: 12px;
+            color: $gh-light-text-secondary;
+            @apply dark:text-gh-text-secondary;
+
+            &--blue {
+                color: #0969da;
+                @apply dark:text-gh-blue-text;
+            }
+        }
+    }
+
+    .repo-topics {
+        margin-top: 4px;
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+
+    .repo-topic-tag {
+        font-size: 11px !important;
+        border-radius: 20px !important;
+        margin: 0 !important;
+        background: #ddf4ff !important;
+        color: #0550ae !important;
+        border-color: #54aeff66 !important;
+    }
 
     @media (max-width: 992px) {
         &__scroll-container {

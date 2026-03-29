@@ -54,5 +54,19 @@
         "selectLanguage": "Select language",
         "selectSort": "Select sort",
         "clear": "Clear"
+    },
+    "layout": {
+        "general": "General",
+        "overview": "Overview",
+        "teamMode": "Team Mode",
+        "aiAgents": "AI Agents",
+        "codebaseQA": "Codebase Q&A",
+        "prReview": "PR Review",
+        "debugging": "Debugging",
+        "testGenerator": "Test Generator",
+        "documentation": "Documentation",
+        "analysis": "Analysis",
+        "architectureGraph": "Architecture Graph",
+        "repoIntelligence": "Repo Intelligence"
     }
 }

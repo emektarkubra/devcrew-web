@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from 'react'
 import { Table, Input, Button, Tag, Avatar, Card, Row, Col, Space, Typography, Tooltip, Flex, Select } from 'antd'
 import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons'
 import { RiGitRepositoryLine } from 'react-icons/ri'
-import { GoStar, GoGitPullRequest, GoRepoForked, GoIssueOpened, GoEye, GoLocation, GoOrganization, GoMail, GoLinkExternal } from 'react-icons/go'
+import { GoStar, GoGitPullRequest, GoRepoForked, GoEye, GoLocation, GoOrganization, GoMail, GoLinkExternal } from 'react-icons/go'
 import { VscCode, VscBeaker } from 'react-icons/vsc'
 import { MdLockOpen } from 'react-icons/md'
 import { TbZoomCode } from 'react-icons/tb'
@@ -10,10 +10,9 @@ import { useTranslation } from 'react-i18next'
 import withLayout from '../../layout/withLayout'
 import { AuthContext } from '../../context/authContext'
 import { api } from '../../services'
-import './index.scss'
 import toast from 'react-hot-toast'
-import { LuFilterX } from "react-icons/lu";
-
+import { LuFilterX } from "react-icons/lu"
+import './index.scss'
 
 const { Text, Link } = Typography
 
@@ -50,6 +49,7 @@ const Profile = () => {
     const [languageFilter, setLanguageFilter] = useState<string>('all')
     const [sortBy, setSortBy] = useState<string>('updated')
     const [currentPage, setCurrentPage] = useState(0)
+    const [stats, setStats] = useState<any>(null)
 
     const isFiltered = search || typeFilter !== 'all' || languageFilter !== 'all' || sortBy !== 'updated'
 
@@ -63,7 +63,6 @@ const Profile = () => {
 
     const getRepos = async () => {
         if (!token) return
-        setAllReposLoading(true)
         try {
             const { data, error } = await api.profile.getRepos(token)
             if (error) toast.error(error)
@@ -71,6 +70,18 @@ const Profile = () => {
         } catch (error) {
             console.error('Error fetching repositories:', error)
             toast.error(t('profile.fetchReposError'))
+        }
+    }
+
+    const getStats = async () => {
+        if (!token) return
+        setAllReposLoading(true)
+        try {
+            const { data, error } = await api.profile.getRepoStats(token)
+            if (error) toast.error(error)
+            else setStats(data)
+        } catch (err) {
+            console.error(err)
         } finally {
             setAllReposLoading(false)
         }
@@ -102,17 +113,37 @@ const Profile = () => {
         }
     }
 
-    useEffect(() => { getRepos() }, [token])
+    useEffect(() => { getRepos(); getStats() }, [token])
     useEffect(() => { getReposWithSearch() }, [token, typeFilter, languageFilter, sortBy, search, currentPage])
     useEffect(() => { setCurrentPage(0) }, [typeFilter, languageFilter, sortBy, search])
 
     const languages = ['all', ...Array.from(new Set(allRepos.map(r => r.language).filter(Boolean)))]
 
     const statItems = [
-        { label: t('profile.totalRepositories'), value: allRepos.length, icon: <RiGitRepositoryLine size={20} />, iconClass: 'stat-icon--blue' },
-        { label: t('profile.languages'), value: [...new Set(allRepos.map(r => r.language).filter(Boolean))].length, icon: <VscCode size={20} />, iconClass: 'stat-icon--purple' },
-        { label: t('profile.totalStars'), value: allRepos.reduce((a, r) => a + (r.stars || 0), 0), icon: <GoStar size={20} />, iconClass: 'stat-icon--orange' },
-        { label: t('profile.publicRepos'), value: allRepos.filter(r => !r.is_private).length, icon: <MdLockOpen size={20} />, iconClass: 'stat-icon--pink' },
+        {
+            label: t('profile.totalRepositories'),
+            value: stats?.total ?? 0,
+            icon: <RiGitRepositoryLine size={20} />,
+            iconClass: 'stat-icon--blue'
+        },
+        {
+            label: t('profile.languages'),
+            value: stats?.languages ?? 0,
+            icon: <VscCode size={20} />,
+            iconClass: 'stat-icon--purple'
+        },
+        {
+            label: t('profile.totalStars'),
+            value: stats?.stars ?? 0,
+            icon: <GoStar size={20} />,
+            iconClass: 'stat-icon--orange'
+        },
+        {
+            label: t('profile.publicRepos'),
+            value: stats?.public ?? 0,
+            icon: <MdLockOpen size={20} />,
+            iconClass: 'stat-icon--pink'
+        },
     ]
 
     const columns = [
@@ -123,11 +154,9 @@ const Profile = () => {
                     <Link href={repo.html_url} target="_blank" className="repo-name">{repo.name}</Link>
                     <div className="repo-desc">{repo.description || t('profile.noDescription')}</div>
                     {repo?.topics?.length > 0 && (
-                        <div style={{ marginTop: 4, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                        <div className="repo-topics">
                             {repo.topics.slice(0, 3).map((topic: string) => (
-                                <Tag key={topic} style={{ fontSize: 11, borderRadius: 20, margin: 0, background: '#ddf4ff', color: '#0550ae', borderColor: '#54aeff66' }}>
-                                    {topic}
-                                </Tag>
+                                <Tag key={topic} className="repo-topic-tag">{topic}</Tag>
                             ))}
                         </div>
                     )}
@@ -157,31 +186,41 @@ const Profile = () => {
         },
         {
             title: t('profile.stars'), dataIndex: 'stars', key: 'stars',
-            sorter: (a: any, b: any) => a.stars - b.stars,
-            render: (count: number) => <Space size={4}><GoStar size={13} style={{ color: '#bc4c00' }} /><Text style={{ fontSize: 12, color: '#656d76' }}>{count}</Text></Space>,
+            render: (count: number) => (
+                <Space size={4} className="profile-page__cell">
+                    <GoStar className="profile-page__cell-icon profile-page__cell-icon--orange" size={13} />
+                    <Text className="profile-page__cell-text">{count}</Text>
+                </Space>
+            ),
         },
         {
             title: t('profile.forks'), dataIndex: 'forks_count', key: 'forks_count',
-            sorter: (a: any, b: any) => a.forks_count - b.forks_count,
-            render: (count: number) => <Space size={4}><GoRepoForked size={13} style={{ color: '#8250df' }} /><Text style={{ fontSize: 12, color: '#656d76' }}>{count}</Text></Space>,
-        },
-        {
-            title: t('profile.issues'), dataIndex: 'open_issues_count', key: 'open_issues_count',
-            sorter: (a: any, b: any) => a.open_issues_count - b.open_issues_count,
-            render: (count: number) => <Space size={4}><GoIssueOpened size={13} style={{ color: count > 0 ? '#0969da' : '#8c959f' }} /><Text style={{ fontSize: 12, color: count > 0 ? '#0969da' : '#656d76' }}>{count}</Text></Space>,
+            render: (count: number) => (
+                <Space size={4} className="profile-page__cell">
+                    <GoRepoForked className="profile-page__cell-icon profile-page__cell-icon--purple" size={13} />
+                    <Text className="profile-page__cell-text">{count}</Text>
+                </Space>
+            ),
         },
         {
             title: t('profile.watchers'), dataIndex: 'watchers_count', key: 'watchers_count',
-            render: (count: number) => <Space size={4}><GoEye size={13} style={{ color: '#656d76' }} /><Text style={{ fontSize: 12, color: '#656d76' }}>{count}</Text></Space>,
+            render: (count: number) => (
+                <Space size={4} className="profile-page__cell">
+                    <GoEye className="profile-page__cell-icon profile-page__cell-icon--muted" size={13} />
+                    <Text className="profile-page__cell-text">{count}</Text>
+                </Space>
+            ),
         },
         {
             title: t('profile.size'), dataIndex: 'size', key: 'size',
-            sorter: (a: any, b: any) => a.size - b.size,
-            render: (size: number) => <Text style={{ fontSize: 12, color: '#656d76' }}>{size > 1024 ? `${(size / 1024).toFixed(1)} MB` : `${size} KB`}</Text>,
+            render: (size: number) => (
+                <Text className="profile-page__cell-text">
+                    {size > 1024 ? `${(size / 1024).toFixed(1)} MB` : `${size} KB`}
+                </Text>
+            ),
         },
         {
             title: t('profile.updated'), dataIndex: 'updated_at', key: 'updated_at',
-            sorter: (a: any, b: any) => new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime(),
             render: (date: string) => <Text className="date">{new Date(date).toLocaleDateString('en-US')}</Text>,
         },
         {
@@ -201,10 +240,10 @@ const Profile = () => {
             <Card className="profile-page__user-card">
                 <Flex align="flex-start" gap={20} wrap="wrap" className="profile-page__user-header">
                     <Avatar size={80} src={user?.avatar_url} className="profile-page__user-avatar" />
-                    <Flex vertical style={{ flex: 1, minWidth: 0 }} className="profile-page__user-info">
+                    <Flex vertical className="profile-page__user-info">
                         <Typography.Title level={3} className="profile-page__user-name">{user?.name || user?.username}</Typography.Title>
                         <Text className="profile-page__user-meta">@{user?.username}</Text>
-                        {user?.bio && <Text className="profile-page__user-meta" style={{ marginBottom: 10 }}>{user.bio}</Text>}
+                        {user?.bio && <Text className="profile-page__user-meta profile-page__user-bio">{user.bio}</Text>}
                         {user?.email && <Flex align="center" gap={6} wrap="wrap"><GoMail size={14} className="profile-page__user-icon" /><Text className="profile-page__user-meta">{user.email}</Text></Flex>}
                         {user?.location && <Flex align="center" gap={6} wrap="wrap"><GoLocation size={14} className="profile-page__user-icon" /><Text className="profile-page__user-meta">{user.location}</Text></Flex>}
                         {user?.company && <Flex align="center" gap={6} wrap="wrap"><GoOrganization size={14} className="profile-page__user-icon" /><Text className="profile-page__user-meta">{user.company}</Text></Flex>}
@@ -223,7 +262,7 @@ const Profile = () => {
                             <Card className="profile-page__stats__card" loading={allReposLoading}>
                                 <Flex gap={12} align="flex-start">
                                     <Flex align="center" justify="center" className={`profile-page__stat-icon ${iconClass}`}>{icon}</Flex>
-                                    <Flex vertical justify="flex-start" align="flex-start" style={{ marginLeft: 10 }}>
+                                    <Flex vertical justify="flex-start" align="flex-start" className="profile-page__stat-content">
                                         <Typography.Title level={3} className="profile-page__stat-value">{value}</Typography.Title>
                                         <div className="profile-page__stat-label">{label}</div>
                                     </Flex>
@@ -238,27 +277,20 @@ const Profile = () => {
                     extra={
                         <Flex align="center" gap={8} wrap="wrap" className="profile-page__filters">
                             <Input
-                                prefix={<SearchOutlined style={{ color: '#8b949e' }} />}
-                                suffix={search ? <CloseCircleFilled style={{ color: '#8b949e', cursor: 'pointer' }} onClick={() => setSearch('')} /> : null}
+                                prefix={<SearchOutlined className="profile-page__search-icon" />}
+                                suffix={search ? <CloseCircleFilled className="profile-page__search-clear" onClick={() => setSearch('')} /> : null}
                                 placeholder={t('profile.searchRepositories')}
                                 value={search}
                                 onChange={e => setSearch(normalizeSearch(e.target.value))}
-                                style={{ width: 180 }}
                                 className="repo-search"
                             />
                             <Select
                                 value={typeFilter}
-                                onChange={v => {
-                                    setTypeFilter(v);
-                                    setCurrentPage(0)
-                                }}
+                                onChange={v => { setTypeFilter(v); setCurrentPage(0) }}
                                 placeholder={t('profile.selectType')}
-                                style={{ width: 120 }}
+                                className="profile-page__filter-select profile-page__filter-select--sm"
                                 allowClear
-                                onClear={() => {
-                                    setTypeFilter('all');
-                                    setCurrentPage(0)
-                                }}
+                                onClear={() => { setTypeFilter('all'); setCurrentPage(0) }}
                                 options={[
                                     { value: 'all', label: t('profile.allTypes') },
                                     { value: 'public', label: t('profile.public') },
@@ -268,47 +300,26 @@ const Profile = () => {
                             />
                             <Select
                                 value={languageFilter}
-                                onChange={v => {
-                                    setLanguageFilter(v);
-                                    setCurrentPage(0)
-                                }}
+                                onChange={v => { setLanguageFilter(v); setCurrentPage(0) }}
                                 placeholder={t('profile.selectLanguage')}
-                                style={{ width: 140 }}
+                                className="profile-page__filter-select profile-page__filter-select--md"
                                 allowClear
-                                onClear={() => {
-                                    setLanguageFilter('all');
-                                    setCurrentPage(0)
-                                }}
+                                onClear={() => { setLanguageFilter('all'); setCurrentPage(0) }}
                                 options={languages.map(lang => ({
                                     value: lang,
                                     label: lang === 'all' ? t('profile.allLanguages') : lang,
                                 }))}
                             />
-                            <Select
-                                value={sortBy}
-                                onChange={v => {
-                                    setSortBy(v);
-                                    setCurrentPage(0)
-                                }}
-                                placeholder={t('profile.selectSort')}
-                                style={{ width: 140 }}
-                                allowClear
-                                onClear={() => {
-                                    setSortBy('updated');
-                                    setCurrentPage(0)
-                                }}
-                                options={[
-                                    { value: 'updated', label: t('profile.lastUpdated') },
-                                    { value: 'created', label: t('profile.newest') },
-                                    { value: 'name', label: t('profile.name') },
-                                    { value: 'stars', label: t('profile.stars') },
-                                ]}
-                            />
-
-                            <Button icon={<LuFilterX/>} size="small" onClick={clearFilters} type="text" className="profile-page__clear-btn" disabled={!isFiltered}>
+                            <Button
+                                icon={<LuFilterX />}
+                                size="small"
+                                onClick={clearFilters}
+                                type="text"
+                                className="profile-page__clear-btn"
+                                disabled={!isFiltered}
+                            >
                                 {t('profile.clear')}
                             </Button>
-
                         </Flex>
                     }
                 >

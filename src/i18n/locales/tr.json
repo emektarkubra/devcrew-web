@@ -54,5 +54,19 @@
         "selectLanguage": "Dil seç",
         "selectSort": "Sıralama seç",
         "clear": "Temizle"
+    },
+    "layout": {
+        "general": "Genel",
+        "overview": "Genel Bakış",
+        "teamMode": "Takım Modu",
+        "aiAgents": "AI Ajanlar",
+        "codebaseQA": "Kod Tabanı S&C",
+        "prReview": "PR İnceleme",
+        "debugging": "Hata Ayıklama",
+        "testGenerator": "Test Üretici",
+        "documentation": "Dokümantasyon",
+        "analysis": "Analiz",
+        "architectureGraph": "Mimari Grafik",
+        "repoIntelligence": "Repo Zekası"
     }
 }

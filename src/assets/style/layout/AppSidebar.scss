@@ -175,9 +175,13 @@
 }
 
 .collapsed-sider-container {
-    flex: 0 0 70px;
-    min-width: 70px;
-    width: 70px;
+    flex: 0 0 70px !important;
+    min-width: 70px !important;
+    width: 70px !important;
+
+    .ant-menu-item-group-title {
+        display: none;
+    }
 
     .ant-layout-sider-children {
         background-color: $gh-light-bg-primary;
@@ -219,9 +223,10 @@
     }
 
     .ant-menu-item {
-        padding: 0 16px;
+        // padding: 0 16px;
         display: flex;
-        justify-content: center;
+        justify-content: center !important;
+        align-items: center !important;
 
         &:hover {
             background-color: $gh-light-bg-secondary;

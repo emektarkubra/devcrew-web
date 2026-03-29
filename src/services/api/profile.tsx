@@ -39,6 +39,12 @@ class profile {
             per_page: params.per_page ?? 10,
         })
     }
+
+
+
+    static getRepoStats = async (token: string) => {
+    return await request.get(`/repos/stats?token=${token}`)
+}
 }
 
 export { profile }
