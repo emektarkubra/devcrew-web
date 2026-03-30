@@ -17,6 +17,8 @@ export const codebaseQAHistory = '/agents/codebase-qa/history'
 export const prList = "/pr-list"
 export const prReview = "/agents/pr-review"
 export const prReviewHistory = "/agents/pr-review/history"
+export const applyFixes = "/agents/pr-review/apply-fixes"
+export const applyFixesToBranch = '/agents/pr-review/apply-fixes-to-branch'
 
 // debugging
 export const debug = "/agents/debug"

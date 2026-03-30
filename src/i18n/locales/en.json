@@ -113,6 +113,20 @@
         "riskHigh": "High risk",
         "riskMedium": "Medium risk",
         "riskLow": "Low risk",
-        "issuesCount": "{{count}} issues"
+        "downloadMd": "Download .md",
+        "summaryLabel": "SUMMARY",
+        "issuesLabel": "ISSUES",
+        "changedFilesLabel": "CHANGED FILES",
+        "issuesCount": "{{count}} issues",
+        "generateFixes": "Generate fixes",
+        "downloadPatch": "Download .patch",
+        "applyToBranch": "Apply to branch",
+        "failedGenerateFixes": "Failed to generate fixes",
+        "failedApplyFixes": "Failed to apply fixes",
+        "fixApplied": "{{count}} fix(es) applied to branch {{branch}}",
+        "fixFailed": "{{count}} fix(es) failed",
+        "before": "BEFORE",
+        "after": "AFTER",
+        "introText": "DevCrew will analyze the {{count}} issues found and generate concrete code fixes for each one. You can then select which fixes to apply and download them as a patch file."
     }
 }

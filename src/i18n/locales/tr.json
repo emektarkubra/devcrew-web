@@ -113,6 +113,20 @@
         "riskHigh": "Yüksek risk",
         "riskMedium": "Orta risk",
         "riskLow": "Düşük risk",
-        "issuesCount": "{{count}} sorun"
+        "downloadMd": ".md indir",
+        "summaryLabel": "ÖZET",
+        "issuesLabel": "SORUNLAR",
+        "changedFilesLabel": "DEĞİŞTİRİLEN DOSYALAR",
+        "issuesCount": "{{count}} sorun",
+        "generateFixes": "Düzeltmeleri oluştur",
+        "downloadPatch": ".patch indir",
+        "applyToBranch": "Branch'e uygula",
+        "failedGenerateFixes": "Düzeltmeler oluşturulamadı",
+        "failedApplyFixes": "Düzeltmeler uygulanamadı",
+        "fixApplied": "{{branch}} branch'ine {{count}} düzeltme uygulandı",
+        "fixFailed": "{{count}} düzeltme başarısız oldu",
+        "before": "ÖNCE",
+        "after": "SONRA",
+        "introText": "DevCrew bulunan {{count}} sorunu analiz edecek ve her biri için somut kod düzeltmeleri oluşturacak. Ardından hangi düzeltmeleri uygulamak istediğini seçebilir ve bunları bir patch dosyası olarak indirebilirsin."
     }
 }

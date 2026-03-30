@@ -9,6 +9,8 @@ import { timeAgo } from '../../utils/timeAgo'
 import { getLanguageColor } from '../../utils/languageColors'
 import { FiGitPullRequest } from 'react-icons/fi'
 import './index.scss'
+import PRReportModal from './components/PRReportModal'
+import ApplyFixModal from './components/ApplyFixModal'
 
 const { Text } = Typography
 
@@ -42,6 +44,8 @@ const PRReview = () => {
     const [loading, setLoading] = useState(false)
     const [history, setHistory] = useState<any[]>([])
     const [selectedHistory, setSelectedHistory] = useState<string | null>(null)
+    const [reportModalOpen, setReportModalOpen] = useState(false)
+    const [fixModalOpen, setFixModalOpen] = useState(false)
 
     const token = localStorage.getItem('dt-token') || ''
 
@@ -376,10 +380,10 @@ const PRReview = () => {
                                     ))}
                                 </div>
                                 <Flex gap={8} className="pr-review__actions">
-                                    <Button type="primary" className="pr-review__btn pr-review__btn--flex">
+                                    <Button type="primary" className="pr-review__btn pr-review__btn--flex" onClick={() => setFixModalOpen(true)}>
                                         {t('prReview.applyFix')}
                                     </Button>
-                                    <Button className="pr-review__btn--flex">
+                                    <Button className="pr-review__btn--flex" onClick={() => setReportModalOpen(true)}>
                                         {t('prReview.fullReport')}
                                     </Button>
                                 </Flex>
@@ -391,6 +395,22 @@ const PRReview = () => {
                 )}
 
             </Flex>
+
+
+            <PRReportModal
+                open={reportModalOpen}
+                onClose={() => setReportModalOpen(false)}
+                result={result}
+            />
+
+            <ApplyFixModal
+                open={fixModalOpen}
+                onClose={() => setFixModalOpen(false)}
+                result={result}
+                token={token}
+                owner={selectedRepo?.split('/')[0] || ''}
+                repo={selectedRepo?.split('/')[1] || ''}
+            />
         </div>
     )
 }

@@ -48,6 +48,32 @@ class agents {
     }
 
     /**
+    * apply pr fixes (generate)
+    */
+    static applyFixes = async (token: string, owner: string, repo: string, prNumber: string, issues: any[]) => {
+        return await request.post(paths.applyFixes, {
+            token,
+            owner,
+            repo,
+            pr_number: parseInt(prNumber),
+            issues,
+        })
+    }
+
+    /**
+     * apply fixes to branch
+     */
+    static applyFixesToBranch = async (token: string, owner: string, repo: string, prNumber: string, fixes: any[]) => {
+        return await request.post(paths.applyFixesToBranch, {
+            token,
+            owner,
+            repo,
+            pr_number: parseInt(prNumber),
+            fixes,
+        })
+    }
+
+    /**
      * debug error
      */
     static debug = async (token: string, owner: string, repo: string, error: string) => {
@@ -96,6 +122,7 @@ class agents {
     static testHistory = async (token: string, owner: string, repo: string) => {
         return await request.post(paths.testHistory, { token, owner, repo })
     }
+
 }
 
 export { agents }
