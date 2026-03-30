@@ -87,5 +87,32 @@
         "historyLabel": "GEÇMİŞ",
         "indexingFailed": "İndeksleme başarısız",
         "files": "dosya"
+    },
+    "prReview": {
+        "title": "PR İnceleme Ajanı",
+        "subtitle": "PR incelemek için bir repo seçin",
+        "repoLabel": "REPO",
+        "selectRepo": "Repo seçin...",
+        "prLabel": "PULL REQUEST",
+        "selectRepoFirst": "Önce bir repo seçin...",
+        "loadingPRs": "PR'lar yükleniyor...",
+        "noPRsFound": "PR bulunamadı",
+        "selectPR": "PR seçin...",
+        "reviewBtn": "PR İncele",
+        "historyLabel": "GEÇMİŞ",
+        "noHistory": "Henüz inceleme geçmişi yok",
+        "responseLabel": "YANIT",
+        "diffLabel": "FARK",
+        "filesLabel": "DOSYALAR",
+        "riskScore": "Risk puanı",
+        "changedFiles": "Değişen dosyalar",
+        "criticalIssues": "Kritik sorunlar",
+        "criticalIssuesTag": "{{count}} kritik sorun",
+        "applyFix": "Düzeltme önerilerini uygula",
+        "fullReport": "Tam raporu görüntüle",
+        "riskHigh": "Yüksek risk",
+        "riskMedium": "Orta risk",
+        "riskLow": "Düşük risk",
+        "issuesCount": "{{count}} sorun"
     }
 }

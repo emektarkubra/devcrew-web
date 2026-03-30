@@ -237,6 +237,11 @@
     &__score-card {
         flex: 1;
 
+
+        .ant-card-body {
+            border-radius: 10px !important;
+        }
+
         &--danger {
             background: $gh-light-red-bg;
             border: 1px solid $gh-light-red-border;
@@ -360,6 +365,17 @@
         font-family: monospace;
 
         @apply dark:text-gh-text-muted;
+    }
+
+
+    &__issue-suggestion {
+        font-size: 12px;
+        color: $gh-light-green;
+        font-style: italic;
+        display: block;
+        margin-top: 4px;
+
+        @apply dark:text-gh-green-text;
     }
 
     // diff
@@ -514,5 +530,91 @@
         color: $gh-light-text-muted;
 
         @apply dark:text-gh-text-muted;
+    }
+
+    // Responsive
+    @media (max-width: 992px) {
+        &__stretch-row {
+            flex-direction: column;
+        }
+
+        &__col {
+            width: 100%;
+        }
+
+        &__issues-scroll,
+        &__files-scroll,
+        &__history-scroll {
+            max-height: 220px;
+        }
+
+        &__diff-card {
+            max-height: 220px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        margin: 12px;
+
+        &__header {
+            padding: 12px 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        &__body {
+            padding: 14px;
+        }
+
+        &__score-card {
+            .ant-card-body {
+                padding: 10px !important;
+            }
+        }
+
+        &__score-value {
+            font-size: 18px;
+        }
+
+        &__score-label {
+            font-size: 12px;
+        }
+
+        &__meta {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 4px !important;
+        }
+
+        &__actions {
+            flex-direction: column;
+
+            .pr-review__btn--flex {
+                width: 100%;
+            }
+        }
+    }
+
+    @media (max-width: 576px) {
+        margin: 8px;
+
+        &__header {
+            padding: 10px 12px;
+        }
+
+        &__body {
+            padding: 12px;
+        }
+
+        &__score-value {
+            font-size: 16px;
+        }
+
+        &__diff-card,
+        &__issues-scroll,
+        &__files-scroll,
+        &__history-scroll {
+            max-height: 180px;
+        }
     }
 }

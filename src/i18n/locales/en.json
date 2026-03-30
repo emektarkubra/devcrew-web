@@ -87,5 +87,32 @@
         "historyLabel": "HISTORY",
         "indexingFailed": "Indexing failed",
         "files": "files"
-    }   
+    },
+    "prReview": {
+        "title": "PR Review Agent",
+        "subtitle": "Select a repo to review PRs",
+        "repoLabel": "REPO",
+        "selectRepo": "Select repo...",
+        "prLabel": "PULL REQUEST",
+        "selectRepoFirst": "Select a repo first...",
+        "loadingPRs": "Loading PRs...",
+        "noPRsFound": "No PRs found",
+        "selectPR": "Select a PR...",
+        "reviewBtn": "Review PR",
+        "historyLabel": "HISTORY",
+        "noHistory": "No review history yet",
+        "responseLabel": "RESPONSE",
+        "diffLabel": "DIFF",
+        "filesLabel": "FILES",
+        "riskScore": "Risk score",
+        "changedFiles": "Changed files",
+        "criticalIssues": "Critical issues",
+        "criticalIssuesTag": "{{count}} critical issues",
+        "applyFix": "Apply fix suggestions",
+        "fullReport": "View full report",
+        "riskHigh": "High risk",
+        "riskMedium": "Medium risk",
+        "riskLow": "Low risk",
+        "issuesCount": "{{count}} issues"
+    }
 }
