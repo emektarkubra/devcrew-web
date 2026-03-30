@@ -25,8 +25,10 @@ const AppSidebar = () => {
 
     return (
         <Sider className={`sider-container ${collapsed ? 'collapsed-sider-container' : ''}`}>
+
             <Menu
-                mode={collapsed ? 'vertical' : 'inline'}
+                mode="inline"
+                inlineCollapsed={collapsed}
                 openKeys={collapsed ? undefined : openKeys}
                 onOpenChange={handleOpenChange}
                 items={menuItems}

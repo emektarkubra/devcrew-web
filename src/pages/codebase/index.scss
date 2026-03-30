@@ -119,26 +119,37 @@
     @apply dark:text-gh-text-muted;
   }
 
+
   // select
 
-  &__repo-select {
+  &__select {
     width: 100%;
+  }
 
-    &:hover .ant-select-selector,
-    &.ant-select-focused .ant-select-selector {
-      border-color: $gh-light-blue;
-      box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.12);
+  &__lang-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
 
-      @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-primary;
+  &__lang-text {
+    font-size: 12px;
+    color: $gh-light-text-muted;
 
-    }
+    @apply dark:text-gh-text-muted;
+  }
+
+  &__history-scroll {
+    max-height: 300px;
+    overflow-y: auto;
   }
 
   // button
 
   &__btn {
-    background: $gh-light-green;
-    border-color: $gh-light-green;
+    background: $gh-light-green !important;
+    border-color: $gh-light-green !important;
     align-self: flex-start;
 
     @apply dark:bg-gh-green dark:border-gh-green-border text-gh-text-primary !important;
@@ -163,6 +174,7 @@
   &__chip {
     cursor: pointer;
     border-radius: 20px;
+    padding: 3px 10px;
 
     &:hover {
       background-color: $gh-light-blue-bg;
@@ -191,26 +203,23 @@
   // file
 
   &__file-item {
-    background-color: $gh-light-bg-primary;
-    border: 1px solid $gh-light-border;
+    background-color: $gh-light-bg-primary !important;
+    border: 1px solid $gh-light-border !important;
+    padding: 5px;
 
-    @apply dark:bg-gh-bg-secondary dark:border-gh-border;
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border !important;
 
-    &:hover {
-      border-color: $gh-light-blue;
-      @apply dark:border-gh-blue-border;
-    }
   }
 
   &__file-avatar {
-    background: $gh-light-blue-bg;
-    color: $gh-light-blue;
+    background: $gh-light-blue-bg !important;
+    color: $gh-light-blue !important;
 
-    @apply dark:bg-gh-blue-light !important;
+    @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text !important;
 
     .anticon {
 
-      @apply dark:text-gh-light-blue !important;
+      @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text !important;
     }
   }
 
@@ -226,30 +235,33 @@
     @apply dark:text-gh-text-muted;
   }
 
-// history
+  // history
 
-&__history-item {
-  cursor: pointer;
-  border-radius: 6px;
-  padding: 10px;
-  width: 100%;
-  cursor: pointer;
+  &__history-item {
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.15s;
 
-  &:hover {
-    background: $gh-light-bg-tertiary;
-    @apply dark:bg-gh-bg-tertiary;
-  }
+    &:hover {
+      background: $gh-light-bg-tertiary;
+      @apply dark:bg-gh-bg-tertiary;
+    }
 
-  &--active {
-    background: $gh-light-bg-tertiary;
-    @apply dark:bg-gh-bg-tertiary;
+    &--active {
+      background: $gh-light-bg-tertiary !important;
+      @apply dark:bg-gh-bg-tertiary !important;
 
-    .codebase-qa__history-question {
-      color: $gh-light-text-primary;
-      @apply dark:text-gh-text-primary;
+
+
+      .debugging__history-error {
+        color: $gh-light-red;
+        @apply dark:text-gh-text-primary !important;
+      }
     }
   }
-}
 
   &__history-dot {
     background: $gh-light-text-muted;

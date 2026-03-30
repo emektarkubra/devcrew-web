@@ -27,7 +27,19 @@
     color: $gh-light-text-primary;
     text-align: left;
 
-    @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-primary !important;
+    @apply dark:bg-gh-bg-primary dark:border-gh-bg-secondary dark:text-gh-text-primary !important;
+}
+
+.ant-select-item {
+    @apply dark:bg-gh-bg-secondary dark:border-gh-bg-secondary dark:text-gh-text-primary !important;
+
+    &:hover {
+        @apply dark:bg-gh-bg-primary !important;
+    }
+}
+
+.ant-select-dropdown {
+    @apply dark:bg-gh-bg-secondary dark:border-gh-bg-secondary dark:text-gh-text-primary !important;
 }
 
 .ant-select-arrow,
@@ -35,6 +47,14 @@
     color: $gh-light-text-muted;
 
     @apply dark:text-gh-text-muted;
+}
+
+.ant-select-open {
+    .ant-select-selection-item {
+        color: $gh-light-text-primary !important;
+        @apply dark:text-gh-text-primary !important;
+    }
+
 }
 
 .ant-card {
@@ -134,35 +154,6 @@ input::placeholder {
 }
 
 // scroll bar
-
-.ant-card-body,
-.ant-list,
-.ant-select-dropdown,
-.ant-table-body {
-    &::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: $gh-light-bg-secondary;
-        border-radius: 8px;
-        @apply dark:bg-gh-bg-secondary;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: $gh-light-border;
-        border-radius: 8px;
-        @apply dark:bg-gh-border;
-
-        &:hover {
-            background: $gh-light-text-muted;
-            @apply dark:bg-gh-text-muted;
-        }
-    }
-}
-
-// scroll
 * {
     &::-webkit-scrollbar {
         width: 9px;
@@ -170,18 +161,20 @@ input::placeholder {
     }
 
     &::-webkit-scrollbar-track {
-        background: transparent;
+        background: $gh-light-bg-secondary !important;
+        background: $gh-light-border !important;
+        border-radius: 8px !important;
+        @apply dark:bg-gh-light-text-secondary !important;
     }
 
     &::-webkit-scrollbar-thumb {
-        background: $gh-light-border;
+        background: $gh-light-text-muted !important;
         border-radius: 8px;
-        background-color: $gh-light-text-secondary !important;
-        @apply dark:bg-gh-border;
+        @apply dark:bg-gh-border !important;
 
         &:hover {
-            background: $gh-light-text-muted;
-            @apply dark:bg-gh-text-muted;
+            background: $gh-light-text-muted !important;
+            @apply dark:bg-gh-text-muted !important;
         }
     }
 }

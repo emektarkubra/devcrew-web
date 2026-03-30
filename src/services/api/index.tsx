@@ -1,6 +1,5 @@
 import { agents } from "./agents";
-import { dashboard } from "./dashboard";
-import { login } from "./login";
+import { profile } from "./profile";
 
 
 /**
@@ -13,28 +12,19 @@ class api {
 
     /**
      *
-     * Auth
-     * @static
-     * @memberof api
-     */
-    static dashboard = dashboard;
-
-
-    /**
-     *
-     * Login
-     * @static
-     * @memberof login
-     */
-    static login = login;
-
-    /**
-     *
      * Agents
      * @static
      * @memberof agents
      */
     static agents = agents;
+
+    /**
+     *
+     * Agents
+     * @static
+     * @memberof profile
+     */
+    static profile = profile;
 
 }
 

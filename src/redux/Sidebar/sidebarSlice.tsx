@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit'
 
 const sidebarSlice = createSlice({
   name: 'collapsed',
@@ -7,10 +7,13 @@ const sidebarSlice = createSlice({
   },
   reducers: {
     handleCollapsedMenu(state) {
-      state.collapsed = !state.collapsed;
+      state.collapsed = !state.collapsed
+    },
+    setCollapsed(state, action) {
+      state.collapsed = action.payload
     },
   },
-});
+})
 
-export const { handleCollapsedMenu } = sidebarSlice.actions;
-export default sidebarSlice.reducer;
+export const { handleCollapsedMenu, setCollapsed } = sidebarSlice.actions
+export default sidebarSlice.reducer

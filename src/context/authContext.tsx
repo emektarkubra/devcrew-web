@@ -45,7 +45,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
             return;
         } else {
             try {
-                const { data, error } = await api.login.getUserProfile(token)
+                const { data, error } = await api.profile.getUserProfile(token)
                 if (error) {
                     toast.error(error)
                 } else {
@@ -74,7 +74,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
 
     const logout = () => {
-        api.login.logout();
+        localStorage.removeItem('dt-token')
+        window.location.href = '/'
         setUser(null);
         setToken(null);
         localStorage.removeItem('dt-token')
