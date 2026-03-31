@@ -8,8 +8,11 @@ export const profile = '/profile';
 export const repos = '/repos';
 export const repoSearch = "/repos/search"
 
-// codebase-qa
+//indexing
 export const indexRepo = '/agents/index'
+export const checkIndex = '/agents/check-index'
+
+// codebase-qa
 export const codebaseQA = '/agents/codebase-qa'
 export const codebaseQAHistory = '/agents/codebase-qa/history'
 
@@ -23,6 +26,7 @@ export const applyFixesToBranch = '/agents/pr-review/apply-fixes-to-branch'
 // debugging
 export const debug = "/agents/debug"
 export const debugHistory = "/agents/debug/history"
+export const applyDebugFix = '/agents/debug/apply-fix'
 
 // test generator
 export const generateTests = "/agents/test-generator"
