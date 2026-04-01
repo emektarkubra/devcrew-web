@@ -153,6 +153,32 @@ input::placeholder {
 
 }
 
+.ant-select-dropdown {
+    &::-webkit-scrollbar {
+        width: 9px;
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $gh-light-bg-secondary !important;
+        background: $gh-light-border !important;
+        border-radius: 8px !important;
+        @apply dark:bg-gh-light-text-secondary !important;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $gh-light-text-muted !important;
+        border-radius: 8px;
+        @apply dark:bg-gh-border !important;
+
+        &:hover {
+            background: $gh-light-text-muted !important;
+            @apply dark:bg-gh-text-muted !important;
+        }
+    }
+}
+
+
 // scroll bar
 * {
     &::-webkit-scrollbar {
@@ -177,6 +203,25 @@ input::placeholder {
             @apply dark:bg-gh-text-muted !important;
         }
     }
+}
+
+
+.rc-virtual-list-scrollbar-thumb {
+    background: $gh-light-text-muted !important;
+    border-radius: 8px;
+    @apply dark:bg-gh-border !important;
+
+    &:hover {
+        background: $gh-light-text-muted !important;
+        @apply dark:bg-gh-text-muted !important;
+    }
+}
+
+.rc-virtual-list-scrollbar {
+    background: $gh-light-bg-secondary !important;
+    background: $gh-light-border !important;
+    border-radius: 8px !important;
+    @apply dark:bg-gh-light-text-secondary !important;
 }
 
 // spin

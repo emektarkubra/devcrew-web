@@ -159,6 +159,7 @@
         "confirmApply": "Apply & Open PR",
         "applyFixDescription": "DevCrew will apply the suggested fix to a new branch and open a pull request automatically.",
         "applyFixWarning": "This will commit directly to a new branch. Review the fix carefully before confirming.",
+        "selectFileToView": "Select a file to view on GitHub",
         "severity": {
             "critical": "Critical",
             "high": "High",

@@ -97,8 +97,8 @@ class agents {
     /**
      * debug history
      */
-    static applyDebugFix = async (token: string, owner: string, repo: string, fix: string, affected_files: any[], error: string) => {
-        return await request.post(paths.applyDebugFix, { token, owner, repo, fix, affected_files, error })
+    static applyDebugFix = async (token: string, owner: string, repo: string, issues: any[], error: string) => {
+        return await request.post(paths.applyDebugFix, { token, owner, repo, issues, error })
     }
 
     /**

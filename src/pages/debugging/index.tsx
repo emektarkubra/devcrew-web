@@ -129,7 +129,7 @@ const Debugging = () => {
             rootCause: item.rootCause,
             severity: item.severity,
             affectedFiles: item.affectedFiles ?? [],
-            fixSuggestion: item.fixSuggestion ?? '',
+            issues: item.issues ?? [],
             explanation: item.explanation ?? '',
             confidence: null,
         })
@@ -142,7 +142,7 @@ const Debugging = () => {
 
 
     // handleApplyFix 
-    const handleApplyFix = async () => {
+    const handleApplyFix = async (selectedIssues: any[]) => {
         if (!selectedRepo || !result) return
         setApplyLoading(true)
 
@@ -151,19 +151,19 @@ const Debugging = () => {
         try {
             const { data, error } = await api.agents.applyDebugFix(
                 token, owner, repo,
-                result.fixSuggestion,
-                result.affectedFiles,
+                selectedIssues,
                 input,
             )
             if (error) {
-                toast.error(error); return
+                toast.error(error);
             } else {
                 toast.success(`PR opened: ${data.pr_url}`)
                 window.open(data?.pr_url, '_blank')
                 setApplyModalOpen(false)
             }
-        } catch {
-            toast.error('Failed to apply fix')
+
+        } catch (error) {
+            console.error('Apply fix error:', error)
         } finally {
             setApplyLoading(false)
         }
@@ -325,11 +325,24 @@ const Debugging = () => {
 
                         <Flex gap={16} className="debugging__stretch-row debugging__stack-on-mobile">
                             <Flex vertical gap={8} className="debugging__col">
-                                <Text className="debugging__section-label">{t('debugging.suggestedFix')}</Text>
+                                <Flex vertical gap={8} className="debugging__col">
+                                    <Text className="debugging__section-label">{t('debugging.suggestedFix')}</Text>
 
-                                <Card size="small" className="debugging__fix-card debugging__fix-card--padded">
-                                    {result?.fixSuggestion}
-                                </Card>
+                                    <Card size="small" className="debugging__fix-card debugging__fix-card--padded">
+                                        {result?.fixSuggestion}
+                                    </Card>
+                                </Flex>
+
+                                <Flex gap={8} className="debugging__actions-row">
+                                    <Button
+                                        type="primary"
+                                        disabled={!result?.issues || !result?.affectedFiles?.length}
+                                        onClick={() => setApplyModalOpen(true)}
+                                        className="debugging__action-btn-primary"
+                                    >
+                                        {t('debugging.applyFixOpenPr')}
+                                    </Button>
+                                </Flex>
                             </Flex>
 
                             <Flex vertical gap={8} className="debugging__col">
@@ -365,24 +378,6 @@ const Debugging = () => {
                                         </Text>
                                     )}
                                 </div>
-                            </Flex>
-                        </Flex>
-
-                        <Flex vertical gap={8}>
-                            <Text className="debugging__section-label">{t('debugging.actions')}</Text>
-
-                            <Flex gap={8} className="debugging__actions-row">
-                                <Button
-                                    type="primary"
-                                    disabled={!result?.fixSuggestion || !result?.affectedFiles?.length}
-                                    onClick={() => setApplyModalOpen(true)}
-                                    className="debugging__action-btn-primary"
-                                >
-                                    {t('debugging.applyFixOpenPr')}
-                                </Button>
-                                <Button className="debugging__action-btn">
-                                    {t('debugging.viewFile')}
-                                </Button>
                             </Flex>
                         </Flex>
                     </>
@@ -434,8 +429,8 @@ const Debugging = () => {
                 onClose={() => setApplyModalOpen(false)}
                 onConfirm={handleApplyFix}
                 loading={applyLoading}
-                affectedFiles={result?.affectedFiles ?? []}
-                fixSuggestion={result?.fixSuggestion ?? ''}
+                issues={result?.issues ?? []}
+                error={input}
             />
         </div>
     )

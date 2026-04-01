@@ -159,6 +159,7 @@
         "confirmApply": "Uygula & PR Aç",
         "applyFixDescription": "DevCrew önerilen düzeltmeyi yeni bir branch'e uygulayacak ve otomatik olarak pull request açacak.",
         "applyFixWarning": "Bu işlem doğrudan yeni bir branch'e commit atacak. Onaylamadan önce düzeltmeyi dikkatlice inceleyin.",
+        "selectFileToView": "GitHub'da görüntülemek için bir dosya seçin",
         "severity": {
             "critical": "Kritik",
             "high": "Yüksek",
