@@ -31,6 +31,7 @@ export const applyDebugFix = '/agents/debug/apply-fix'
 // test generator
 export const generateTests = "/agents/test-generator"
 export const testHistory = "/agents/test-generator/history"
+export const saveTests = '/agents/test-generator/save'
 
 // documentation
 export const documentation = "/agents/documentation"
