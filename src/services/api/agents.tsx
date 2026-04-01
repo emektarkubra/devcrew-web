@@ -13,6 +13,13 @@ class agents {
     }
 
     /**
+     * check index
+     */
+    static checkIndex = async (token: string, owner: string, repo: string) => {
+        return await request.post(paths.checkIndex, { token, owner, repo })
+    }
+
+    /**
      * codebase qa query
      */
     static codebaseQA = async (token: string, owner: string, repo: string, query: string) => {
@@ -87,6 +94,12 @@ class agents {
         return await request.post(paths.debugHistory, { token, owner, repo })
     }
 
+    /**
+     * debug history
+     */
+    static applyDebugFix = async (token: string, owner: string, repo: string, issues: any[], error: string) => {
+        return await request.post(paths.applyDebugFix, { token, owner, repo, issues, error })
+    }
 
     /**
      * generate documentation

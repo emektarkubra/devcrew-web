@@ -46,6 +46,23 @@ const CodebaseQA = () => {
         const [owner, repo] = value.split('/')
 
         try {
+            const { data: checkData, error: checkError } = await api.agents.checkIndex(token, owner, repo)
+
+            if (checkError) {
+                toast.error(checkError)
+                setIndexStatus('idle')
+                return
+            }
+
+            if (checkData?.indexed) {
+                // zaten index li
+                setIndexedFileCount(checkData.file_count)
+                setIndexStatus('ready')
+                await fetchHistory(owner, repo)
+                return
+            }
+
+            // index yok, index le
             const { data, error } = await api.agents.indexRepo(token, owner, repo)
             if (error) {
                 toast.error(error)
@@ -56,7 +73,7 @@ const CodebaseQA = () => {
                 await fetchHistory(owner, repo)
             }
         } catch {
-            toast.error(t('codebase.indexingFailed'))
+            toast.error('Indexing failed')
             setIndexStatus('idle')
         }
     }
