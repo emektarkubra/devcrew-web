@@ -6,10 +6,7 @@
     border: 1px solid $gh-light-border;
     background-color: $gh-light-bg-primary;
     margin: 20px;
-
     @apply dark:bg-gh-bg-secondary dark:border-gh-border;
-
-    // layout
 
     &__header {
         padding: 14px 20px;
@@ -22,20 +19,42 @@
         padding: 20px;
     }
 
-    &__spin-wrap {
-        padding: 8px 0;
-    }
-
     &__stretch-row {
         align-items: stretch;
+
+        @media (max-width: 768px) {
+            flex-direction: column;
+        }
     }
 
     &__preview-col {
         flex: 2;
+        min-width: 0;
     }
 
     &__side-col {
         flex: 1;
+        min-width: 0;
+
+        @media (max-width: 768px) {
+            flex: unset;
+        }
+    }
+
+    &__controls-row {
+        @media (max-width: 600px) {
+            flex-direction: column;
+        }
+    }
+
+    &__doctype-col {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__target-col {
+        flex: 1;
+        min-width: 0;
     }
 
     // dot
@@ -114,23 +133,10 @@
         @apply dark:bg-gh-purple-bg dark:border-gh-purple-border dark:text-gh-purple-text !important;
     }
 
-    &__tag--done {
-        background-color: $gh-light-green-bg !important;
-        border-color: $gh-light-green-border !important;
-        color: $gh-light-green !important;
-        font-size: 11px;
-        @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text !important;
-    }
-
     // select
 
     &__select {
         width: 100%;
-    }
-
-    &__type-select {
-        width: 160px;
-        flex-shrink: 0;
     }
 
     &__lang-dot {
@@ -146,19 +152,25 @@
         @apply dark:text-gh-text-muted;
     }
 
-    // input
+    &__repo-option {
+        width: 100%;
+    }
 
-    &__input {
-        flex: 1;
-        background-color: $gh-light-bg-primary;
-        border-color: $gh-light-border;
-        color: $gh-light-text-primary;
-        @apply dark:bg-gh-bg-secondary dark:border-gh-border dark:text-gh-text-primary;
+    &__full-repo-icon {
+        font-size: 12px;
+        color: #8250df;
+        @apply dark:text-gh-purple-text;
+    }
 
-        &:focus {
-            border-color: $gh-light-purple;
-            box-shadow: 0 0 0 2px rgba(130, 80, 223, 0.12);
-        }
+    &__full-repo-label {
+        color: #8250df;
+        @apply dark:text-gh-purple-text;
+    }
+
+    &__file-icon {
+        font-size: 12px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
     }
 
     // buttons
@@ -166,9 +178,7 @@
     &__generate-btn {
         background: $gh-light-purple !important;
         border-color: $gh-light-purple !important;
-        flex-shrink: 0;
         align-self: flex-start;
-
         @apply dark:bg-gh-purple dark:border-gh-purple-border !important;
 
         &:hover {
@@ -178,16 +188,19 @@
 
         &.ant-btn-disabled,
         &[disabled] {
-            background: $gh-light-bg-tertiary;
-            border-color: $gh-light-border;
-            color: $gh-light-text-muted;
-
+            background: $gh-light-bg-tertiary !important;
+            border-color: $gh-light-border !important;
+            color: $gh-light-text-muted !important;
             @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
+        }
+
+        @media (max-width: 600px) {
+            width: 100%;
+            align-self: stretch;
         }
     }
 
     &__export-btn {
-        flex: 1;
         background: $gh-light-purple !important;
         border-color: $gh-light-purple !important;
         @apply dark:bg-gh-purple dark:border-gh-purple-border !important;
@@ -196,10 +209,10 @@
             background: $gh-light-purple-hover !important;
             border-color: $gh-light-purple-hover !important;
         }
-    }
 
-    &__repo-btn {
-        flex: 1;
+        @media (max-width: 600px) {
+            width: 100%;
+        }
     }
 
     &__view-btn {
@@ -210,7 +223,12 @@
         }
     }
 
-    // preview card
+    // preview
+
+    &__preview-head {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
 
     &__preview-card {
         background: $gh-light-bg-secondary !important;
@@ -232,6 +250,7 @@
         font-size: 13px;
         line-height: 1.65;
         color: $gh-light-text-secondary;
+        display: block;
         @apply dark:text-gh-text-secondary;
     }
 
@@ -254,6 +273,7 @@
 
     &__method-header {
         margin-bottom: 4px;
+        flex-wrap: wrap;
     }
 
     &__method-name {
@@ -290,31 +310,7 @@
         color: $gh-light-text-primary;
         margin: 0;
         white-space: pre-wrap;
-        @apply dark:text-gh-text-primary;
-    }
-
-    // file status
-
-    &__file-status-scroll {
-        max-height: 180px;
-        overflow-y: auto;
-    }
-
-    &__file-status-item {
-        padding: 8px 0;
-        width: 100%;
-    }
-
-    &__file-avatar {
-        background: $gh-light-purple-bg !important;
-        color: $gh-light-purple !important;
-        flex-shrink: 0;
-        @apply dark:bg-gh-purple-bg dark:text-gh-purple-text !important;
-    }
-
-    &__file-code {
-        font-size: 12px;
-        color: $gh-light-text-primary;
+        word-break: break-word;
         @apply dark:text-gh-text-primary;
     }
 
@@ -323,6 +319,10 @@
     &__history-scroll {
         max-height: 200px;
         overflow-y: auto;
+    }
+
+    &__history-list-item {
+        padding: 0 !important;
     }
 
     &__history-item {
@@ -360,8 +360,6 @@
         @apply dark:text-gh-text-muted;
     }
 
-
-
     &__info-icon {
         font-size: 12px;
         color: $gh-light-text-muted;
@@ -372,5 +370,77 @@
             color: $gh-light-purple;
             @apply dark:text-gh-purple-text;
         }
+    }
+
+    &__repo-level-info {
+        background: $gh-light-purple-bg;
+        border: 1px solid $gh-light-purple-border;
+        border-radius: 6px;
+        padding: 8px 12px;
+        @apply dark:bg-gh-purple-bg dark:border-gh-purple-border;
+    }
+
+    &__guide-warning {
+        border-radius: 6px;
+        font-size: 12px;
+    }
+
+    .ant-alert-message {
+        text-align: left;
+    }
+
+    &__copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 15px;
+        font-size: 11px;
+        width: 30px !important;
+        height: 30px !important;
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 8px;
+        padding: 4px;
+        transition: all 0.2s ease;
+
+        background-color: $gh-light-bg-tertiary;
+        border: 1px solid $gh-light-border;
+
+        .anticon {
+            color: $gh-light-text-muted;
+            font-size: 16px !important;
+            transition: all 0.2s ease;
+        }
+
+        &:hover {
+            background-color: #e0f2fe;
+            border-color: #38bdf8;
+
+            .anticon {
+                color: #0284c7;
+            }
+        }
+
+        &:active {
+            transform: scale(0.92);
+            background-color: #bae6fd;
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+        }
+
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
+
+        @apply dark:[&_.anticon]:text-gh-text-muted;
+
+        @apply dark:hover:bg-[#0f172a] dark:hover:border-[#38bdf8];
+
+        @apply dark:hover:[&_.anticon]:text-[#38bdf8];
+
+        @apply dark:active:bg-[#020617];
     }
 }
