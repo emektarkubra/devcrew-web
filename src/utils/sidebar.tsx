@@ -69,10 +69,10 @@ export const MENU_ELEMENTS: MenuTypes[] = [
         type: 'group',
         children: [
             {
-                key: '/overview',
+                key: '/',
                 label: 'layout.overview',
                 title: 'layout.overview',
-                href: '/overview',
+                href: '/',
                 icon: <VscAccount size={18} />,
             },
             {

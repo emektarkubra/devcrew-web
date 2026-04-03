@@ -3,7 +3,7 @@ import { Content } from "antd/es/layout/layout";
 import "../assets/style/layout/layout.scss"
 import AppHeader from "./AppHeader";
 import AppSidebar from "./AppSidebar";
-
+import logo from "../assets/images/devCrew1.png"
 
 const withLayout = (PageContent: any) => {
 
@@ -14,7 +14,11 @@ const withLayout = (PageContent: any) => {
       </div>
       <Layout className="app-inside-container">
         <Flex vertical className="sidebar-container" >
-          {/* <div>logo</div> */}
+          {/* <Image
+            src={logo}
+            preview={false}
+            className="app-container__logo"
+          /> */}
           <AppSidebar />
         </Flex>
         <Content className="content-container">
