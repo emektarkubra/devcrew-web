@@ -33,7 +33,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
         if (token) {
             localStorage.setItem('dt-token', token)
-            window.history.replaceState({}, '', '/overview')
+            window.history.replaceState({}, '', '/')
             setToken(token)
         }
     }

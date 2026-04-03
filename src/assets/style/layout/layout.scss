@@ -8,6 +8,12 @@
     background-color: $gh-light-bg-secondary;
 
     @apply dark:bg-gh-bg-primary;
+
+    &__logo {
+        width: 140px !important;
+        height: 140px !important;
+        margin-right: 8px !important;
+    }
 }
 
 .app-inside-container {

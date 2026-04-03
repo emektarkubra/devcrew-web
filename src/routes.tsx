@@ -1,6 +1,5 @@
 import ArchitectureGraph from "./pages/architectureGraph";
 import CodebaseQA from "./pages/codebase";
-import Dashboard from "./pages/dashboard";
 import Debugging from "./pages/debugging";
 import Documentation from "./pages/documentation";
 import Profile from "./pages/profile";
@@ -10,16 +9,10 @@ import TestGenerator from "./pages/testGenerator";
 
 
 export const MENU_ROUTES = [
-  // Dashboard
-  {
-    path: "/",
-    title: "Main title",
-    element: <Dashboard />,
-  },
 
   // Profile
   {
-    path: "/overview",
+    path: "/",
     title: "Main title",
     element: <Profile />,
   },

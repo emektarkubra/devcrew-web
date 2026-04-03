@@ -1,5 +1,3 @@
-// src/services/agents.ts
-
 import request from "./requests"
 import * as paths from "./paths"
 
@@ -102,20 +100,6 @@ class agents {
     }
 
     /**
-     * generate documentation
-     */
-    static documentation = async (token: string, owner: string, repo: string, target: string, doc_type: string) => {
-        return await request.post(paths.documentation, { token, owner, repo, target, doc_type })
-    }
-
-    /**
-     * documentation history
-     */
-    static documentationHistory = async (token: string, owner: string, repo: string) => {
-        return await request.post(paths.documentationHistory, { token, owner, repo })
-    }
-
-    /**
      * repo file list
      */
     static repoFiles = async (token: string, owner: string, repo: string) => {
@@ -136,6 +120,26 @@ class agents {
         return await request.post(paths.testHistory, { token, owner, repo })
     }
 
+    /**
+     * save tests
+     */
+    static saveTests = async (token: string, tests: any[], filename: string, framework: string) => {
+        return await request.post(paths.saveTests, { token, tests, filename, framework })
+    }
+
+    /**
+     * generate documentation
+     */
+    static documentation = async (token: string, owner: string, repo: string, target: string, doc_type: string) => {
+        return await request.post(paths.documentation, { token, owner, repo, target, doc_type })
+    }
+
+    /**
+     * documentation history
+     */
+    static documentationHistory = async (token: string, owner: string, repo: string) => {
+        return await request.post(paths.documentationHistory, { token, owner, repo })
+    }
 }
 
 export { agents }

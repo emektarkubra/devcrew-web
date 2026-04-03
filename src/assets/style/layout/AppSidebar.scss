@@ -9,14 +9,14 @@
 
     .ant-layout-sider-children {
         background-color: $gh-light-bg-primary;
-        border-right: 1px solid $gh-light-border;
+        border-right: none;
 
         @apply dark:bg-gh-bg-secondary dark:border-gh-border;
     }
 
     .ant-menu {
         background-color: $gh-light-bg-primary;
-        border-right: none;
+        border-right: none !important;
 
         @apply dark:bg-gh-bg-secondary;
     }
@@ -26,9 +26,10 @@
         margin: 2px 8px;
         width: calc(100% - 16px);
         border-radius: 6px;
-        color: $gh-light-text-secondary;
+        color: $gh-light-text-primary;
+        cursor: pointer;
 
-        @apply dark:text-gh-text-secondary;
+        @apply dark:text-gh-text-secondary !important;
 
         &:hover {
             background-color: $gh-light-bg-tertiary;
@@ -37,8 +38,8 @@
 
             .ant-menu-title-content,
             .ant-menu-item-icon {
-                color: $gh-light-text-primary;
-                @apply dark:text-gh-text-primary;
+                color: $gh-light-text-secondary !important;
+                @apply dark:text-gh-text-primary !important;
             }
         }
     }
