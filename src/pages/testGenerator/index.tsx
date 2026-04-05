@@ -28,6 +28,27 @@ const allFrameworks = [
     { value: 'mocha', label: 'Mocha' },
 ]
 
+const testableExtentions = [
+    '.py',
+    '.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs',
+    '.java',
+    '.kt', '.kts',
+    '.go',
+    '.rs',
+    '.c', '.cpp', '.cc', '.cxx', '.h', '.hpp',
+    '.cs',
+    '.rb',
+    '.php',
+    '.swift',
+    '.scala',
+    '.dart',
+    '.ex', '.exs',
+    '.hs',
+    '.lua',
+    '.pl',
+    '.r', '.R',
+]
+
 const getFrameworksForFile = (file: string) => {
     const ext = Object.keys(frameworksByExtension).find(e => file.endsWith(e))
     if (!ext) return allFrameworks
@@ -114,8 +135,14 @@ const TestGenerator = () => {
         try {
             setFilesLoading(true)
             const { data, error } = await api.agents.repoFiles(token, owner, repo)
-            if (error) { toast.error(error) } else {
-                setRepoFiles(data?.files ?? [])
+            if (error) {
+                toast.error(error)
+            } else {
+                const allFiles = data?.files ?? []
+                const testable = allFiles.filter((f: string) =>
+                    testableExtentions?.some(ext => f?.endsWith(ext))
+                )
+                setRepoFiles(testable)
                 await getHistoryList(owner, repo)
             }
         } catch (e) {
@@ -155,16 +182,16 @@ const TestGenerator = () => {
 
     // history click
     const handleHistoryClick = (item: any) => {
-        setSelectedFile(item.target)
-        setFramework(item.framework ?? 'jest')
+        setSelectedFile(item?.target)
+        setFramework(item?.framework ?? 'jest')
         setResult({
-            totalTests: item.testCount,
-            coverage: item.coverage,
-            unitCount: item.tests?.filter((t: any) => t?.type === 'unit').length ?? 0,
-            edgeCount: item.tests?.filter((t: any) => t?.type === 'edge').length ?? 0,
-            integrationCount: item.tests?.filter((t: any) => t?.type === 'integration').length ?? 0,
-            tests: item.tests ?? [],
-            mergedCode: item.mergedCode ?? '',
+            testCount: item?.testCount,
+            coverage: item?.coverage,
+            unitCount: item?.tests?.filter((t: any) => t?.type === 'unit').length ?? 0,
+            edgeCount: item?.tests?.filter((t: any) => t?.type === 'edge').length ?? 0,
+            integrationCount: item?.tests?.filter((t: any) => t?.type === 'integration').length ?? 0,
+            tests: item?.tests ?? [],
+            mergedCode: item?.mergedCode ?? '',
         })
     }
 
@@ -187,7 +214,7 @@ const TestGenerator = () => {
     }
 
     const filteredTests = useMemo(
-        () => result?.tests?.filter((item: any) => filterType === 'all' || item.type === filterType) ?? [],
+        () => result?.tests?.filter((item: any) => filterType === 'all' || item?.type === filterType) ?? [],
         [result?.tests, filterType]
     )
 
@@ -215,7 +242,7 @@ const TestGenerator = () => {
                                 {t('testGenerator.historyMeta', {
                                     count: item?.testCount,
                                     coverage: item?.coverage,
-                                    time: timeAgo(item.timeAgo),
+                                    time: timeAgo(item?.timeAgo),
                                 })}
                             </Text>
                         </Flex>
@@ -349,7 +376,7 @@ const TestGenerator = () => {
                         <Flex gap={10} className="test-generator__score-cards">
                             <Card size="small" className="test-generator__card-green">
                                 <Text className="test-generator__card-label">{t('testGenerator.totalTests')}</Text>
-                                <Text className="test-generator__stat-value-green">{result?.totalTests}</Text>
+                                <Text className="test-generator__stat-value-green">{result?.testCount}</Text>
                             </Card>
                             <Card size="small" className="test-generator__card-green">
                                 <Text className="test-generator__card-label">{t('testGenerator.estimatedCoverage')}</Text>
@@ -391,7 +418,7 @@ const TestGenerator = () => {
 
                                 <div className="test-generator__tests-scroll">
                                     {filteredTests?.map((item: any) => (
-                                        <div key={item.name} className="test-generator__test-item">
+                                        <div key={item?.name} className="test-generator__test-item">
                                             <Flex
                                                 align="center"
                                                 justify="space-between"
