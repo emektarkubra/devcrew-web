@@ -287,5 +287,20 @@
         "tooltip_pr_review": "Reviews all open pull requests, checks for issues and suggests improvements.",
         "tooltip_test": "Generates unit, edge case, and integration tests for the most critical files.",
         "tooltip_documentation": "Generates README, API reference, architecture overview, and onboarding guide."
+    },
+    "architectureGraph": {
+        "title": "Architecture Graph",
+        "subtitle": "{{repo}} · {{nodes}} nodes · {{edges}} connections",
+        "live": "Live",
+        "filter": "Filter:",
+        "all": "All",
+        "service": "Service",
+        "database": "Database",
+        "external": "External",
+        "middleware": "Middleware",
+        "reset": "Reset",
+        "downloadPng": "Download as PNG",
+        "description": "Description",
+        "connections": "Connections"
     }
 }
