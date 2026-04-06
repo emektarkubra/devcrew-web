@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Button, Card, Flex, Tag, Typography, Select, List, Tooltip, Collapse } from 'antd'
-import { GithubOutlined, CheckCircleOutlined, ClockCircleOutlined, InfoCircleOutlined, ThunderboltOutlined } from '@ant-design/icons'
+import { GithubOutlined, CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
+import { useTranslation } from 'react-i18next'
 import withLayout from '../../layout/withLayout'
 import { api } from '../../services/api'
 import { getLanguageColor } from '../../utils/languageColors'
@@ -11,24 +12,11 @@ import './index.scss'
 
 const { Text } = Typography
 
-const AGENTS = [
-    { key: 'codebase', label: 'Codebase Analysis', tooltip: 'Analyzes codebase structure, dependencies, and code quality. Detects circular imports and anti-patterns.', color: '#0969da' },
-    { key: 'pr_review', label: 'PR Review', tooltip: 'Reviews all open pull requests, checks for issues, missing tests, and suggests improvements.', color: '#8250df' },
-    { key: 'test', label: 'Test Generator', tooltip: 'Generates unit, edge case, and integration tests for the most critical files in the repo.', color: '#1a7f37' },
-    { key: 'documentation', label: 'Documentation', tooltip: 'Generates README, API reference, architecture overview, and onboarding guide.', color: '#bc4c00' },
-]
-
-const MOCK_HISTORY = [
-    { repo: 'emektarkubra/devcrew-be', agents: ['codebase', 'pr_review', 'test', 'documentation'], score: 87, timeAgo: new Date(Date.now() - 30 * 60 * 1000).toISOString() },
-    { repo: 'emektarkubra/devcrew-web', agents: ['codebase', 'test'], score: 91, timeAgo: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString() },
-    { repo: 'emektarkubra/devcrew-be', agents: ['pr_review', 'documentation'], score: 78, timeAgo: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() },
-]
-
-const MOCK_OUTPUTS: Record<string, { summary: string; actions: string[] }> = {
-    codebase: { summary: 'Well-organized FastAPI project · 2 circular imports detected · Code quality: 87/100', actions: ['Fix circular import between app/services/agents/ and app/core/', 'Add type hints to 3 functions in app/routes/agents.py'] },
-    pr_review: { summary: '3 PRs analyzed · PR #12: missing error handling · PR #11: fix looks correct', actions: ['Add error handling to generate_tests() in PR #12', 'Add input validation for framework field in PR #12'] },
-    test: { summary: '24 tests generated · 91% estimated coverage · 8 unit · 9 edge · 7 integration', actions: ['Run generated tests: pytest tests/generated/', 'Review edge cases for charge_customer() function'] },
-    documentation: { summary: 'README · API reference · Architecture overview · Onboarding guide generated', actions: ['Review and publish generated README.md', 'Add environment variables section to onboarding guide'] },
+const agentDoneClass: Record<string, string> = {
+    codebase: 'team-mode__step-icon--done-green',
+    pr_review: 'team-mode__step-icon--done-green',
+    test: 'team-mode__step-icon--done-green',
+    documentation: 'team-mode__step-icon--done-green',
 }
 
 type AgentStatus = 'idle' | 'running' | 'done' | 'waiting'
@@ -40,6 +28,7 @@ interface AgentState {
 }
 
 const TeamMode = () => {
+    const { t } = useTranslation()
     const [repos, setRepos] = useState<any[]>([])
     const [reposLoading, setReposLoading] = useState(false)
     const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
@@ -47,28 +36,89 @@ const TeamMode = () => {
     const [running, setRunning] = useState(false)
     const [agentStates, setAgentStates] = useState<Record<string, AgentState>>({})
     const [summary, setSummary] = useState<any>(null)
-    const [history, setHistory] = useState(MOCK_HISTORY)
+    const [history, setHistory] = useState<any[]>([])
+    const [historyLoading, setHistoryLoading] = useState(false)
 
     const token = localStorage.getItem('dt-token') || ''
-
     const allDone = selectedAgents.length > 0 && selectedAgents.every(k => agentStates[k]?.status === 'done')
     const hasStarted = Object.keys(agentStates).length > 0
 
-    useEffect(() => {
-        const fetchRepos = async () => {
-            setReposLoading(true)
+    const agents = [
+        {
+            key: 'codebase',
+            label: t('teamMode.agents_codebase'),
+            tooltip: t('teamMode.tooltip_codebase')
+        },
+        {
+            key: 'pr_review', label: t('teamMode.agents_pr_review'),
+            tooltip: t('teamMode.tooltip_pr_review')
+        },
+        {
+            key: 'test',
+            label: t('teamMode.agents_test'),
+            tooltip: t('teamMode.tooltip_test')
+        },
+        {
+            key: 'documentation',
+            label: t('teamMode.agents_documentation'),
+            tooltip: t('teamMode.tooltip_documentation')
+        },
+    ]
+
+    const steps = [
+        { icon: '1', label: t('teamMode.step1') },
+        { icon: '2', label: t('teamMode.step2') },
+        { icon: '3', label: t('teamMode.step3') },
+        { icon: '4', label: t('teamMode.step4') },
+    ]
+
+    // get repos
+    const getRepos = async () => {
+        setReposLoading(true)
+
+        try {
             const { data, error } = await api.profile.getRepos(token)
-            if (error) { toast.error(error); setReposLoading(false); return }
-            setRepos(data)
+            if (error) {
+                toast.error(error)
+            } else {
+                setRepos(data)
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
             setReposLoading(false)
         }
-        fetchRepos()
+    }
+
+
+    // get history
+    const getHistory = async () => {
+        setHistoryLoading(true)
+        try {
+            const { data, error } = await api.agents.teamModeHistory(token)
+            if (error) {
+                toast.error(error)
+            } else {
+                setHistory(data)
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setHistoryLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        getRepos()
+        getHistory()
     }, [])
 
-    const handleSelectAll = () => setSelectedAgents(AGENTS.map(a => a.key))
 
-    const handleRun = async () => {
+    // run team mode
+    const handleRun = () => {
         if (!selectedRepo || selectedAgents.length === 0) return
+
+        const [owner, repo] = selectedRepo.split('/')
         setRunning(true)
         setSummary(null)
 
@@ -78,38 +128,81 @@ const TeamMode = () => {
         })
         setAgentStates(initial)
 
-        for (const key of selectedAgents) {
-            const start = Date.now()
-            await new Promise(r => setTimeout(r, 1500 + Math.random() * 1000))
-            const elapsed = ((Date.now() - start) / 1000).toFixed(1)
+        const agentStartTimes: Record<string, number> = {}
+        const response = api.agents.teamModeStream(token, owner, repo, selectedAgents)
 
+        response.addEventListener('agent_start', (e) => {
+            const { agent } = JSON.parse((e as MessageEvent).data)
+            agentStartTimes[agent] = Date.now()
             setAgentStates(prev => {
-                const next = { ...prev, [key]: { status: 'done' as AgentStatus, output: MOCK_OUTPUTS[key], elapsed: Number(elapsed) } }
-                const idx = selectedAgents.indexOf(key)
-                if (selectedAgents[idx + 1]) {
-                    next[selectedAgents[idx + 1]] = { status: 'running', output: null, elapsed: null }
+                const next = { ...prev }
+                next[agent] = { status: 'running', output: null, elapsed: null }
+                const idx = selectedAgents.indexOf(agent)
+                if (selectedAgents[idx + 1] && next[selectedAgents[idx + 1]]?.status !== 'done') {
+                    next[selectedAgents[idx + 1]] = { status: 'waiting', output: null, elapsed: null }
                 }
                 return next
             })
-        }
+        })
 
-        setSummary({ score: 87, prs: 3, tests: 24, docs: selectedAgents.includes('documentation') ? 4 : 0 })
-        setRunning(false)
+        response.addEventListener('agent_done', (e) => {
+            const { agent, summary: agentSummary, actions } = JSON.parse((e as MessageEvent).data)
+            const elapsed = agentStartTimes[agent]
+                ? Number(((Date.now() - agentStartTimes[agent]) / 1000).toFixed(1))
+                : null
+            setAgentStates(prev => ({
+                ...prev,
+                [agent]: { status: 'done', elapsed, output: { summary: agentSummary, actions } },
+            }))
+        })
+
+        response.addEventListener('complete', (e) => {
+            const data = JSON.parse((e as MessageEvent).data)
+            setSummary({
+                score: data?.health_score ?? 0,
+                text: data?.summary ?? '',
+                top_actions: data?.top_actions ?? [],
+                prs: data?.results?.pr_review?.pr_count ?? 0,
+                tests: data?.results?.test?.test_count ?? 0,
+                docs: data?.results?.documentation?.docs_generated ?? 0,
+            })
+            getHistory()
+            response.close()
+            setRunning(false)
+        })
+
+        response.addEventListener('error', (e: any) => {
+            try {
+                const data = JSON.parse(e.data ?? '{}')
+                toast.error(data.message ?? 'Team run failed')
+            } catch {
+                toast.error('Connection lost')
+            }
+            response.close()
+            setRunning(false)
+        })
     }
 
-    const handleReset = () => {
-        setAgentStates({})
-        setSummary(null)
-        setRunning(false)
-    }
-
+    // history click
     const handleHistoryClick = (item: any) => {
-        setSelectedRepo(item.repo)
-        setSelectedAgents(item.agents)
-        setSummary({ score: item.score, prs: 3, tests: 24, docs: 4 })
+        setSelectedRepo(item?.repo)
+        setSelectedAgents(item?.agents)
+        setSummary({
+            score: item?.health_score ?? item?.score ?? 0,
+            text: item?.summary ?? '',
+            top_actions: item?.top_actions ?? [],
+            prs: item?.results?.pr_review?.pr_count ?? 0,
+            tests: item?.results?.test?.test_count ?? 0,
+            docs: item?.results?.documentation?.docs_generated ?? 0,
+        })
         const states: Record<string, AgentState> = {}
-        item.agents.forEach((k: string) => {
-            states[k] = { status: 'done', output: MOCK_OUTPUTS[k], elapsed: 2.1 }
+        item?.agents.forEach((k: string) => {
+            const r = item?.results?.[k]
+            states[k] = {
+                status: 'done',
+                elapsed: null,
+                output: r ? { summary: r.summary ?? '', actions: r.actions ?? [] } : null,
+            }
         })
         setAgentStates(states)
     }
@@ -121,174 +214,151 @@ const TeamMode = () => {
     }
 
     const getStatusTag = (status: AgentStatus) => {
-        if (status === 'running') return <Tag className="team-mode__tag--running">Running</Tag>
-        if (status === 'done') return <Tag className="team-mode__tag--done">Done</Tag>
-        return <Tag className="team-mode__tag--waiting">Waiting</Tag>
+        if (status === 'running') return <Tag className="team-mode__tag--running">{t('teamMode.tagRunning')}</Tag>
+        if (status === 'done') return <Tag className="team-mode__tag--done">{t('teamMode.tagDone')}</Tag>
+        return <Tag className="team-mode__tag--waiting">{t('teamMode.tagWaiting')}</Tag>
+    }
+
+    const getStepIconClass = (key: string, status: AgentStatus) => {
+        if (status === 'done') return `team-mode__step-icon ${agentDoneClass[key] ?? 'team-mode__step-icon--done'}`
+        if (status === 'running') return 'team-mode__step-icon team-mode__step-icon--running'
+        return 'team-mode__step-icon'
     }
 
     return (
         <div className="team-mode">
 
-            {/* Header */}
             <Flex align="center" justify="space-between" className="team-mode__header">
                 <Flex align="center" gap={10}>
                     <div className={`team-mode__dot team-mode__dot--${running ? 'active' : allDone ? 'ready' : 'idle'}`} />
                     <Flex vertical align="flex-start" gap={2}>
-                        <Text strong className="team-mode__title">Team Mode</Text>
+                        <Text strong className="team-mode__title">{t('teamMode.title')}</Text>
                         <Text type="secondary" className="team-mode__subtitle">
-                            {running ? 'Agents are running...' : allDone ? 'All agents completed' : 'Run multiple agents simultaneously on a repo'}
+                            {running ? t('teamMode.running') : allDone ? t('teamMode.allDone') : t('teamMode.subtitle')}
                         </Text>
                     </Flex>
                 </Flex>
                 {allDone && (
-                    <Tag className="team-mode__tag--complete">{selectedAgents.length} agents completed</Tag>
+                    <Tag className="team-mode__tag--complete">
+                        {t('teamMode.agentsCompleted', { count: selectedAgents?.length })}
+                    </Tag>
                 )}
             </Flex>
 
-            {/* How it works */}
             {!hasStarted && !running && (
                 <div className="team-mode__how-it-works">
                     <Flex gap={0} align="center" className="team-mode__how-steps">
-                        {[
-                            { icon: '1', label: 'Select a repo' },
-                            { icon: '2', label: 'Choose agents' },
-                            { icon: '3', label: 'Run agents' },
-                            { icon: '4', label: 'Get health report' },
-                        ].map((step, idx) => (
-                            <Flex key={step.icon} align="center" style={{ flex: 1 }}>
+                        {steps?.map((step, idx) => (
+                            <Flex key={step?.icon} align="center" style={{ flex: 1 }}>
                                 <Flex vertical align="center" gap={6} style={{ flex: 1 }}>
-                                    <div className="team-mode__how-step-num">{step.icon}</div>
-                                    <Text className="team-mode__how-step-label">{step.label}</Text>
+                                    <div className="team-mode__how-step-num">{step?.icon}</div>
+                                    <Text className="team-mode__how-step-label">{step?.label}</Text>
                                 </Flex>
                                 {idx < 3 && <div className="team-mode__how-connector" />}
                             </Flex>
                         ))}
                     </Flex>
-                    <Text className="team-mode__how-desc">
-                        Select the agents you want to run on your repo. Each agent runs in sequence and results appear as they complete. At the end you get a combined health report.
-                    </Text>
+                    <Text className="team-mode__how-desc">{t('teamMode.howItWorks')}</Text>
                 </div>
             )}
 
-            {/* Body */}
             <Flex vertical gap={20} className="team-mode__body">
 
-                {/* Config */}
-                <Flex gap={12} className="team-mode__config-row">
-                    <Flex vertical gap={6} style={{ flex: 1 }}>
-                        <Text className="team-mode__section-label">REPO</Text>
+                <Flex vertical gap={12} className="team-mode__config-row" >
+                    <Text className="team-mode__section-label">{t('teamMode.repo')}</Text>
+                    <Flex gap={6} style={{ flex: 1 }}>
                         <Select
                             className="team-mode__select"
-                            placeholder={<Flex align="center" gap={8}><GithubOutlined /><span>Select repo...</span></Flex>}
+                            placeholder={<Flex align="center" gap={8}><GithubOutlined /><span>{t('teamMode.selectRepo')}</span></Flex>}
                             value={selectedRepo}
                             onChange={setSelectedRepo}
                             showSearch
                             loading={reposLoading}
                             disabled={running}
-                            options={repos.map(r => ({
-                                value: r.full_name,
+                            options={repos?.map(repo => ({
+                                value: repo?.full_name,
                                 label: (
                                     <Flex align="center" justify="space-between">
                                         <Flex align="center" gap={8}>
                                             <GithubOutlined />
-                                            <span>{r.full_name}</span>
+                                            <span>{repo?.full_name}</span>
                                         </Flex>
-                                        {r.language && (
+                                        {repo?.language && (
                                             <Flex align="center" gap={4}>
-                                                <div className="team-mode__lang-dot" style={{ background: getLanguageColor(r.language) }} />
-                                                <Text className="team-mode__lang-text">{r.language}</Text>
+                                                <div className="team-mode__lang-dot" style={{ background: getLanguageColor(repo?.language) }} />
+                                                <Text className="team-mode__lang-text">{repo?.language}</Text>
                                             </Flex>
                                         )}
                                     </Flex>
                                 ),
                             }))}
                         />
-                    </Flex>
-
-                    <Flex vertical gap={6} style={{ flex: 1 }}>
-                        <Flex align="center" justify="space-between">
-                            <Text className="team-mode__section-label">AGENTS</Text>
-                            <Button
-                                size="small"
-                                type="link"
-                                icon={<ThunderboltOutlined />}
-                                onClick={handleSelectAll}
-                                disabled={running}
-                                className="team-mode__select-all-btn"
-                            >
-                                Select all
-                            </Button>
-                        </Flex>
                         <Select
                             mode="multiple"
                             className="team-mode__select"
-                            placeholder="Select agents..."
+                            placeholder={t('teamMode.selectAgents')}
                             value={selectedAgents}
                             onChange={setSelectedAgents}
                             disabled={running}
-                            maxTagCount={2}
-                            options={AGENTS.map(a => ({
-                                value: a.key,
+                            maxTagCount="responsive"
+                            options={agents?.map(agent => ({
+                                value: agent?.key,
                                 label: (
                                     <Flex align="center" justify="space-between">
-                                        <span>{a.label}</span>
-                                        <Tooltip title={a.tooltip} placement="right">
-                                            <InfoCircleOutlined className="team-mode__info-icon" />
-                                        </Tooltip>
+                                        <span>{agent?.label}</span>
                                     </Flex>
                                 ),
                             }))}
                         />
                     </Flex>
+
                 </Flex>
 
-                {/* Actions */}
                 <Flex gap={8}>
                     <Button
                         type="primary"
                         onClick={handleRun}
-                        loading={running}
-                        disabled={!selectedRepo || selectedAgents.length === 0}
+                        disabled={!selectedRepo || selectedAgents.length === 0 || running}
                         className="team-mode__run-btn"
                     >
-                        {running ? 'Running...' : 'Run Team'}
+                        {t('teamMode.runTeam')}
                     </Button>
                     {hasStarted && !running && (
-                        <Button onClick={handleReset} className="team-mode__reset-btn">Reset</Button>
+                        <Button
+                            onClick={() => {
+                                setAgentStates({})
+                                setSummary(null)
+                                setRunning(false)
+                            }}
+                            className="team-mode__reset-btn">
+                            {t('teamMode.reset')}
+                        </Button>
                     )}
                 </Flex>
 
-                {/* Pipeline */}
                 {hasStarted && (
                     <Flex vertical gap={8}>
-                        <Flex align="center" gap={6}>
-                            <Text className="team-mode__section-label">PIPELINE</Text>
-                        </Flex>
+                        <Text className="team-mode__section-label">{t('teamMode.pipeline')}</Text>
                         <Flex gap={0} align="center" className="team-mode__pipeline">
-                            {selectedAgents.map((key, idx) => {
-                                const agent = AGENTS.find(a => a.key === key)!
+                            {selectedAgents?.map((key, idx) => {
+                                const agent = agents?.find(a => a.key === key)
                                 const state = agentStates[key]
                                 const status = state?.status ?? 'idle'
                                 return (
-                                    <Flex key={key} align="center" style={{ flex: 1 }}>
+                                    <Flex key={key} align="center" style={{ flex: idx === selectedAgents.length - 1 ? 'unset' : 1 }} justify='space-between'>
                                         <Flex vertical align="center" gap={6} className={`team-mode__step team-mode__step--${status}`}>
-                                            <div
-                                                className="team-mode__step-icon"
-                                                style={{
-                                                    background: status === 'done' ? '#dafbe1' : status === 'running' ? '#ddf4ff' : undefined,
-                                                    borderColor: status === 'done' ? agent.color :
-                                                        status === 'running' ? '#0969da' : undefined,
-                                                }}
-                                            >
+                                            <div className={getStepIconClass(key, status)}>
                                                 {getStatusIcon(status)}
                                             </div>
-                                            <Text className="team-mode__step-label">{agent.label}</Text>
+                                            <Text className="team-mode__step-label">{agent?.label}</Text>
                                             {getStatusTag(status)}
                                             {state?.elapsed && (
-                                                <Text className="team-mode__step-elapsed">{state.elapsed}s</Text>
+                                                <Text className="team-mode__step-elapsed">
+                                                    {t('teamMode.completedIn', { elapsed: state.elapsed })}
+                                                </Text>
                                             )}
                                         </Flex>
-                                        {idx < selectedAgents.length - 1 && (
+                                        {idx < selectedAgents?.length - 1 && (
                                             <div className={`team-mode__connector team-mode__connector--${status === 'done' ? 'active' : 'inactive'}`} />
                                         )}
                                     </Flex>
@@ -298,62 +368,80 @@ const TeamMode = () => {
                     </Flex>
                 )}
 
-                {/* Summary */}
                 {summary && (
                     <Flex vertical gap={8}>
-                        <Text className="team-mode__section-label">REPO HEALTH REPORT — {selectedRepo}</Text>
-                        <Flex gap={10} wrap="wrap">   {/* ← wrap ekle */}
+                        <Text className="team-mode__section-label">
+                            {t('teamMode.healthReport')} — {selectedRepo}
+                        </Text>
+                        <Flex gap={10} wrap="wrap">
                             <Card size="small" className="team-mode__card-green">
-                                <Text className="team-mode__card-label">Code quality</Text>
-                                <Text className="team-mode__stat-value-green">{summary.score}/100</Text>
+                                <Text className="team-mode__card-label">{t('teamMode.healthScore')}</Text>
+                                <Text className="team-mode__stat-value-green">{summary?.score}/100</Text>
                             </Card>
                             <Card size="small" className="team-mode__card-green">
-                                <Text className="team-mode__card-label">PRs reviewed</Text>
-                                <Text className="team-mode__stat-value-green">{summary.prs}</Text>
+                                <Text className="team-mode__card-label">{t('teamMode.prsReviewed')}</Text>
+                                <Text className="team-mode__stat-value-green">{summary?.prs}</Text>
                             </Card>
                             <Card size="small" className="team-mode__card-green">
-                                <Text className="team-mode__card-label">Tests generated</Text>
-                                <Text className="team-mode__stat-value-green">{summary.tests}</Text>
+                                <Text className="team-mode__card-label">{t('teamMode.testsGenerated')}</Text>
+                                <Text className="team-mode__stat-value-green">{summary?.tests}</Text>
                             </Card>
                             <Card size="small" className="team-mode__card-green">
-                                <Text className="team-mode__card-label">Docs generated</Text>
-                                <Text className="team-mode__stat-value-green">{summary.docs}</Text>
+                                <Text className="team-mode__card-label">{t('teamMode.docsGenerated')}</Text>
+                                <Text className="team-mode__stat-value-green">{summary?.docs}</Text>
                             </Card>
                         </Flex>
+
+                        {summary?.text && (
+                            <Text className="team-mode__summary-text">{summary?.text}</Text>
+                        )}
+
+                        {summary?.top_actions?.length > 0 && (
+                            <Flex vertical gap={4}>
+                                <Text className="team-mode__output-actions-label">{t('teamMode.topActions')}</Text>
+                                {summary?.top_actions.map((action: string, i: number) => (
+                                    <Flex key={i} align="center" gap={8} className="team-mode__output-action">
+                                        <span className="team-mode__output-action-bullet">→</span>
+                                        <Text className="team-mode__output-action-text">{action}</Text>
+                                    </Flex>
+                                ))}
+                            </Flex>
+                        )}
                     </Flex>
                 )}
 
-                {/* Outputs */}
-                {selectedAgents.some(k => agentStates[k]?.status === 'done') && (
+                {selectedAgents?.some(k => agentStates[k]?.status === 'done') && (
                     <Flex vertical gap={8}>
-                        <Text className="team-mode__section-label">OUTPUTS</Text>
+                        <Text className="team-mode__section-label">{t('teamMode.outputs')}</Text>
                         <Collapse
                             className="team-mode__collapse"
                             items={selectedAgents
-                                .filter(k => agentStates[k]?.status === 'done')
-                                .map(key => {
-                                    const agent = AGENTS.find(a => a.key === key)!
+                                ?.filter(k => agentStates[k]?.status === 'done')
+                                ?.map(key => {
+                                    const agent = agents?.find(a => a.key === key)
                                     const state = agentStates[key]
                                     return {
                                         key,
                                         label: (
                                             <Flex align="center" gap={8}>
                                                 <CheckCircleOutlined className="team-mode__icon--done" />
-                                                <Text strong style={{ fontSize: 13 }}>{agent.label}</Text>
-                                                {state.elapsed && (
+                                                <Text strong className="team-mode__step-label">{agent?.label}</Text>
+                                                {state?.elapsed && (
                                                     <Text className="team-mode__step-elapsed" style={{ marginLeft: 'auto' }}>
-                                                        completed in {state.elapsed}s
+                                                        {t('teamMode.completedIn', { elapsed: state?.elapsed })}
                                                     </Text>
                                                 )}
                                             </Flex>
                                         ),
                                         children: (
                                             <Flex vertical gap={10}>
-                                                <Text className="team-mode__output-summary">{state.output?.summary}</Text>
-                                                {state.output?.actions && state.output.actions.length > 0 && (
+                                                <Text className="team-mode__output-summary">{state?.output?.summary}</Text>
+                                                {state?.output?.actions && state.output.actions.length > 0 && (
                                                     <Flex vertical gap={4}>
-                                                        <Text className="team-mode__output-actions-label">SUGGESTED ACTIONS</Text>
-                                                        {state.output.actions.map((action, i) => (
+                                                        <Text className="team-mode__output-actions-label">
+                                                            {t('teamMode.suggestedActions')}
+                                                        </Text>
+                                                        {state?.output?.actions?.map((action, i) => (
                                                             <Flex key={i} align="flex-start" gap={8} className="team-mode__output-action">
                                                                 <span className="team-mode__output-action-bullet">→</span>
                                                                 <Text className="team-mode__output-action-text">{action}</Text>
@@ -370,17 +458,17 @@ const TeamMode = () => {
                     </Flex>
                 )}
 
-                {/* History */}
                 <Flex vertical gap={8} className="team-mode__history-col">
-                    <Text className="team-mode__section-label">HISTORY</Text>
+                    <Text className="team-mode__section-label">{t('teamMode.history')}</Text>
                     <div className="team-mode__history-scroll">
                         <List
                             dataSource={history}
+                            loading={historyLoading}
                             split
-                            locale={{ emptyText: 'No team runs yet' }}
+                            locale={{ emptyText: t('teamMode.noHistory') }}
                             renderItem={(item: any) => (
                                 <List.Item style={{ padding: 0 }}>
-                                    <Tooltip title="Click to restore this run" placement="right">
+                                    <Tooltip title={t('teamMode.restoreRun')} placement="right">
                                         <Flex
                                             align="flex-start"
                                             gap={10}
@@ -389,19 +477,19 @@ const TeamMode = () => {
                                         >
                                             <div className="team-mode__history-dot" />
                                             <Flex align="center" gap={12} style={{ flex: 1, flexWrap: 'wrap' }}>
-                                                <Text code className="team-mode__history-repo">{item.repo}</Text>
+                                                <Text code className="team-mode__history-repo">{item?.repo}</Text>
                                                 <Flex gap={4} wrap="wrap">
-                                                    {item.agents.map((k: string) => (
+                                                    {item?.agents?.map((k: string) => (
                                                         <Tag key={k} className="team-mode__history-agent">
-                                                            {AGENTS.find(a => a.key === k)?.label}
+                                                            {agents?.find(a => a.key === k)?.label}
                                                         </Tag>
                                                     ))}
                                                 </Flex>
                                                 <Flex align="center" gap={6} style={{ marginLeft: 'auto' }}>
                                                     <Tag className="team-mode__tag--done" style={{ margin: 0 }}>
-                                                        {item.score}/100
+                                                        {item?.health_score ?? item?.score ?? 0}/100
                                                     </Tag>
-                                                    <Text className="team-mode__history-meta">{timeAgo(item.timeAgo)}</Text>
+                                                    <Text className="team-mode__history-meta">{timeAgo(item?.timeAgo)}</Text>
                                                 </Flex>
                                             </Flex>
                                         </Flex>

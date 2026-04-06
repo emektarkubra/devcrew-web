@@ -13,7 +13,7 @@
         border-radius: 4px;
     }
 
-    // ── Header ───────────────────────────────────────────────
+    // header
 
     &__header {
         padding: 14px 20px;
@@ -29,7 +29,6 @@
         }
     }
 
-    // ── How it works ─────────────────────────────────────────
 
     &__how-it-works {
         padding: 20px 20px 0;
@@ -96,7 +95,7 @@
         @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted;
     }
 
-    // ── Body ─────────────────────────────────────────────────
+    //body
 
     &__body {
         padding: 20px;
@@ -106,7 +105,7 @@
         }
     }
 
-    // ── Dot ──────────────────────────────────────────────────
+    // dot
 
     &__dot {
         width: 9px;
@@ -146,7 +145,7 @@
         }
     }
 
-    // ── Typography ───────────────────────────────────────────
+    // typography
 
     &__title {
         font-size: 15px;
@@ -166,24 +165,33 @@
         letter-spacing: 0.06em;
         display: block;
         color: $gh-light-text-muted;
+        text-align: left;
         @apply dark:text-gh-text-muted;
     }
 
-    &__pipeline-hint {
-        font-size: 11px;
-        color: $gh-light-text-muted;
-        @apply dark:text-gh-text-muted;
+    &__summary-text {
+        font-size: 12px;
+        color: $gh-light-text-secondary;
+        display: block;
+        line-height: 1.7;
+        padding: 10px 12px;
+        background: $gh-light-bg-secondary;
+        border-radius: 6px;
+        border: 1px solid $gh-light-border;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-secondary;
     }
 
-    // ── Tags ─────────────────────────────────────────────────
+    // tags
 
     &__tag--running {
-        background: #ddf4ff;
-        border-color: #54aeff66;
-        color: #0969da;
+        background: $gh-light-red-bg;
+        border-color: $gh-light-red-border;
+        color: $gh-light-red;
         font-size: 11px;
         border-radius: 20px;
         padding: 1px 8px;
+
+        @apply dark:bg-gh-red-bg dark:border-gh-red-border dark:text-gh-red-text;
     }
 
     &__tag--done {
@@ -216,7 +224,7 @@
         @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
     }
 
-    // ── Config ───────────────────────────────────────────────
+    // config
 
     &__config-row {
         @media (max-width: 600px) {
@@ -255,11 +263,23 @@
         @apply dark:text-gh-text-muted;
     }
 
-    // ── Buttons ──────────────────────────────────────────────
+    // buttons 
 
     &__run-btn {
-        background: $gh-light-blue !important;
-        border-color: $gh-light-blue !important;
+        background: $gh-light-green !important;
+        border-color: $gh-light-green !important;
+
+        &:hover {
+            background: $gh-light-green-hover !important;
+        }
+
+        &.ant-btn-disabled,
+        &[disabled] {
+            background: $gh-light-bg-tertiary !important;
+            border-color: $gh-light-border !important;
+            color: $gh-light-text-muted !important;
+            @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
+        }
 
         @media (max-width: 480px) {
             flex: 1;
@@ -275,7 +295,7 @@
         }
     }
 
-    // ── Icons ────────────────────────────────────────────────
+    // icons
 
     &__icon--done {
         color: $gh-light-green;
@@ -291,9 +311,7 @@
 
     &__spin {
         font-size: 16px;
-        color: $gh-light-blue;
         animation: team-spin 0.8s linear infinite;
-        @apply dark:text-gh-blue-text;
     }
 
     @keyframes team-spin {
@@ -306,7 +324,7 @@
         }
     }
 
-    // ── Pipeline ─────────────────────────────────────────────
+    // pipeline 
 
     &__pipeline {
         overflow-x: auto;
@@ -362,7 +380,19 @@
         justify-content: center;
         transition: all 0.3s;
         flex-shrink: 0;
-        @apply dark:bg-gh-bg-tertiary dark:border-gh-border !important;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
+
+        &--done {
+            background: $gh-light-green-bg;
+            border-color: $gh-light-green;
+            @apply dark:bg-gh-green-bg dark:border-gh-green-border;
+        }
+
+        &--running {
+            background: $gh-light-red-bg;
+            border-color: $gh-light-red;
+            @apply dark:bg-gh-red-bg dark:border-gh-red-text;
+        }
 
         @media (max-width: 600px) {
             width: 32px;
@@ -404,27 +434,37 @@
         }
     }
 
-    // ── Summary cards ────────────────────────────────────────
+    // cards
 
     &__card-green {
         flex: 1;
+        min-width: calc(25% - 8px);
         background: $gh-light-green-bg !important;
         border: 1px solid $gh-light-green-border !important;
         @apply dark:bg-gh-green-bg dark:border-gh-green-border;
 
-        @media (max-width: 480px) {
+        @media (max-width: 1042px) {
             min-width: calc(50% - 5px);
+        }
+
+        @media (max-width: 648px) {
+            min-width: 100%;
         }
     }
 
     &__card-neutral {
         flex: 1;
+        min-width: calc(25% - 8px);
         background: $gh-light-bg-secondary !important;
         border: 1px solid $gh-light-border !important;
         @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
 
-        @media (max-width: 480px) {
+        @media (max-width: 1042px) {
             min-width: calc(50% - 5px);
+        }
+
+        @media (max-width: 648px) {
+            min-width: 100%;
         }
     }
 
@@ -439,7 +479,7 @@
         font-size: 22px;
         font-weight: 500;
         color: $gh-light-green;
-        @apply dark:text-gh-green-text;
+        @apply dark:text-gh-green-text !important;
 
         @media (max-width: 480px) {
             font-size: 18px;
@@ -457,7 +497,14 @@
         }
     }
 
-    // ── Outputs ──────────────────────────────────────────────
+    .ant-card-body {
+        border-radius: 8px !important;
+        // background: $gh-light-green-bg !important;
+        // border-color: $gh-light-green !important;
+        @apply dark:bg-gh-green-bg dark:border-gh-green-border !important;
+    }
+
+    // outputs
 
     &__collapse {
         background: transparent !important;
@@ -490,12 +537,19 @@
         @apply dark:text-gh-text-secondary;
     }
 
+    &__output-action {
+        height: 35px !important;
+    }
+
     &__output-actions-label {
         font-size: 10px;
         font-weight: 600;
         letter-spacing: 0.06em;
         color: $gh-light-text-muted;
         display: block;
+        text-align: left;
+        margin-top: 20px;
+
         @apply dark:text-gh-text-muted;
     }
 
@@ -516,7 +570,7 @@
         @apply dark:text-gh-text-primary;
     }
 
-    // ── History ──────────────────────────────────────────────
+    // history
 
     &__history-col {
         width: 100%;
@@ -585,43 +639,14 @@
         @apply dark:text-gh-text-muted;
     }
 
-    &__card-green {
-        flex: 1;
-        min-width: calc(25% - 8px);
-        background: $gh-light-green-bg !important;
-        border: 1px solid $gh-light-green-border !important;
-        @apply dark:bg-gh-green-bg dark:border-gh-green-border;
 
-        @media (max-width: 1042px) {
-            min-width: calc(50% - 5px);
+    &__step-icon {
+
+        &--done-green {
+            background: $gh-light-green-bg !important;
+            border-color: $gh-light-green !important;
+            @apply dark:bg-gh-green-bg dark:border-gh-green-border !important;
         }
 
-        @media (max-width: 648px) {
-            min-width: 100%;
-        }
-
-    }
-
-    &__card-neutral {
-        flex: 1;
-        min-width: calc(25% - 8px);
-        background: $gh-light-bg-secondary !important;
-        border: 1px solid $gh-light-border !important;
-
-        @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
-
-        @media (max-width: 1042px) {
-            min-width: calc(50% - 5px);
-        }
-
-        @media (max-width: 648px) {
-            min-width: 100%;
-        }
-
-
-    }
-
-    .ant-card-body {
-        border-radius: 8px !important;
     }
 }
