@@ -140,6 +140,23 @@ class agents {
     static documentationHistory = async (token: string, owner: string, repo: string) => {
         return await request.post(paths.documentationHistory, { token, owner, repo })
     }
+
+    /**
+     * team mode stream — EventSource
+     */
+    static teamModeStream = (token: string, owner: string, repo: string, selectedAgents: string[]): EventSource => {
+        const params = new URLSearchParams({ token, owner, repo, selected_agents: selectedAgents.join(',') })
+        return new EventSource(
+            `${import.meta.env.VITE_API_URL ?? 'http://localhost:8000'}/agents/team-mode/stream?${params}`
+        )
+    }
+
+    /**
+     * team mode history
+     */
+    static teamModeHistory = async (token: string) => {
+        return await request.post(paths.teamModeHistory, { token })
+    }
 }
 
 export { agents }

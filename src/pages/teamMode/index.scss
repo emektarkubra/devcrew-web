@@ -1,0 +1,652 @@
+@import '../../assets/style/variables';
+
+.team-mode {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid $gh-light-border;
+    background-color: $gh-light-bg-primary;
+    margin: 20px;
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border;
+
+    @media (max-width: 768px) {
+        margin: 10px;
+        border-radius: 4px;
+    }
+
+    // header
+
+    &__header {
+        padding: 14px 20px;
+        border-bottom: 1px solid $gh-light-border;
+        background-color: $gh-light-bg-secondary;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
+
+        @media (max-width: 480px) {
+            padding: 12px 14px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+    }
+
+
+    &__how-it-works {
+        padding: 20px 20px 0;
+
+        @media (max-width: 480px) {
+            padding: 14px 14px 0;
+        }
+    }
+
+    &__how-steps {
+        margin-bottom: 12px;
+        overflow-x: auto;
+    }
+
+    &__how-step-num {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: $gh-light-bg-secondary;
+        border: 1px solid $gh-light-border;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 500;
+        color: $gh-light-text-secondary;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-secondary;
+
+        @media (max-width: 480px) {
+            width: 26px;
+            height: 26px;
+            font-size: 11px;
+        }
+    }
+
+    &__how-step-label {
+        font-size: 12px;
+        color: $gh-light-text-secondary;
+        text-align: center;
+        @apply dark:text-gh-text-secondary;
+
+        @media (max-width: 480px) {
+            font-size: 10px;
+        }
+    }
+
+    &__how-connector {
+        height: 1px;
+        flex: 1;
+        background: $gh-light-border;
+        margin-bottom: 20px;
+        @apply dark:bg-gh-border;
+    }
+
+    &__how-desc {
+        font-size: 12px;
+        color: $gh-light-text-muted;
+        display: block;
+        padding: 10px 12px;
+        background: $gh-light-bg-secondary;
+        border-radius: 6px;
+        border: 1px solid $gh-light-border;
+        margin-bottom: 4px;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted;
+    }
+
+    //body
+
+    &__body {
+        padding: 20px;
+
+        @media (max-width: 480px) {
+            padding: 14px;
+        }
+    }
+
+    // dot
+
+    &__dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+
+        &--idle {
+            background: $gh-light-text-muted;
+            @apply dark:bg-gh-text-muted;
+        }
+
+        &--active {
+            background: $gh-light-blue;
+            box-shadow: 0 0 6px rgba(9, 105, 218, 0.5);
+            animation: team-pulse 1.2s ease-in-out infinite;
+            @apply dark:bg-gh-blue-text;
+        }
+
+        &--ready {
+            background: $gh-light-green;
+            box-shadow: 0 0 6px rgba(26, 127, 55, 0.4);
+            @apply dark:bg-gh-green-text;
+        }
+    }
+
+    @keyframes team-pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.4;
+        }
+    }
+
+    // typography
+
+    &__title {
+        font-size: 15px;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
+    }
+
+    &__subtitle {
+        font-size: 12px;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
+    }
+
+    &__section-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        display: block;
+        color: $gh-light-text-muted;
+        text-align: left;
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__summary-text {
+        font-size: 12px;
+        color: $gh-light-text-secondary;
+        display: block;
+        line-height: 1.7;
+        padding: 10px 12px;
+        background: $gh-light-bg-secondary;
+        border-radius: 6px;
+        border: 1px solid $gh-light-border;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-secondary;
+    }
+
+    // tags
+
+    &__tag--running {
+        background: $gh-light-red-bg;
+        border-color: $gh-light-red-border;
+        color: $gh-light-red;
+        font-size: 11px;
+        border-radius: 20px;
+        padding: 1px 8px;
+
+        @apply dark:bg-gh-red-bg dark:border-gh-red-border dark:text-gh-red-text;
+    }
+
+    &__tag--done {
+        background: $gh-light-green-bg;
+        border-color: $gh-light-green-border;
+        color: $gh-light-green;
+        font-size: 11px;
+        border-radius: 20px;
+        padding: 1px 8px;
+        @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
+    }
+
+    &__tag--waiting {
+        background: $gh-light-bg-secondary;
+        border-color: $gh-light-border;
+        color: $gh-light-text-muted;
+        font-size: 11px;
+        border-radius: 20px;
+        padding: 1px 8px;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted;
+    }
+
+    &__tag--complete {
+        background: $gh-light-green-bg;
+        border-color: $gh-light-green-border;
+        color: $gh-light-green;
+        font-size: 11px;
+        border-radius: 20px;
+        padding: 2px 10px;
+        @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
+    }
+
+    // config
+
+    &__config-row {
+        @media (max-width: 600px) {
+            flex-direction: column;
+        }
+    }
+
+    &__select {
+        width: 100%;
+    }
+
+    &__lang-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__lang-text {
+        font-size: 12px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__select-all-btn {
+        font-size: 12px;
+        padding: 0;
+        height: auto;
+        color: $gh-light-blue;
+        @apply dark:text-gh-blue-text;
+    }
+
+    &__info-icon {
+        font-size: 12px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    // buttons 
+
+    &__run-btn {
+        background: $gh-light-green !important;
+        border-color: $gh-light-green !important;
+
+        &:hover {
+            background: $gh-light-green-hover !important;
+        }
+
+        &.ant-btn-disabled,
+        &[disabled] {
+            background: $gh-light-bg-tertiary !important;
+            border-color: $gh-light-border !important;
+            color: $gh-light-text-muted !important;
+            @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
+        }
+
+        @media (max-width: 480px) {
+            flex: 1;
+        }
+    }
+
+    &__reset-btn {
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
+
+        @media (max-width: 480px) {
+            flex: 1;
+        }
+    }
+
+    // icons
+
+    &__icon--done {
+        color: $gh-light-green;
+        font-size: 16px;
+        @apply dark:text-gh-green-text;
+    }
+
+    &__icon--waiting {
+        color: $gh-light-text-muted;
+        font-size: 16px;
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__spin {
+        font-size: 16px;
+        animation: team-spin 0.8s linear infinite;
+    }
+
+    @keyframes team-spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    // pipeline 
+
+    &__pipeline {
+        overflow-x: auto;
+        padding-bottom: 4px;
+
+        @media (max-width: 600px) {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+    }
+
+    &__step {
+        min-width: 120px;
+        text-align: center;
+        padding: 8px;
+
+        &--done {
+            opacity: 1;
+        }
+
+        &--running {
+            opacity: 1;
+        }
+
+        &--waiting {
+            opacity: 0.5;
+        }
+
+        &--idle {
+            opacity: 0.4;
+        }
+
+        @media (max-width: 600px) {
+            flex-direction: row !important;
+            align-items: center !important;
+            text-align: left;
+            min-width: unset;
+            width: 100%;
+            padding: 6px 0;
+            gap: 10px !important;
+        }
+    }
+
+    &__step-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 1.5px solid $gh-light-border;
+        background: $gh-light-bg-secondary;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        flex-shrink: 0;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
+
+        &--done {
+            background: $gh-light-green-bg;
+            border-color: $gh-light-green;
+            @apply dark:bg-gh-green-bg dark:border-gh-green-border;
+        }
+
+        &--running {
+            background: $gh-light-red-bg;
+            border-color: $gh-light-red;
+            @apply dark:bg-gh-red-bg dark:border-gh-red-text;
+        }
+
+        @media (max-width: 600px) {
+            width: 32px;
+            height: 32px;
+        }
+    }
+
+    &__step-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
+    }
+
+    &__step-elapsed {
+        font-size: 11px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__connector {
+        height: 2px;
+        flex: 1;
+        margin-bottom: 52px;
+        transition: background 0.3s;
+
+        &--active {
+            background: $gh-light-green;
+            @apply dark:bg-gh-green-text;
+        }
+
+        &--inactive {
+            background: $gh-light-border;
+            @apply dark:bg-gh-border;
+        }
+
+        @media (max-width: 600px) {
+            display: none;
+        }
+    }
+
+    // cards
+
+    &__card-green {
+        flex: 1;
+        min-width: calc(25% - 8px);
+        background: $gh-light-green-bg !important;
+        border: 1px solid $gh-light-green-border !important;
+        @apply dark:bg-gh-green-bg dark:border-gh-green-border;
+
+        @media (max-width: 1042px) {
+            min-width: calc(50% - 5px);
+        }
+
+        @media (max-width: 648px) {
+            min-width: 100%;
+        }
+    }
+
+    &__card-neutral {
+        flex: 1;
+        min-width: calc(25% - 8px);
+        background: $gh-light-bg-secondary !important;
+        border: 1px solid $gh-light-border !important;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
+
+        @media (max-width: 1042px) {
+            min-width: calc(50% - 5px);
+        }
+
+        @media (max-width: 648px) {
+            min-width: 100%;
+        }
+    }
+
+    &__card-label {
+        font-size: 11px;
+        display: block;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
+    }
+
+    &__stat-value-green {
+        font-size: 22px;
+        font-weight: 500;
+        color: $gh-light-green;
+        @apply dark:text-gh-green-text !important;
+
+        @media (max-width: 480px) {
+            font-size: 18px;
+        }
+    }
+
+    &__stat-value {
+        font-size: 22px;
+        font-weight: 500;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
+
+        @media (max-width: 480px) {
+            font-size: 18px;
+        }
+    }
+
+    .ant-card-body {
+        border-radius: 8px !important;
+        // background: $gh-light-green-bg !important;
+        // border-color: $gh-light-green !important;
+        @apply dark:bg-gh-green-bg dark:border-gh-green-border !important;
+    }
+
+    // outputs
+
+    &__collapse {
+        background: transparent !important;
+        border-color: $gh-light-border !important;
+        @apply dark:border-gh-border !important;
+
+        .ant-collapse-item {
+            border-color: $gh-light-border !important;
+            @apply dark:border-gh-border !important;
+        }
+
+        .ant-collapse-header {
+            background: $gh-light-bg-secondary !important;
+            @apply dark:bg-gh-bg-tertiary !important;
+        }
+
+        .ant-collapse-content {
+            background: $gh-light-bg-primary !important;
+            border-color: $gh-light-border !important;
+            @apply dark:bg-gh-bg-secondary dark:border-gh-border !important;
+        }
+    }
+
+    &__output-summary {
+        font-size: 12px;
+        font-family: monospace;
+        color: $gh-light-text-secondary;
+        display: block;
+        line-height: 1.7;
+        @apply dark:text-gh-text-secondary;
+    }
+
+    &__output-action {
+        height: 35px !important;
+    }
+
+    &__output-actions-label {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        color: $gh-light-text-muted;
+        display: block;
+        text-align: left;
+        margin-top: 20px;
+
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__output-action {
+        padding: 4px 0;
+    }
+
+    &__output-action-bullet {
+        font-size: 12px;
+        color: $gh-light-blue;
+        flex-shrink: 0;
+        @apply dark:text-gh-blue-text;
+    }
+
+    &__output-action-text {
+        font-size: 12px;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
+    }
+
+    // history
+
+    &__history-col {
+        width: 100%;
+        border-top: 1px solid $gh-light-border;
+        padding-top: 16px;
+        @apply dark:border-gh-border;
+    }
+
+    &__history-scroll {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    &__history-item {
+        cursor: pointer;
+        border-radius: 6px;
+        padding: 10px;
+        width: 100%;
+        transition: background 0.15s;
+
+        &:hover {
+            background: $gh-light-bg-secondary;
+            @apply dark:bg-gh-bg-tertiary;
+        }
+
+        @media (max-width: 480px) {
+            padding: 8px 6px;
+        }
+    }
+
+    &__history-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: $gh-light-blue;
+        margin-top: 6px;
+        flex-shrink: 0;
+        @apply dark:bg-gh-blue-text;
+    }
+
+    &__history-repo {
+        font-size: 12px;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
+
+        @media (max-width: 480px) {
+            font-size: 11px;
+            word-break: break-all;
+        }
+    }
+
+    &__history-agent {
+        font-size: 10px;
+        border-radius: 20px;
+        padding: 0 6px;
+        margin: 0;
+        background: $gh-light-bg-secondary;
+        border-color: $gh-light-border;
+        color: $gh-light-text-secondary;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-secondary;
+    }
+
+    &__history-meta {
+        font-size: 11px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+
+    &__step-icon {
+
+        &--done-green {
+            background: $gh-light-green-bg !important;
+            border-color: $gh-light-green !important;
+            @apply dark:bg-gh-green-bg dark:border-gh-green-border !important;
+        }
+
+    }
+}

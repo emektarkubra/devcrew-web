@@ -5,6 +5,7 @@ import Documentation from "./pages/documentation";
 import Profile from "./pages/profile";
 import PrReview from "./pages/PRReview";
 import RepoIntelligence from "./pages/repoIntelligence";
+import TeamMode from "./pages/teamMode";
 import TestGenerator from "./pages/testGenerator";
 
 
@@ -15,6 +16,11 @@ export const MENU_ROUTES = [
     path: "/",
     title: "Main title",
     element: <Profile />,
+  },
+    {
+    path: "/team-mode",
+    title: "Team Mode",
+    element: <TeamMode />,
   },
   {
     path: "/agents/codebase-qa",

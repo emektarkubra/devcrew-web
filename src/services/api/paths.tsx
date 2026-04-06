@@ -39,3 +39,7 @@ export const documentationHistory = "/agents/documentation/history"
 
 // agents
 export const repoFiles = "/agents/repo-files"
+
+// team mode
+export const teamModeStream = "/agents/team-mode/stream"
+export const teamModeHistory = "/agents/team-mode/history"
