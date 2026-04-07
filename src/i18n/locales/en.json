@@ -301,7 +301,9 @@
         "reset": "Reset",
         "downloadPng": "Download as PNG",
         "description": "Description",
-        "connections": "Connections"
+        "connections": "Connections",
+        "analyzing": "analyzing",
+        "noNodes": "No nodes"
     },
     "repoIntelligence": {
         "title": "Repo Intelligence",

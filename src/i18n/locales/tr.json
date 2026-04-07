@@ -301,7 +301,9 @@
         "reset": "Sıfırla",
         "downloadPng": "PNG olarak indir",
         "description": "Açıklama",
-        "connections": "Bağlantılar"
+        "connections": "Bağlantılar",
+        "analyzing": "analiz ediliyor",
+        "noNodes": "Düğüm yok"
     },
     "repoIntelligence": {
         "title": "Repo Intelligence",

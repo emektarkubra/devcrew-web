@@ -21,6 +21,10 @@
         min-width: 0;
     }
 
+    &__loading {
+        height: 100%;
+    }
+
     &__title {
         font-size: 15px;
         color: $gh-light-text-primary;
@@ -210,6 +214,26 @@
 
         &__toolbar-actions {
             justify-content: flex-end;
+        }
+    }
+
+    .ant-select.ant-select-outlined.css-dev-only-do-not-override-1ld0lzq.ant-select-single.ant-select-show-arrow.ant-select-show-search {
+        width: 400px !important;
+    }
+
+    &__dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: $gh-light-text-muted;
+        flex-shrink: 0;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+        @apply dark:bg-gh-text-muted;
+
+        &--active {
+            background: $gh-light-green;
+            box-shadow: 0 0 6px rgba(26, 127, 55, 0.4);
+            @apply dark:bg-gh-green-text;
         }
     }
 
@@ -405,6 +429,67 @@
             @apply dark:bg-gh-purple-text !important;
         }
     }
+
+    &__repo-lang-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__lang-text {
+        font-size: 12px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__loading {
+        height: 100%;
+        min-height: 400px;
+    }
+
+    &__loading-text {
+        font-size: 13px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__empty-icon {
+        font-size: 32px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__spin-icon {
+        font-size: 28px;
+        color: $gh-light-blue;
+        @apply dark:text-gh-blue-text;
+    }
+
+    &__drawer-path {
+        font-size: 11px;
+        display: block;
+        margin-top: 4px;
+        word-break: break-all;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
+    }
+
+    &__lang-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__tag--lang {
+        background: $gh-light-bg-secondary !important;
+        border-color: $gh-light-border !important;
+        color: $gh-light-text-secondary !important;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-secondary !important;
+    }
+
+
 
     @media (max-width: 576px) {
         &__card {
