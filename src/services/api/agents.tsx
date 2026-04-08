@@ -157,6 +157,14 @@ class agents {
     static teamModeHistory = async (token: string) => {
         return await request.post(paths.teamModeHistory, { token })
     }
+
+
+    /**
+    * team mode history
+    */
+    static getArchitecture = async (token: string, owner: string, repo: string) => {
+        return await request.get(`${paths.architecture}?token=${token}&owner=${owner}&repo=${repo}`)
+    }
 }
 
 export { agents }

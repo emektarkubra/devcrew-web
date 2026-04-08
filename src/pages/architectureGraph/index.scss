@@ -1,36 +1,83 @@
+@import '../../assets/style/variables';
+
 .architecture-graph {
     border-radius: 6px;
     overflow: hidden;
-    background-color: #fff;
+    border: 1px solid $gh-light-border;
+    background-color: $gh-light-bg-primary;
     margin: 20px;
+
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border;
+
 
     &__header {
         padding: 14px 20px;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid $gh-light-border;
+        background-color: $gh-light-bg-secondary;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
+    }
+
+    &__header-left {
+        min-width: 0;
+    }
+
+    &__loading {
+        height: 100%;
+    }
+
+    &__title {
+        font-size: 15px;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
+    }
+
+    &__subtitle {
+        font-size: 12px;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
     }
 
     &__dot {
         width: 9px;
         height: 9px;
         border-radius: 50%;
-        background: #0F6E56;
+        background: $gh-light-green;
         flex-shrink: 0;
+        @apply dark:bg-gh-green-text;
     }
 
     &__live-tag {
-        background: #e1f5ee !important;
-        color: #0F6E56 !important;
-        border: 1px solid #9FE1CB !important;
+        background: $gh-light-green-bg !important;
+        color: $gh-light-green-text !important;
+        border: 1px solid $gh-light-green-border !important;
+        @apply dark:bg-gh-green-bg dark:text-gh-green-text dark:border-gh-green-border !important;
     }
 
     &__toolbar {
         padding: 10px 20px;
-        border-bottom: 1px solid #f0f0f0;
-        background: #fafafa;
+        border-bottom: 1px solid $gh-light-border;
+        background: $gh-light-bg-secondary;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
+    }
+
+    &__toolbar-group,
+    &__toolbar-actions {
+        flex-shrink: 0;
     }
 
     &__filter-label {
         font-size: 12px !important;
+        color: $gh-light-text-secondary !important;
+        @apply dark:text-gh-text-secondary !important;
+    }
+
+    &__filter-select {
+        width: 130px;
+    }
+
+    &__legend {
+        min-width: 0;
+        flex-wrap: wrap;
     }
 
     &__legend-dot {
@@ -38,23 +85,63 @@
         height: 8px;
         border-radius: 50%;
         flex-shrink: 0;
+
+        &--service {
+            background: $gh-light-blue;
+            @apply dark:bg-gh-blue-text;
+        }
+
+        &--database {
+            background: $gh-light-green;
+            @apply dark:bg-gh-green-text;
+        }
+
+        &--external {
+            background: $gh-light-orange;
+            @apply dark:bg-gh-orange-text;
+        }
+
+        &--middleware {
+            background: $gh-light-purple;
+            @apply dark:bg-gh-purple-text;
+        }
     }
 
     &__legend-label {
         font-size: 11px !important;
+        color: $gh-light-text-secondary !important;
+        @apply dark:text-gh-text-secondary !important;
+    }
+
+    &__reset-btn {
+        border-color: $gh-light-border !important;
+        @apply dark:border-gh-border !important;
     }
 
     &__download-btn {
-        background: #0F6E56 !important;
+        background: $gh-light-green-btn !important;
+        border-color: $gh-light-green-btn !important;
+
+        &:hover {
+            background: $gh-light-green-hover !important;
+            border-color: $gh-light-green-hover !important;
+        }
+
+        @apply dark:bg-gh-green dark:border-gh-green dark:text-gh-text-primary !important;
     }
 
     &__graph {
         height: 540px;
     }
 
+    &__background {
+        color: $gh-light-border-muted !important;
+    }
+
     &__minimap {
-        background: #f9fafb;
-        border: 1px solid #f0f0f0;
+        background: $gh-light-bg-secondary !important;
+        border: 1px solid $gh-light-border !important;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border !important;
     }
 
     &__drawer-label {
@@ -62,6 +149,8 @@
         text-transform: uppercase;
         letter-spacing: 0.06em;
         display: block !important;
+        color: $gh-light-text-muted !important;
+        @apply dark:text-gh-text-muted !important;
     }
 
     &__drawer-desc-label {
@@ -74,6 +163,8 @@
 
     &__drawer-description {
         font-size: 13px !important;
+        color: $gh-light-text-primary !important;
+        @apply dark:text-gh-text-primary !important;
     }
 
     &__drawer-conn-item {
@@ -82,35 +173,332 @@
 
     &__drawer-conn-arrow {
         font-size: 11px !important;
+        color: $gh-light-text-muted !important;
+        @apply dark:text-gh-text-muted !important;
     }
 
     &__drawer-conn-label-text {
         font-size: 12px !important;
+        color: $gh-light-text-primary !important;
+        @apply dark:text-gh-text-primary !important;
+    }
+
+    &__edge {
+        &--service {
+            stroke: $gh-light-blue !important;
+        }
+
+        &--database {
+            stroke: $gh-light-green !important;
+        }
+
+        &--external {
+            stroke: $gh-light-orange !important;
+        }
+    }
+
+    @media (max-width: 992px) {
+        margin: 16px;
+
+        &__toolbar {
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-start !important;
+        }
+
+        &__toolbar-group,
+        &__legend,
+        &__toolbar-actions {
+            width: 100%;
+        }
+
+        &__toolbar-actions {
+            justify-content: flex-end;
+        }
+    }
+
+    .ant-select.ant-select-outlined.css-dev-only-do-not-override-1ld0lzq.ant-select-single.ant-select-show-arrow.ant-select-show-search {
+        width: 400px !important;
+    }
+
+    &__dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: $gh-light-text-muted;
+        flex-shrink: 0;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+        @apply dark:bg-gh-text-muted;
+
+        &--active {
+            background: $gh-light-green;
+            box-shadow: 0 0 6px rgba(26, 127, 55, 0.4);
+            @apply dark:bg-gh-green-text;
+        }
+    }
+
+    @media (max-width: 768px) {
+        margin: 12px;
+
+        &__header {
+            padding: 12px 14px;
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 10px;
+        }
+
+        &__toolbar {
+            padding: 12px 14px;
+        }
+
+        &__graph {
+            height: 460px;
+        }
+
+        &__toolbar-actions {
+            flex-wrap: wrap;
+        }
+
+        &__filter-select {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 576px) {
+        margin: 8px;
+
+        &__header,
+        &__toolbar {
+            padding: 10px 12px;
+        }
+
+        &__title {
+            font-size: 14px;
+        }
+
+        &__subtitle {
+            font-size: 11px;
+        }
+
+        &__graph {
+            height: 400px;
+        }
+
+        &__toolbar-actions .ant-btn {
+            width: 100%;
+        }
     }
 }
 
 .service-node {
+    &__card {
+        border-radius: 8px;
+        padding: 10px 14px;
+        min-width: 140px;
+        border: 1.5px solid $gh-light-border;
+        background: $gh-light-bg-primary;
+        box-shadow: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+        @apply dark:bg-gh-bg-secondary dark:border-gh-border;
+
+        &--selected {
+            box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.18);
+        }
+
+        &--service {
+            background: $gh-light-blue-bg;
+            border-color: $gh-light-blue-border;
+            @apply dark:bg-gh-blue-bg dark:border-gh-blue-border;
+        }
+
+        &--database {
+            background: $gh-light-green-bg;
+            border-color: $gh-light-green-border;
+            @apply dark:bg-gh-green-bg dark:border-gh-green-border;
+        }
+
+        &--external {
+            background: $gh-light-orange-bg;
+            border-color: $gh-light-orange-border;
+            @apply dark:bg-gh-orange-bg dark:border-gh-orange-border;
+        }
+
+        &--middleware {
+            background: $gh-light-purple-bg;
+            border-color: $gh-light-purple-border;
+            @apply dark:bg-gh-purple-bg dark:border-gh-purple-border;
+        }
+    }
+
+    &__head {
+        margin-bottom: 4px;
+    }
+
     &__dot {
         width: 7px;
         height: 7px;
         border-radius: 50%;
         flex-shrink: 0;
+
+        &--service {
+            background: $gh-light-blue;
+            @apply dark:bg-gh-blue-text;
+        }
+
+        &--database {
+            background: $gh-light-green;
+            @apply dark:bg-gh-green-text;
+        }
+
+        &--external {
+            background: $gh-light-orange;
+            @apply dark:bg-gh-orange-text;
+        }
+
+        &--middleware {
+            background: $gh-light-purple;
+            @apply dark:bg-gh-purple-text;
+        }
     }
 
     &__label {
         font-size: 13px !important;
         font-weight: 500 !important;
-        color: #111 !important;
+        color: $gh-light-text-primary !important;
+        @apply dark:text-gh-text-primary !important;
     }
 
     &__tag {
         font-size: 10px !important;
         margin: 0 !important;
         padding: 0 5px !important;
+        border-radius: 12px;
+
+        &--service {
+            background: $gh-light-blue-bg !important;
+            border-color: $gh-light-blue-border !important;
+            color: $gh-light-blue-text !important;
+            @apply dark:bg-gh-blue-bg dark:border-gh-blue-border dark:text-gh-blue-text !important;
+        }
+
+        &--database {
+            background: $gh-light-green-bg !important;
+            border-color: $gh-light-green-border !important;
+            color: $gh-light-green-text !important;
+            @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text !important;
+        }
+
+        &--external {
+            background: $gh-light-orange-bg !important;
+            border-color: $gh-light-orange-border !important;
+            color: $gh-light-orange-text !important;
+            @apply dark:bg-gh-orange-bg dark:border-gh-orange-border dark:text-gh-orange-text !important;
+        }
+
+        &--middleware {
+            background: $gh-light-purple-bg !important;
+            border-color: $gh-light-purple-border !important;
+            color: $gh-light-purple-text !important;
+            @apply dark:bg-gh-purple-bg dark:border-gh-purple-border dark:text-gh-purple-text !important;
+        }
     }
 
     &__handle {
         width: 8px !important;
         height: 8px !important;
+        border: none !important;
+
+        &--service {
+            background: $gh-light-blue !important;
+            @apply dark:bg-gh-blue-text !important;
+        }
+
+        &--database {
+            background: $gh-light-green !important;
+            @apply dark:bg-gh-green-text !important;
+        }
+
+        &--external {
+            background: $gh-light-orange !important;
+            @apply dark:bg-gh-orange-text !important;
+        }
+
+        &--middleware {
+            background: $gh-light-purple !important;
+            @apply dark:bg-gh-purple-text !important;
+        }
+    }
+
+    &__repo-lang-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__lang-text {
+        font-size: 12px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__loading {
+        height: 100%;
+        min-height: 400px;
+    }
+
+    &__loading-text {
+        font-size: 13px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__empty-icon {
+        font-size: 32px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__spin-icon {
+        font-size: 28px;
+        color: $gh-light-blue;
+        @apply dark:text-gh-blue-text;
+    }
+
+    &__drawer-path {
+        font-size: 11px;
+        display: block;
+        margin-top: 4px;
+        word-break: break-all;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
+    }
+
+    &__lang-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__tag--lang {
+        background: $gh-light-bg-secondary !important;
+        border-color: $gh-light-border !important;
+        color: $gh-light-text-secondary !important;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-secondary !important;
+    }
+
+
+
+    @media (max-width: 576px) {
+        &__card {
+            min-width: 120px;
+            padding: 8px 10px;
+        }
+
+        &__label {
+            font-size: 12px !important;
+        }
     }
 }
