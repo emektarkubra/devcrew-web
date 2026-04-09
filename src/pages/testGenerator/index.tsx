@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Card, Flex, Tag, Typography, List, Select, Spin } from 'antd'
-import { GithubOutlined, LoadingOutlined, FileOutlined } from '@ant-design/icons'
+import { LoadingOutlined, FileOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import withLayout from '../../layout/withLayout'
 import { api } from '../../services/api'
 import toast from 'react-hot-toast'
 import { timeAgo } from '../../utils/timeAgo'
-import { getLanguageColor } from '../../utils/languageColors'
+import { useRepo } from '../../context/repoContext'
 import RunTestsModal from './components/RunTestsModal'
 import './index.scss'
 
@@ -31,22 +31,11 @@ const allFrameworks = [
 const testableExtentions = [
     '.py',
     '.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs',
-    '.java',
-    '.kt', '.kts',
-    '.go',
-    '.rs',
+    '.java', '.kt', '.kts', '.go', '.rs',
     '.c', '.cpp', '.cc', '.cxx', '.h', '.hpp',
-    '.cs',
-    '.rb',
-    '.php',
-    '.swift',
-    '.scala',
-    '.dart',
-    '.ex', '.exs',
-    '.hs',
-    '.lua',
-    '.pl',
-    '.r', '.R',
+    '.cs', '.rb', '.php', '.swift', '.scala',
+    '.dart', '.ex', '.exs', '.hs', '.lua',
+    '.pl', '.r', '.R',
 ]
 
 const getFrameworksForFile = (file: string) => {
@@ -61,11 +50,8 @@ const getDefaultFramework = (file: string): string => {
 
 const TestGenerator = () => {
     const { t } = useTranslation()
+    const { selectedRepo } = useRepo()
 
-
-
-    const [repos, setRepos] = useState<any[]>([])
-    const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
     const [repoFiles, setRepoFiles] = useState<string[]>([])
     const [filesLoading, setFilesLoading] = useState(false)
     const [selectedFile, setSelectedFile] = useState<string | null>(null)
@@ -78,7 +64,6 @@ const TestGenerator = () => {
     const [runTestsModalOpen, setRunTestsModalOpen] = useState(false)
 
     const token = localStorage.getItem('dt-token') || ''
-
 
     const typeConfig: Record<string, { color: string; label: string; className: string }> = {
         unit: {
@@ -98,21 +83,40 @@ const TestGenerator = () => {
         },
     }
 
-    // get repo
-    const getRepos = async () => {
-        const { data, error } = await api.profile.getRepos(token)
-        if (error) {
-            toast.error(error)
-        } else {
-            setRepos(data)
+    useEffect(() => {
+        if (!selectedRepo) return
+        const [owner, repo] = selectedRepo.split('/')
+        setSelectedFile(null)
+        setResult(null)
+        setRepoFiles([])
+        setHistory([])
+        setFramework('jest')
+        fetchRepoFiles(owner, repo)
+        getHistoryList(owner, repo)
+    }, [selectedRepo])
+
+    // get repo file
+    const fetchRepoFiles = async (owner: string, repo: string) => {
+        setFilesLoading(true)
+        try {
+            const { data, error } = await api.agents.repoFiles(token, owner, repo)
+            if (error) {
+                toast.error(error)
+            } else {
+                const allFiles = data?.files ?? []
+                const testable = allFiles.filter((f: string) =>
+                    testableExtentions.some(ext => f.endsWith(ext))
+                )
+                setRepoFiles(testable)
+            }
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setFilesLoading(false)
         }
     }
 
-    useEffect(() => {
-        getRepos()
-    }, [])
-
-    // history list
+    // get history
     const getHistoryList = async (owner: string, repo: string) => {
         const { data, error } = await api.agents.testHistory(token, owner, repo)
         if (error) {
@@ -122,43 +126,12 @@ const TestGenerator = () => {
         }
     }
 
-    // repo select
-    const handleRepoSelect = async (value: string) => {
-        setSelectedRepo(value)
-        setSelectedFile(null)
-        setResult(null)
-        setRepoFiles([])
-        setHistory([])
-        setFramework('jest')
-
-        const [owner, repo] = value.split('/')
-        try {
-            setFilesLoading(true)
-            const { data, error } = await api.agents.repoFiles(token, owner, repo)
-            if (error) {
-                toast.error(error)
-            } else {
-                const allFiles = data?.files ?? []
-                const testable = allFiles.filter((f: string) =>
-                    testableExtentions?.some(ext => f?.endsWith(ext))
-                )
-                setRepoFiles(testable)
-                await getHistoryList(owner, repo)
-            }
-        } catch (e) {
-            console.error(e)
-        } finally {
-            setFilesLoading(false)
-        }
-    }
-
-    // file select
     const handleFileSelect = (file: string) => {
         setSelectedFile(file)
         setFramework(getDefaultFramework(file))
     }
 
-    // generate tests
+    // generate test
     const handleGenerateTest = async () => {
         if (!selectedFile || !selectedRepo) return
         setLoading(true)
@@ -195,15 +168,12 @@ const TestGenerator = () => {
         })
     }
 
-    // save tests
+    // save test
     const handleSaveTests = () => {
         if (!result?.mergedCode || !selectedFile) return
-
         const ext = selectedFile?.split('.').pop() ?? 'tsx'
         const baseName = selectedFile?.split('/').pop()?.replace(`.${ext}`, '') ?? 'test'
         const filename = `${baseName}.test.${ext}`
-
-
         const blob = new Blob([result?.mergedCode], { type: 'text/plain' })
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
@@ -235,9 +205,7 @@ const TestGenerator = () => {
                     >
                         <div className="test-generator__history-dot" />
                         <Flex vertical gap={2} className="test-generator__history-content">
-                            <Text code className="test-generator__history-file">
-                                {item?.target}
-                            </Text>
+                            <Text code className="test-generator__history-file">{item?.target}</Text>
                             <Text type="secondary" className="test-generator__history-meta">
                                 {t('testGenerator.historyMeta', {
                                     count: item?.testCount,
@@ -274,42 +242,6 @@ const TestGenerator = () => {
             </Flex>
 
             <Flex vertical gap={16} className="test-generator__body">
-
-                <Flex vertical gap={6}>
-                    <Text className="test-generator__section-label">{t('testGenerator.repo')}</Text>
-                    <Select
-                        className="test-generator__select"
-                        placeholder={
-                            <Flex align="center" gap={8}>
-                                <GithubOutlined />
-                                <span>{t('testGenerator.selectRepo')}</span>
-                            </Flex>
-                        }
-                        value={selectedRepo}
-                        onChange={handleRepoSelect}
-                        showSearch
-                        options={repos?.map((repo) => ({
-                            value: repo?.full_name,
-                            label: (
-                                <Flex align="center" justify="space-between" className="test-generator__repo-option">
-                                    <Flex align="center" gap={8} className="test-generator__repo-option-left">
-                                        <GithubOutlined />
-                                        <span className="test-generator__repo-name">{repo?.full_name}</span>
-                                    </Flex>
-                                    {repo?.language && (
-                                        <Flex align="center" gap={4} className="test-generator__repo-option-right">
-                                            <div
-                                                className="test-generator__lang-dot"
-                                                style={{ background: getLanguageColor(repo?.language) }}
-                                            />
-                                            <Text className="test-generator__lang-text">{repo?.language}</Text>
-                                        </Flex>
-                                    )}
-                                </Flex>
-                            ),
-                        }))}
-                    />
-                </Flex>
 
                 <Flex gap={8} className="test-generator__controls-row">
                     <Flex vertical gap={6} className="test-generator__target-col">

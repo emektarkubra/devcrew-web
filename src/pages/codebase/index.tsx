@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Button, Card, Flex, Input, Tag, Typography, List, Avatar, Select } from 'antd'
-import { FileOutlined, SearchOutlined, GithubOutlined, LoadingOutlined, CheckCircleOutlined } from '@ant-design/icons'
+import { Button, Card, Flex, Input, Tag, Typography, List, Avatar } from 'antd'
+import { FileOutlined, SearchOutlined, LoadingOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import { FiSearch } from 'react-icons/fi'
 import { useTranslation } from 'react-i18next'
 import withLayout from '../../layout/withLayout'
 import { api } from '../../services/api'
 import toast from 'react-hot-toast'
 import { timeAgo } from '../../utils/timeAgo'
-import { getLanguageColor } from '../../utils/languageColors'
+import { useRepo } from '../../context/repoContext'
 import './index.scss'
 
 const { Text, Paragraph } = Typography
@@ -16,9 +16,8 @@ type IndexStatus = 'idle' | 'indexing' | 'ready'
 
 const CodebaseQA = () => {
     const { t } = useTranslation()
+    const { selectedRepo } = useRepo()
 
-    const [repos, setRepos] = useState<any[]>([])
-    const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
     const [indexStatus, setIndexStatus] = useState<IndexStatus>('idle')
     const [indexedFileCount, setIndexedFileCount] = useState(0)
     const [query, setQuery] = useState('')
@@ -29,21 +28,17 @@ const CodebaseQA = () => {
 
     const token = localStorage.getItem('dt-token') || ''
 
-    const fetchRepos = async () => {
-        const { data, error } = await api.profile.getRepos(token)
-        if (error) { toast.error(error); return }
-        setRepos(data)
-    }
+    // index
+    useEffect(() => {
+        if (!selectedRepo) return
+        const [owner, repo] = selectedRepo.split('/')
+        triggerIndex(owner, repo)
+    }, [selectedRepo])
 
-    useEffect(() => { fetchRepos() }, [])
-
-    const handleRepoSelect = async (value: string) => {
-        setSelectedRepo(value)
+    const triggerIndex = async (owner: string, repo: string) => {
         setIndexStatus('indexing')
         setResult(null)
         setSelectedHistory(null)
-
-        const [owner, repo] = value.split('/')
 
         try {
             const { data: checkData, error: checkError } = await api.agents.checkIndex(token, owner, repo)
@@ -55,14 +50,12 @@ const CodebaseQA = () => {
             }
 
             if (checkData?.indexed) {
-                // zaten index li
                 setIndexedFileCount(checkData.file_count)
                 setIndexStatus('ready')
-                await fetchHistory(owner, repo)
+                await getHistory(owner, repo)
                 return
             }
 
-            // index yok, index le
             const { data, error } = await api.agents.indexRepo(token, owner, repo)
             if (error) {
                 toast.error(error)
@@ -70,7 +63,7 @@ const CodebaseQA = () => {
             } else {
                 setIndexedFileCount(data?.files_indexed)
                 setIndexStatus('ready')
-                await fetchHistory(owner, repo)
+                await getHistory(owner, repo)
             }
         } catch {
             toast.error('Indexing failed')
@@ -78,12 +71,18 @@ const CodebaseQA = () => {
         }
     }
 
-    const fetchHistory = async (owner: string, repo: string) => {
+    // get history
+    const getHistory = async (owner: string, repo: string) => {
         const { data, error } = await api.agents.codebaseQAHistory(token, owner, repo)
-        if (error) { toast.error(error); return }
-        setHistory(data)
+        if (error) {
+            toast.error(error);
+        } else {
+            setHistory(data)
+        }
+
     }
 
+    // ask
     const handleAsk = async () => {
         if (!query.trim() || indexStatus !== 'ready' || !selectedRepo) return
         setLoading(true)
@@ -98,7 +97,7 @@ const CodebaseQA = () => {
                 toast.error(error)
             } else {
                 setResult(data)
-                await fetchHistory(owner, repo)
+                await getHistory(owner, repo)
             }
         } catch (error) {
             console.log(error)
@@ -107,6 +106,7 @@ const CodebaseQA = () => {
         }
     }
 
+    // click history
     const handleHistoryClick = async (item: any, index: number) => {
         setSelectedHistory(index)
         setQuery(item.question)
@@ -122,17 +122,20 @@ const CodebaseQA = () => {
         try {
             const { data } = await api.agents.codebaseQA(token, owner, repo, item.question)
             if (data?.suggestions) {
-                setResult((prev: any) => ({ ...prev, suggestions: data.suggestions }))
+                setResult((prev: any) => ({ ...prev, suggestions: data?.suggestions }))
             }
-        } catch {
-            // suggestions gelmezse sorun değil
+        } catch (error) {
+            console.log(error)
         }
     }
 
-
     const renderStatusTag = () => {
         if (indexStatus === 'idle') {
-            return <Tag className="codebase-qa__status-tag codebase-qa__status-tag--idle">{t('codebase.noRepoSelected')}</Tag>
+            return (
+                <Tag className="codebase-qa__status-tag codebase-qa__status-tag--idle">
+                    {t('codebase.noRepoSelected')}
+                </Tag>
+            )
         }
         if (indexStatus === 'indexing') {
             return (
@@ -167,43 +170,6 @@ const CodebaseQA = () => {
             </Flex>
 
             <Flex vertical gap={16} className="codebase-qa__body">
-
-                <Flex vertical gap={6}>
-                    <Text className="codebase-qa__section-label">{t('codebase.repoLabel')}</Text>
-                    <Select
-                        className="codebase-qa__repo-select"
-                        placeholder={
-                            <Flex align="center" gap={8}>
-                                <GithubOutlined />
-                                <span>{t('codebase.selectRepo')}</span>
-                            </Flex>
-                        }
-                        value={selectedRepo}
-                        onChange={handleRepoSelect}
-                        disabled={indexStatus === 'indexing'}
-                        showSearch
-                        options={repos?.map((repo) => ({
-                            value: repo?.full_name,
-                            label: (
-                                <Flex align="center" justify="space-between">
-                                    <Flex align="center" gap={8}>
-                                        <GithubOutlined />
-                                        <span>{repo?.full_name}</span>
-                                        {repo?.is_private && <Tag className="codebase-qa__repo-private-tag">Private</Tag>}
-                                    </Flex>
-                                    {repo?.language && (
-                                        <Flex align="center" gap={4}>
-                                            <div className="codebase-qa__lang-dot" style={{ background: getLanguageColor(repo?.language) }} />
-                                            <Text className="codebase-qa__lang-text">{repo?.language}</Text>
-                                        </Flex>
-                                    )}
-                                </Flex>
-                            ),
-                        }))}
-                    />
-                </Flex>
-
-                {/* Search */}
                 <Flex vertical gap={10}>
                     <Text className="codebase-qa__section-label">{t('codebase.searchLabel')}</Text>
                     <Input
@@ -244,7 +210,7 @@ const CodebaseQA = () => {
                     {t('codebase.ask')}
                 </Button>
 
-                {(result) && (
+                {result && (
                     <Flex vertical gap={8} className="codebase-qa__response">
                         <Text className="codebase-qa__section-label">{t('codebase.responseLabel')}</Text>
                         <Card size="small" className="codebase-qa__response-card">
@@ -271,8 +237,6 @@ const CodebaseQA = () => {
                                 </Flex>
                             ))}
                         </Card>
-
-
                     </Flex>
                 )}
 
@@ -305,7 +269,6 @@ const CodebaseQA = () => {
                         </div>
                     </Flex>
                 )}
-
             </Flex>
         </div>
     )

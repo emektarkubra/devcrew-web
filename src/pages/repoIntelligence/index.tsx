@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import withLayout from '../../layout/withLayout'
 import { api } from '../../services/api'
-import { getLanguageColor } from '../../utils/languageColors'
 import toast from 'react-hot-toast'
+import { useRepo } from '../../context/repoContext'
 import './index.scss'
 
 const { Text } = Typography
@@ -60,42 +60,21 @@ interface IntelligenceData {
 
 const RepoIntelligence: React.FC = () => {
     const { t } = useTranslation()
+    const { selectedRepo } = useRepo()
 
     const [period, setPeriod] = useState('30d')
     const [sortBy, setSortBy] = useState('bugRate')
-    const [repos, setRepos] = useState<any[]>([])
-    const [reposLoading, setReposLoading] = useState(false)
-    const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
     const [data, setData] = useState<IntelligenceData | null>(null)
     const [loading, setLoading] = useState(false)
 
     const token = localStorage.getItem('dt-token') || ''
 
-    // get repo
-    const getRepos = async () => {
-        setReposLoading(true)
-        try {
-            const { data: repoData, error } = await api.profile.getRepos(token)
-            if (error) {
-                toast.error(error)
-            } else {
-                setRepos(repoData)
-                if (repoData?.length > 0) setSelectedRepo(repoData[0].full_name)
-            }
-        } catch (e) {
-            console.error(e)
-        } finally {
-            setReposLoading(false)
-        }
-    }
-
-    // get intelligence
     const getIntelligenceData = async () => {
         if (!selectedRepo) return
         const [owner, repo] = selectedRepo.split('/')
 
         const days = period === '7d' ? 7 : period === '90d' ? 90 : 30
-        const since = dayjs()?.subtract(days, 'day').format('YYYY-MM-DD')
+        const since = dayjs()?.subtract(days, 'day')?.format('YYYY-MM-DD')
         const until = dayjs()?.format('YYYY-MM-DD')
 
         setLoading(true)
@@ -113,10 +92,6 @@ const RepoIntelligence: React.FC = () => {
             setLoading(false)
         }
     }
-
-    useEffect(() => {
-        getRepos()
-    }, [])
 
     useEffect(() => {
         getIntelligenceData()
@@ -161,39 +136,6 @@ const RepoIntelligence: React.FC = () => {
                 </Flex>
 
                 <Flex align="center" gap={8} className="repo-intelligence__header-actions">
-                    <Select
-                        className="repo-intelligence__repo-select"
-                        placeholder={
-                            <Flex align="center" gap={6}>
-                                <GithubOutlined />
-                                <span>{t('repoIntelligence.selectRepo')}</span>
-                            </Flex>
-                        }
-                        value={selectedRepo}
-                        onChange={setSelectedRepo}
-                        showSearch
-                        loading={reposLoading}
-                        options={repos?.map(repo => ({
-                            value: repo?.full_name,
-                            label: (
-                                <Flex align="center" justify="space-between">
-                                    <Flex align="center" gap={8}>
-                                        <GithubOutlined />
-                                        <span>{repo?.full_name}</span>
-                                    </Flex>
-                                    {repo?.language && (
-                                        <Flex align="center" gap={4}>
-                                            <div
-                                                className="repo-intelligence__lang-dot"
-                                                style={{ background: getLanguageColor(repo?.language) }}
-                                            />
-                                            <Text className="repo-intelligence__lang-text">{repo?.language}</Text>
-                                        </Flex>
-                                    )}
-                                </Flex>
-                            ),
-                        }))}
-                    />
                     <Select
                         value={period}
                         onChange={setPeriod}
@@ -353,6 +295,7 @@ const RepoIntelligence: React.FC = () => {
                             </Flex>
                         </Flex>
 
+                        {/* ── Bottom Row ── */}
                         <Flex gap={16} className="repo-intelligence__bottom-row">
 
                             {/* Recent Activity */}
