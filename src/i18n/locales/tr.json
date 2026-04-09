@@ -366,6 +366,10 @@
         "weeksAgo2": "2 hafta önce",
         "commitsAndPrs": "{{commits}} commit · {{prs}} PR",
         "selectRepo": "Repo seçin...",
-        "selectRepoFirst": "Zekayı görmek için repo seçin"
+        "selectRepoFirst": "Zekayı görmek için repo seçin",
+        "analyzing": "Repo analiz ediliyor...",
+        "noHotspots": "Bug hotspot bulunamadı.",
+        "noActivity": "Son aktivite bulunamadı.",
+        "thisPeriod": "seçilen dönemde"
     }
 }

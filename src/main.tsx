@@ -9,6 +9,7 @@ import { Provider } from 'react-redux'
 import { store } from './redux/store.tsx'
 import AuthProvider from './context/authContext.tsx'
 import { ThemeProvider } from './context/themeContext';
+import { RepoProvider } from './context/repoContext.tsx'
 import './i18n/i18n';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -16,9 +17,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ThemeProvider>
       <Provider store={store}>
         <AuthProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
+          <RepoProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </RepoProvider>
         </AuthProvider>
       </Provider>
     </ThemeProvider>

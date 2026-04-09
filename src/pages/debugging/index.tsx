@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Button, Card, Flex, Input, Tag, Typography, List, Select, Avatar } from 'antd'
-import { SearchOutlined, GithubOutlined, LoadingOutlined, FileOutlined, CheckCircleOutlined } from '@ant-design/icons'
+import { Button, Card, Flex, Input, Tag, Typography, List, Avatar } from 'antd'
+import { SearchOutlined, LoadingOutlined, FileOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import withLayout from '../../layout/withLayout'
 import { api } from '../../services/api'
 import toast from 'react-hot-toast'
 import { timeAgo } from '../../utils/timeAgo'
-import { getLanguageColor } from '../../utils/languageColors'
+import { useRepo } from '../../context/repoContext'
 import ApplyDebugFixModal from './components/ApplyDebugFixModal'
 import './index.scss'
 
@@ -16,55 +16,32 @@ type IndexStatus = 'idle' | 'indexing' | 'ready'
 
 const Debugging = () => {
     const { t } = useTranslation()
-    const [repos, setRepos] = useState<any[]>([])
-    const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
-    const [input, setInput] = useState('')
-    const [result, setResult] = useState<any>(null)
-    const [loading, setLoading] = useState(false)
-    const [history, setHistory] = useState<any[]>([])
+    const { selectedRepo } = useRepo()
+
+    const [input, setInput]                   = useState('')
+    const [result, setResult]                 = useState<any>(null)
+    const [loading, setLoading]               = useState(false)
+    const [history, setHistory]               = useState<any[]>([])
     const [selectedHistory, setSelectedHistory] = useState<number | null>(null)
-
-
-    const [indexStatus, setIndexStatus] = useState<IndexStatus>('idle')
+    const [indexStatus, setIndexStatus]       = useState<IndexStatus>('idle')
     const [indexedFileCount, setIndexedFileCount] = useState(0)
-    const [applyLoading, setApplyLoading] = useState(false)
+    const [applyLoading, setApplyLoading]     = useState(false)
     const [applyModalOpen, setApplyModalOpen] = useState(false)
 
     const token = localStorage.getItem('dt-token') || ''
 
-    // get repos
-    const getRepos = async () => {
-        const { data, error } = await api.profile.getRepos(token)
-        if (error) {
-            toast.error(error)
-        } else {
-            setRepos(data)
-        }
-    }
-
-    // get history
-    const getHistory = async (owner: string, repo: string) => {
-        const { data, error } = await api.agents.debugHistory(token, owner, repo)
-        if (error) {
-            toast.error(error)
-        } else {
-            setHistory(data)
-        }
-    }
-
-    // select repo
-    const handleRepoSelect = async (value: string) => {
-        setSelectedRepo(value)
+    useEffect(() => {
+        if (!selectedRepo) return
+        const [owner, repo] = selectedRepo.split('/')
         setResult(null)
         setInput('')
         setHistory([])
         setSelectedHistory(null)
+        triggerIndex(owner, repo)
+    }, [selectedRepo])
 
-        const [owner, repo] = value.split('/')
-
-        // control indexing status
+    const triggerIndex = async (owner: string, repo: string) => {
         setIndexStatus('indexing')
-
         try {
             const { data: checkData, error: checkError } = await api.agents.checkIndex(token, owner, repo)
 
@@ -81,7 +58,6 @@ const Debugging = () => {
                 return
             }
 
-            // if not indexed, start indexing
             const { data, error } = await api.agents.indexRepo(token, owner, repo)
             if (error) {
                 toast.error(error)
@@ -96,10 +72,19 @@ const Debugging = () => {
         }
     }
 
-    // analyze error log
+    // get history
+    const getHistory = async (owner: string, repo: string) => {
+        const { data, error } = await api.agents.debugHistory(token, owner, repo)
+        if (error) {
+            toast.error(error)
+        } else {
+            setHistory(data)
+        }
+    }
+
+    // analyze
     const handleAnalyze = async () => {
         if (!input.trim() || !selectedRepo) return
-
         setLoading(true)
         setResult(null)
 
@@ -109,7 +94,6 @@ const Debugging = () => {
             const { data, error } = await api.agents.debug(token, owner, repo, input)
             if (error) {
                 toast.error(error)
-                return
             } else {
                 setResult(data)
                 await getHistory(owner, repo)
@@ -126,12 +110,12 @@ const Debugging = () => {
         setSelectedHistory(index)
         setInput(item.error)
         setResult({
-            rootCause: item.rootCause,
-            severity: item.severity,
+            rootCause:     item.rootCause,
+            severity:      item.severity,
             affectedFiles: item.affectedFiles ?? [],
-            issues: item.issues ?? [],
-            explanation: item.explanation ?? '',
-            confidence: null,
+            issues:        item.issues ?? [],
+            explanation:   item.explanation ?? '',
+            confidence:    null,
         })
     }
 
@@ -140,8 +124,7 @@ const Debugging = () => {
         return t(`debugging.severity.${severity}`)
     }
 
-
-    // handleApplyFix 
+    // apply fix
     const handleApplyFix = async (selectedIssues: any[]) => {
         if (!selectedRepo || !result) return
         setApplyLoading(true)
@@ -155,24 +138,18 @@ const Debugging = () => {
                 input,
             )
             if (error) {
-                toast.error(error);
+                toast.error(error)
             } else {
                 toast.success(`PR opened: ${data.pr_url}`)
                 window.open(data?.pr_url, '_blank')
                 setApplyModalOpen(false)
             }
-
         } catch (error) {
             console.error('Apply fix error:', error)
         } finally {
             setApplyLoading(false)
         }
     }
-
-
-    useEffect(() => {
-        getRepos()
-    }, [])
 
     return (
         <div className="debugging">
@@ -186,9 +163,7 @@ const Debugging = () => {
                         <Text type="secondary" className="debugging__subtitle">
                             {indexStatus === 'ready'
                                 ? `${selectedRepo} · ${indexedFileCount} files indexed`
-                                : selectedRepo
-                                    ? t('debugging.subtitle')
-                                    : t('debugging.subtitle')
+                                : t('debugging.subtitle')
                             }
                         </Text>
                     </Flex>
@@ -227,45 +202,6 @@ const Debugging = () => {
             </Flex>
 
             <Flex vertical gap={16} className="debugging__body">
-                <Flex vertical gap={6}>
-                    <Text className="debugging__section-label">{t('debugging.repo')}</Text>
-
-                    <Select
-                        className="debugging__select"
-                        placeholder={
-                            <Flex align="center" gap={8}>
-                                <GithubOutlined />
-                                <span>{t('debugging.selectRepo')}</span>
-                            </Flex>
-                        }
-                        value={selectedRepo}
-                        onChange={handleRepoSelect}
-                        showSearch
-                        popupClassName="debugging__select-dropdown"
-                        options={repos?.map((repo) => ({
-                            value: repo.full_name,
-                            label: (
-                                <div className="debugging__repo-option">
-                                    <div className="debugging__repo-option-left">
-                                        <GithubOutlined />
-                                        <span className="debugging__repo-option-name">{repo?.full_name}</span>
-                                        {repo?.is_private && <Tag className="pr-review__tag--private">Private</Tag>}
-                                    </div>
-
-                                    {repo?.language && (
-                                        <div className="debugging__repo-option-right">
-                                            <div
-                                                className="debugging__lang-dot"
-                                                style={{ ['--lang-dot-color' as any]: getLanguageColor(repo?.language) }}
-                                            />
-                                            <Text className="debugging__lang-text">{repo?.language}</Text>
-                                        </div>
-                                    )}
-                                </div>
-                            ),
-                        }))}
-                    />
-                </Flex>
 
                 <Flex vertical gap={6}>
                     <Text className="debugging__section-label">{t('debugging.errorLog')}</Text>
@@ -299,11 +235,9 @@ const Debugging = () => {
                         <Flex gap={16} className="debugging__stretch-row debugging__stack-on-mobile">
                             <Flex vertical gap={8} className="debugging__col">
                                 <Text className="debugging__section-label">{t('debugging.rootCause')}</Text>
-
                                 <Card size="small" className="debugging__root-card">
                                     <Text className="debugging__root-text">{result?.rootCause}</Text>
                                 </Card>
-
                                 {result?.confidence && (
                                     <Card size="small" className="debugging__stat-card">
                                         <Text className="debugging__card-label">{t('debugging.confidence')}</Text>
@@ -314,7 +248,6 @@ const Debugging = () => {
 
                             <Flex vertical gap={8} className="debugging__col">
                                 <Text className="debugging__section-label">{t('debugging.explanation')}</Text>
-
                                 <Card size="small" className="debugging__explanation-card">
                                     <Paragraph className="debugging__explanation-text">
                                         {result?.explanation}
@@ -327,12 +260,10 @@ const Debugging = () => {
                             <Flex vertical gap={8} className="debugging__col">
                                 <Flex vertical gap={8} className="debugging__col">
                                     <Text className="debugging__section-label">{t('debugging.suggestedFix')}</Text>
-
                                     <Card size="small" className="debugging__fix-card debugging__fix-card--padded">
                                         {result?.fixSuggestion}
                                     </Card>
                                 </Flex>
-
                                 <Flex gap={8} className="debugging__actions-row">
                                     <Button
                                         type="primary"
@@ -347,7 +278,6 @@ const Debugging = () => {
 
                             <Flex vertical gap={8} className="debugging__col">
                                 <Text className="debugging__section-label">{t('debugging.affectedFiles')}</Text>
-
                                 <div className="debugging__files-scroll">
                                     {result?.affectedFiles?.length > 0 ? (
                                         result?.affectedFiles?.map((file: any) => (
@@ -363,12 +293,8 @@ const Debugging = () => {
                                                     size={32}
                                                 />
                                                 <Flex vertical gap={2} className="debugging__file-info">
-                                                    <Text code className="debugging__file-name">
-                                                        {file?.name}
-                                                    </Text>
-                                                    <Text type="secondary" className="debugging__file-meta">
-                                                        {file?.path}
-                                                    </Text>
+                                                    <Text code className="debugging__file-name">{file?.name}</Text>
+                                                    <Text type="secondary" className="debugging__file-meta">{file?.path}</Text>
                                                 </Flex>
                                             </Flex>
                                         ))
@@ -387,7 +313,6 @@ const Debugging = () => {
                     <Flex gap={16} className="debugging__stretch-row debugging__stack-on-mobile">
                         <Flex vertical gap={4} className="debugging__col">
                             <Text className="debugging__section-label">{t('debugging.history')}</Text>
-
                             <div className="debugging__history-scroll">
                                 <List
                                     dataSource={history}
@@ -398,16 +323,10 @@ const Debugging = () => {
                                             <Flex
                                                 align="flex-start"
                                                 gap={10}
-                                                className={`debugging__history-item ${selectedHistory === index
-                                                    ? 'debugging__history-item--active'
-                                                    : ''
-                                                    }`}
+                                                className={`debugging__history-item ${selectedHistory === index ? 'debugging__history-item--active' : ''}`}
                                                 onClick={() => handleHistoryClick(item, index)}
                                             >
-                                                <div
-                                                    className={`debugging__history-dot debugging__history-dot--${item?.resolved === 'true' ? 'resolved' : 'unresolved'
-                                                        }`}
-                                                />
+                                                <div className={`debugging__history-dot debugging__history-dot--${item?.resolved === 'true' ? 'resolved' : 'unresolved'}`} />
                                                 <Flex vertical gap={2} className="debugging__history-content">
                                                     <Text className="debugging__history-error">{item?.error}</Text>
                                                     <Text type="secondary" className="debugging__history-meta">

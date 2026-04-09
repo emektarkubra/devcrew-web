@@ -9,36 +9,36 @@ import withLayout from '../../layout/withLayout'
 import { api } from '../../services/api'
 import { getLanguageColor } from '../../utils/languageColors'
 import toast from 'react-hot-toast'
+import { useRepo } from '../../context/repoContext'
 import './index.scss'
 
 const { Text } = Typography
 
 interface NodeData {
-    label: string
-    type: 'service' | 'database' | 'external' | 'middleware'
-    language?: string
-    path?: string
+    label:        string
+    type:         'service' | 'database' | 'external' | 'middleware'
+    language?:    string
+    path?:        string
     description?: string
 }
 
 const nodeConfig = {
-    service: { bgClass: 'service-node__card--service', dotClass: 'service-node__dot--service', handleClass: 'service-node__handle--service', tagClass: 'service-node__tag--service' },
-    database: { bgClass: 'service-node__card--database', dotClass: 'service-node__dot--database', handleClass: 'service-node__handle--database', tagClass: 'service-node__tag--database' },
-    external: { bgClass: 'service-node__card--external', dotClass: 'service-node__dot--external', handleClass: 'service-node__handle--external', tagClass: 'service-node__tag--external' },
-    middleware: { bgClass: 'service-node__card--middleware', dotClass: 'service-node__dot--middleware', handleClass: 'service-node__handle--middleware', tagClass: 'service-node__tag--middleware' },
+    service:    { bgClass: 'service-node__card--service',    dotClass: 'service-node__dot--service',    handleClass: 'service-node__handle--service',    tagClass: 'service-node__tag--service' },
+    database:   { bgClass: 'service-node__card--database',   dotClass: 'service-node__dot--database',   handleClass: 'service-node__handle--database',   tagClass: 'service-node__tag--database' },
+    external:   { bgClass: 'service-node__card--external',   dotClass: 'service-node__dot--external',   handleClass: 'service-node__handle--external',   tagClass: 'service-node__tag--external' },
+    middleware: { bgClass: 'service-node__card--middleware',  dotClass: 'service-node__dot--middleware',  handleClass: 'service-node__handle--middleware',  tagClass: 'service-node__tag--middleware' },
 }
 
-// apply layout
 const applyLayout = (nodes: any[], edges: any[]): any[] => {
     if (!nodes.length) return nodes
 
     const graph = new dagre.graphlib.Graph()
-    graph?.setGraph({ rankdir: 'TB', nodesep: 80, ranksep: 100, marginx: 40, marginy: 40 })
-    graph?.setDefaultEdgeLabel(() => ({}))
+    graph.setGraph({ rankdir: 'TB', nodesep: 80, ranksep: 100, marginx: 40, marginy: 40 })
+    graph.setDefaultEdgeLabel(() => ({}))
 
-    nodes?.forEach(node => graph.setNode(node.id, { width: 160, height: 70 }))
-    edges?.forEach(edge => graph.setEdge(edge.source, edge.target))
-    dagre?.layout(graph)
+    nodes.forEach(node => graph.setNode(node.id, { width: 160, height: 70 }))
+    edges.forEach(edge => graph.setEdge(edge.source, edge.target))
+    dagre.layout(graph)
 
     return nodes.map(n => {
         const pos = graph.node(n.id)
@@ -47,12 +47,11 @@ const applyLayout = (nodes: any[], edges: any[]): any[] => {
     })
 }
 
-// service node
 const ServiceNode = ({ data, selected }: NodeProps<NodeData>) => {
     const cfg = nodeConfig[data?.type] ?? nodeConfig.service
     return (
         <>
-            <Handle type="target" position={Position.Top} className={`service-node__handle ${cfg.handleClass}`} />
+            <Handle type="target" position={Position.Top}  className={`service-node__handle ${cfg.handleClass}`} />
             <Handle type="target" position={Position.Left} className={`service-node__handle ${cfg.handleClass}`} />
             <div className={`service-node__card ${cfg.bgClass} ${selected ? 'service-node__card--selected' : ''}`}>
                 <Flex align="center" gap={6} className="service-node__head">
@@ -74,54 +73,38 @@ const ServiceNode = ({ data, selected }: NodeProps<NodeData>) => {
                     )}
                 </Flex>
             </div>
-            <Handle type="source" position={Position.Bottom} className={`service-node__handle ${cfg?.handleClass}`} />
-            <Handle type="source" position={Position.Right} className={`service-node__handle ${cfg?.handleClass}`} />
+            <Handle type="source" position={Position.Bottom} className={`service-node__handle ${cfg.handleClass}`} />
+            <Handle type="source" position={Position.Right}  className={`service-node__handle ${cfg.handleClass}`} />
         </>
     )
 }
 
 const nodeTypes = { serviceNode: ServiceNode }
 
-
 const ArchitectureGraph = () => {
     const { t } = useTranslation()
+    const { selectedRepo } = useRepo()
 
     const legend = [
-        { type: 'service', label: t('architectureGraph.service') },
-        { type: 'database', label: t('architectureGraph.database') },
-        { type: 'external', label: t('architectureGraph.external') },
+        { type: 'service',    label: t('architectureGraph.service') },
+        { type: 'database',   label: t('architectureGraph.database') },
+        { type: 'external',   label: t('architectureGraph.external') },
         { type: 'middleware', label: t('architectureGraph.middleware') },
     ]
 
     const [nodes, setNodes, onNodesChange] = useNodesState<NodeData>([])
     const [edges, setEdges, onEdgesChange] = useEdgesState([])
-    const [filter, setFilter] = useState<string>('all')
-    const [repos, setRepos] = useState<any[]>([])
-    const [reposLoading, setReposLoading] = useState(false)
-    const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
-    const [loading, setLoading] = useState(false)
+    const [filter, setFilter]             = useState<string>('all')
+    const [loading, setLoading]           = useState(false)
 
     const token = localStorage.getItem('dt-token') || ''
 
-    // get repo
-    const getRepos = async () => {
-        setReposLoading(true)
-        try {
-            const { data, error } = await api.profile.getRepos(token)
-            if (error) {
-                toast.error(error)
-            } else {
-                setRepos(data)
-                if (data?.length > 0) setSelectedRepo(data[0].full_name)
-            }
-        } catch (e) {
-            console.error(e)
-        } finally {
-            setReposLoading(false)
-        }
-    }
+    useEffect(() => {
+        if (!selectedRepo) return
+        const [owner, repo] = selectedRepo.split('/')
+        getArchitecture(owner, repo)
+    }, [selectedRepo])
 
-    // get architecture
     const getArchitecture = async (owner: string, repo: string) => {
         setLoading(true)
         setNodes([])
@@ -142,33 +125,23 @@ const ArchitectureGraph = () => {
         }
     }
 
-    useEffect(() => {
-        getRepos()
-    }, [])
-
-    useEffect(() => {
-        if (!selectedRepo) return
-        const [owner, repo] = selectedRepo.split('/')
-        getArchitecture(owner, repo)
-    }, [selectedRepo])
-
     const onConnect = useCallback(
         (params: Connection) =>
             setEdges(eds => addEdge({ ...params, animated: true, className: 'architecture-graph__edge' }, eds)),
         [setEdges]
     )
 
-
     const visibleNodes = filter === 'all'
         ? nodes
-        : nodes?.map(n => ({ ...n, hidden: n.data.type !== filter }))
+        : nodes.map(n => ({ ...n, hidden: n.data.type !== filter }))
 
-    const nodeCount = visibleNodes?.filter(n => !n.hidden)?.length
-    const edgeCount = edges?.length
+    const nodeCount = visibleNodes.filter(n => !n.hidden).length
+    const edgeCount = edges.length
 
     return (
         <div className="architecture-graph">
 
+            {/* ── Header ── */}
             <Flex align="center" justify="space-between" className="architecture-graph__header">
                 <Flex align="center" gap={10} className="architecture-graph__header-left">
                     <div className={`architecture-graph__dot ${selectedRepo ? 'architecture-graph__dot--active' : ''}`} />
@@ -186,46 +159,13 @@ const ArchitectureGraph = () => {
                 </Flex>
 
                 <Flex align="center" gap={8} className="architecture-graph__header-actions">
-                    <Select
-                        className="architecture-graph__repo-select"
-                        placeholder={
-                            <Flex align="center" gap={6}>
-                                <GithubOutlined />
-                                <span>{t('architectureGraph.selectRepo')}</span>
-                            </Flex>
-                        }
-                        value={selectedRepo}
-                        onChange={setSelectedRepo}
-                        showSearch
-                        loading={reposLoading}
-                        disabled={loading}
-                        options={repos?.map(repo => ({
-                            value: repo?.full_name,
-                            label: (
-                                <Flex align="center" justify="space-between">
-                                    <Flex align="center" gap={8}>
-                                        <GithubOutlined />
-                                        <span>{repo?.full_name}</span>
-                                    </Flex>
-                                    {repo?.language && (
-                                        <Flex align="center" gap={4}>
-                                            <div
-                                                className="pr-review__lang-dot"
-                                                style={{ background: getLanguageColor(repo?.language) }}
-                                            />
-                                            <Text className="pr-review__lang-text">{repo?.language}</Text>
-                                        </Flex>
-                                    )}
-                                </Flex>
-                            ),
-                        }))}
-                    />
                     <Tag className="architecture-graph__live-tag">
                         {t('architectureGraph.live')}
                     </Tag>
                 </Flex>
             </Flex>
 
+            {/* ── Toolbar ── */}
             <Flex align="center" justify="space-between" className="architecture-graph__toolbar">
                 <Flex align="center" gap={8} className="architecture-graph__toolbar-group">
                     <Text type="secondary" className="architecture-graph__filter-label">
@@ -236,27 +176,28 @@ const ArchitectureGraph = () => {
                         onChange={setFilter}
                         size="small"
                         disabled={loading || !selectedRepo}
-                        className="architecture-graph__filter-select"
+                        style={{ width: 130 }}
                         options={[
-                            { value: 'all', label: t('architectureGraph.all') },
-                            { value: 'service', label: t('architectureGraph.service') },
-                            { value: 'database', label: t('architectureGraph.database') },
-                            { value: 'external', label: t('architectureGraph.external') },
+                            { value: 'all',        label: t('architectureGraph.all') },
+                            { value: 'service',    label: t('architectureGraph.service') },
+                            { value: 'database',   label: t('architectureGraph.database') },
+                            { value: 'external',   label: t('architectureGraph.external') },
                             { value: 'middleware', label: t('architectureGraph.middleware') },
                         ]}
                     />
                 </Flex>
 
                 <Flex align="center" gap={12} className="architecture-graph__legend">
-                    {legend?.map(l => (
-                        <Flex key={l?.type} align="center" gap={5}>
-                            <div className={`architecture-graph__legend-dot architecture-graph__legend-dot--${l?.type}`} />
-                            <Text type="secondary" className="architecture-graph__legend-label">{l?.label}</Text>
+                    {legend.map(l => (
+                        <Flex key={l.type} align="center" gap={5}>
+                            <div className={`architecture-graph__legend-dot architecture-graph__legend-dot--${l.type}`} />
+                            <Text type="secondary" className="architecture-graph__legend-label">{l.label}</Text>
                         </Flex>
                     ))}
                 </Flex>
             </Flex>
 
+            {/* ── Graph ── */}
             <div className="architecture-graph__graph">
                 {loading ? (
                     <Flex align="center" justify="center" className="architecture-graph__loading">
@@ -303,9 +244,9 @@ const ArchitectureGraph = () => {
                         <MiniMap
                             nodeColor={n => {
                                 const map: Record<string, string> = {
-                                    service: '#0969da',
-                                    database: '#1a7f37',
-                                    external: '#bc4c00',
+                                    service:    '#0969da',
+                                    database:   '#1a7f37',
+                                    external:   '#bc4c00',
                                     middleware: '#8250df',
                                 }
                                 return map[(n.data as NodeData).type] ?? '#8c959f'

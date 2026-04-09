@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Button, Card, Flex, Tag, Typography, List, Select, Spin, Tooltip, Alert } from 'antd'
-import { GithubOutlined, LoadingOutlined, FileOutlined, InfoCircleOutlined } from '@ant-design/icons'
+import { LoadingOutlined, FileOutlined, InfoCircleOutlined } from '@ant-design/icons'
+import { GithubOutlined, CopyOutlined, CheckOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import withLayout from '../../layout/withLayout'
 import { api } from '../../services/api'
 import toast from 'react-hot-toast'
 import { timeAgo } from '../../utils/timeAgo'
-import { getLanguageColor } from '../../utils/languageColors'
-import { CopyOutlined, CheckOutlined } from '@ant-design/icons'
+import { useRepo } from '../../context/repoContext'
 import './index.scss'
 
 const { Text } = Typography
@@ -17,6 +17,7 @@ const FRONTEND_LANGUAGES = ['JavaScript', 'TypeScript', 'Vue', 'Svelte', 'HTML',
 
 const Documentation = () => {
     const { t } = useTranslation()
+    const { selectedRepo, repos } = useRepo()
 
     const DOC_TYPES = [
         { value: 'function', label: t('documentation.typeFunction'), tooltip: t('documentation.tooltipFunction') },
@@ -28,8 +29,6 @@ const Documentation = () => {
         { value: 'changelog', label: t('documentation.typeChangelog'), tooltip: t('documentation.tooltipChangelog') },
     ]
 
-    const [repos, setRepos] = useState<any[]>([])
-    const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
     const [repoFiles, setRepoFiles] = useState<string[]>([])
     const [filesLoading, setFilesLoading] = useState(false)
     const [selectedFile, setSelectedFile] = useState<string | null>(null)
@@ -48,20 +47,34 @@ const Documentation = () => {
     const isFrontendRepo = FRONTEND_LANGUAGES.includes(repoLanguage)
     const showGuideWarning = docType === 'guide' && selectedRepo && !isFrontendRepo
 
+    // selectedRepo header'dan değişince dosyaları ve history'i çek
+    useEffect(() => {
+        if (!selectedRepo) return
+        const [owner, repo] = selectedRepo.split('/')
+        setResult(null)
+        setRepoFiles([])
+        setHistory([])
+        setSelectedFile(isRepoLevel ? selectedRepo : null)
+        fetchRepoFiles(owner, repo)
+        getHistory(owner, repo)
+    }, [selectedRepo])
 
-    // get repo
-    const getRepos = async () => {
-        const { data, error } = await api.profile.getRepos(token)
-        if (error) {
-            toast.error(error)
-        } else {
-            setRepos(data)
+    // get repo files
+    const fetchRepoFiles = async (owner: string, repo: string) => {
+        setFilesLoading(true)
+        try {
+            const { data, error } = await api.agents.repoFiles(token, owner, repo)
+            if (error) {
+                toast.error(error)
+            } else {
+                setRepoFiles(data?.files ?? [])
+            }
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setFilesLoading(false)
         }
     }
-
-    useEffect(() => {
-        getRepos()
-    }, [])
 
     // get history
     const getHistory = async (owner: string, repo: string) => {
@@ -70,35 +83,6 @@ const Documentation = () => {
             toast.error(error)
         } else {
             setHistory(data)
-        }
-    }
-
-    // select repo
-    const handleRepoSelect = async (value: string) => {
-        try {
-            setSelectedRepo(value)
-            setResult(null)
-            setRepoFiles([])
-            setHistory([])
-            setFilesLoading(true)
-
-            if (isRepoLevel) {
-                setSelectedFile(value)
-            } else {
-                setSelectedFile(null)
-            }
-
-            const [owner, repo] = value.split('/')
-
-            const { data, error } = await api.agents.repoFiles(token, owner, repo)
-            if (error) { toast.error(error) } else {
-                setRepoFiles(data?.files ?? [])
-                await getHistory(owner, repo)
-            }
-        } catch (e) {
-            console.error(e)
-        } finally {
-            setFilesLoading(false)
         }
     }
 
@@ -112,7 +96,7 @@ const Documentation = () => {
         }
     }
 
-    // generate documentation
+    // generate
     const handleGenerate = async () => {
         if (!selectedRepo) return
         if (!isRepoLevel && !selectedFile) return
@@ -138,7 +122,7 @@ const Documentation = () => {
         }
     }
 
-    // history click
+    // click history
     const handleHistoryClick = (item: any) => {
         setSelectedFile(item?.target)
         setDocType(item?.docType)
@@ -162,16 +146,13 @@ const Documentation = () => {
         URL.revokeObjectURL(url)
     }
 
-
     // copy
     const handleCopy = async () => {
         if (!result?.markdown) return
-
         try {
             await navigator.clipboard.writeText(result.markdown)
             setCopied(true)
             toast.success(t('testGenerator.copied'))
-
             setTimeout(() => setCopied(false), 1500)
         } catch (e) {
             console.error(e)
@@ -180,8 +161,8 @@ const Documentation = () => {
 
     const isGenerateDisabled = !selectedRepo || (!isRepoLevel && !selectedFile)
 
-    const fileOptions = selectedRepo ? [
-        ...repoFiles?.map((file) => ({
+    const fileOptions = selectedRepo
+        ? repoFiles?.map((file) => ({
             value: file,
             label: (
                 <Flex align="center" gap={8}>
@@ -189,8 +170,8 @@ const Documentation = () => {
                     <span>{file}</span>
                 </Flex>
             ),
-        })),
-    ] : []
+        }))
+        : []
 
     const renderHistory = () => (
         <List
@@ -209,7 +190,7 @@ const Documentation = () => {
                         <Flex vertical gap={2}>
                             <Text code className="documentation__history-file">{item?.target}</Text>
                             <Text type="secondary" className="documentation__history-meta">
-                                {DOC_TYPES.find(d => d.value === item?.docType)?.label ?? item?.docType} · {timeAgo(item?.timeAgo)}
+                                {DOC_TYPES?.find(d => d.value === item?.docType)?.label ?? item?.docType} · {timeAgo(item?.timeAgo)}
                             </Text>
                         </Flex>
                     </Flex>
@@ -234,42 +215,6 @@ const Documentation = () => {
             </Flex>
 
             <Flex vertical gap={16} className="documentation__body">
-
-                <Flex vertical gap={6}>
-                    <Text className="documentation__section-label">{t('documentation.repo')}</Text>
-                    <Select
-                        className="documentation__select"
-                        placeholder={
-                            <Flex align="center" gap={8}>
-                                <GithubOutlined />
-                                <span>{t('documentation.selectRepo')}</span>
-                            </Flex>
-                        }
-                        value={selectedRepo}
-                        onChange={handleRepoSelect}
-                        showSearch
-                        options={repos?.map((repo) => ({
-                            value: repo?.full_name,
-                            label: (
-                                <Flex align="center" justify="space-between" className="documentation__repo-option">
-                                    <Flex align="center" gap={8}>
-                                        <GithubOutlined />
-                                        <span>{repo?.full_name}</span>
-                                    </Flex>
-                                    {repo?.language && (
-                                        <Flex align="center" gap={4}>
-                                            <div
-                                                className="documentation__lang-dot"
-                                                style={{ background: getLanguageColor(repo?.language) }}
-                                            />
-                                            <Text className="documentation__lang-text">{repo?.language}</Text>
-                                        </Flex>
-                                    )}
-                                </Flex>
-                            ),
-                        }))}
-                    />
-                </Flex>
 
                 <Flex gap={8} className="documentation__controls-row">
                     <Flex vertical gap={6} className="documentation__doctype-col">

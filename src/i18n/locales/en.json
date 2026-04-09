@@ -366,6 +366,10 @@
         "weeksAgo2": "2 weeks ago",
         "commitsAndPrs": "{{commits}} commits · {{prs}} PRs",
         "selectRepo": "Select repo...",
-        "selectRepoFirst": "Select a repository to view intelligence"
+        "selectRepoFirst": "Select a repository to view intelligence",
+        "analyzing": "Analyzing repository...",
+        "noHotspots": "No bug hotspots detected.",
+        "noActivity": "No recent activity.",
+        "thisPeriod": "in selected period"
     }
 }

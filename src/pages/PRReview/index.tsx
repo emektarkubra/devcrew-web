@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Button, Card, Flex, Tag, Typography, List, Avatar, Spin, Select } from 'antd'
-import { FileOutlined, GithubOutlined, LoadingOutlined } from '@ant-design/icons'
+import { FileOutlined, LoadingOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import withLayout from '../../layout/withLayout'
 import { api } from '../../services/api'
 import toast from 'react-hot-toast'
 import { timeAgo } from '../../utils/timeAgo'
-import { getLanguageColor } from '../../utils/languageColors'
 import { FiGitPullRequest } from 'react-icons/fi'
+import { useRepo } from '../../context/repoContext'
 import './index.scss'
 import PRReportModal from './components/PRReportModal'
 import ApplyFixModal from './components/ApplyFixModal'
@@ -28,6 +28,7 @@ const diffLineClass = (type: string): string => {
 
 const PRReview = () => {
     const { t } = useTranslation()
+    const { selectedRepo } = useRepo()
 
     const RISK_CONFIG: Record<string, { label: string }> = {
         high: { label: t('prReview.riskHigh') },
@@ -35,8 +36,6 @@ const PRReview = () => {
         low: { label: t('prReview.riskLow') },
     }
 
-    const [repos, setRepos] = useState<any[]>([])
-    const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
     const [prs, setPrs] = useState<any[]>([])
     const [prsLoading, setPrsLoading] = useState(false)
     const [selectedPR, setSelectedPR] = useState<number | null>(null)
@@ -50,37 +49,25 @@ const PRReview = () => {
     const token = localStorage.getItem('dt-token') || ''
 
 
-    // get repos
-    const getRepos = async () => {
-        const { data, error } = await api.profile.getRepos(token)
-        if (error) {
-            toast.error(error)
-        } else {
-            setRepos(data)
-        }
-    }
-
     useEffect(() => {
-        getRepos()
-    }, [])
-
-    // repo select
-    const handleRepoSelect = async (value: string) => {
-        setSelectedRepo(value)
+        if (!selectedRepo) return
+        const [owner, repo] = selectedRepo?.split('/')
         setSelectedPR(null)
         setResult(null)
         setPrs([])
+        getPRs(owner, repo)
+        getHistory(owner, repo)
+    }, [selectedRepo])
+
+    // get PRs
+    const getPRs = async (owner: string, repo: string) => {
         setPrsLoading(true)
-
-        const [owner, repo] = value.split('/')
-
         try {
             const { data, error } = await api.agents.prList(token, owner, repo)
             if (error) {
                 toast.error(error)
             } else {
                 setPrs(data)
-                await getHistory(owner, repo)
             }
         } catch (error) {
             console.error(error)
@@ -89,7 +76,7 @@ const PRReview = () => {
         }
     }
 
-    // pr select
+    // PR Select
     const handlePRSelect = (prNumber: number) => {
         setSelectedPR(prNumber)
         setResult(null)
@@ -202,45 +189,7 @@ const PRReview = () => {
 
             <Flex vertical gap={16} className="pr-review__body">
 
-                {/* Repo */}
-                <Flex vertical gap={6}>
-                    <Text className="pr-review__section-label">{t('prReview.repoLabel')}</Text>
-                    <Select
-                        className="pr-review__select"
-                        placeholder={
-                            <Flex align="center" gap={8}>
-                                <GithubOutlined />
-                                <span>{t('prReview.selectRepo')}</span>
-                            </Flex>
-                        }
-                        value={selectedRepo}
-                        onChange={handleRepoSelect}
-                        showSearch
-                        options={repos?.map((repo) => ({
-                            value: repo?.full_name,
-                            label: (
-                                <Flex align="center" justify="space-between">
-                                    <Flex align="center" gap={8}>
-                                        <GithubOutlined />
-                                        <span>{repo?.full_name}</span>
-                                        {repo?.is_private && <Tag className="pr-review__tag--private">Private</Tag>}
-                                    </Flex>
-                                    {repo?.language && (
-                                        <Flex align="center" gap={4}>
-                                            <div
-                                                className="pr-review__lang-dot"
-                                                style={{ background: getLanguageColor(repo?.language) }}
-                                            />
-                                            <Text className="pr-review__lang-text">{repo?.language}</Text>
-                                        </Flex>
-                                    )}
-                                </Flex>
-                            ),
-                        }))}
-                    />
-                </Flex>
-
-                {/* PR */}
+                {/* PR Select */}
                 <Flex vertical gap={6}>
                     <Text className="pr-review__section-label">{t('prReview.prLabel')}</Text>
                     <Select
@@ -393,9 +342,7 @@ const PRReview = () => {
                         </Flex>
                     </>
                 )}
-
             </Flex>
-
 
             <PRReportModal
                 open={reportModalOpen}
