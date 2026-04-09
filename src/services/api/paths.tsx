@@ -46,3 +46,6 @@ export const teamModeHistory = "/agents/team-mode/history"
 
 // architecture
 export const architecture = "/agents/architecture"
+
+// repo intelligence
+export const repoIntelligence = "/agents/repo-intelligence"

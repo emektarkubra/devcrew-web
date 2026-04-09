@@ -614,4 +614,14 @@
         color: $gh-light-text-muted;
         @apply dark:text-gh-text-muted;
     }
+
+    &__loading {
+        min-height: 400px;
+    }
+
+    &__loading-text {
+        font-size: 13px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
 }

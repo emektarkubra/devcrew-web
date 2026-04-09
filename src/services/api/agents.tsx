@@ -165,6 +165,14 @@ class agents {
     static getArchitecture = async (token: string, owner: string, repo: string) => {
         return await request.get(`${paths.architecture}?token=${token}&owner=${owner}&repo=${repo}`)
     }
+
+
+    /**
+    * repo intelligence
+    */
+    static getRepoIntelligence = async (token: string, owner: string, repo: string, since: string, until: string) => {
+        return await request.get(`${paths.repoIntelligence}?token=${token}&owner=${owner}&repo=${repo}&since=${since}&until=${until}`)
+    }
 }
 
 export { agents }
