@@ -53,7 +53,9 @@
         "selectType": "Select type",
         "selectLanguage": "Select language",
         "selectSort": "Select sort",
-        "clear": "Clear"
+        "clear": "Clear",
+        "debug": "Debug",
+        "documentation": "Documentation"
     },
     "layout": {
         "general": "General",

@@ -53,7 +53,9 @@
         "selectType": "Tip seç",
         "selectLanguage": "Dil seç",
         "selectSort": "Sıralama seç",
-        "clear": "Temizle"
+        "clear": "Temizle",
+        "debug": "Hata",
+        "documentation": "Dokümantasyon"
     },
     "layout": {
         "general": "Genel",
