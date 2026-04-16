@@ -361,6 +361,34 @@
             background: $gh-yellow-text;
         }
 
+        &--html {
+            background: $gh-orange;
+        }
+
+        &--css {
+            background: $gh-light-purple;
+        }
+
+        &--scss {
+            background: $gh-light-pink;
+        }
+
+        &--sass {
+            background: $gh-light-pink;
+        }
+
+        &--vue {
+            background: $gh-light-green;
+        }
+
+        &--svelte {
+            background: $gh-light-orange;
+        }
+
+        &--astro {
+            background: $gh-light-orange;
+        }
+
         &--go {
             background: $gh-blue-text;
         }
@@ -369,7 +397,160 @@
             background: $gh-orange-text;
         }
 
+        &--c {
+            background: $gh-light-blue;
+        }
+
+        &--cpp {
+            background: $gh-light-blue;
+        }
+
+        &--c\+\+ {
+            background: $gh-light-blue;
+        }
+
+        // ── JVM ──────────────────────────────────────────────────
         &--java {
+            background: $gh-orange;
+        }
+
+        &--kotlin {
+            background: $gh-light-purple;
+        }
+
+        &--scala {
+            background: $gh-light-red;
+        }
+
+        &--groovy {
+            background: $gh-light-blue;
+        }
+
+        &--csharp {
+            background: $gh-light-purple;
+        }
+
+        &--fsharp {
+            background: $gh-blue-text;
+        }
+
+        &--ruby {
+            background: $gh-light-red;
+        }
+
+        &--php {
+            background: $gh-light-purple;
+        }
+
+        &--perl {
+            background: $gh-light-blue;
+        }
+
+        &--lua {
+            background: $gh-blue-text;
+        }
+
+        &--shell {
+            background: $gh-light-green;
+        }
+
+        &--bash {
+            background: $gh-light-green;
+        }
+
+        &--powershell {
+            background: $gh-blue-text;
+        }
+
+        &--r {
+            background: $gh-light-blue;
+        }
+
+        &--julia {
+            background: $gh-light-purple;
+        }
+
+        &--matlab {
+            background: $gh-light-orange;
+        }
+
+        &--notebooks {
+            background: $gh-light-orange;
+        }
+
+        &--swift {
+            background: $gh-light-orange;
+        }
+
+        &--dart {
+            background: $gh-blue-text;
+        }
+
+        &--objectivec {
+            background: $gh-light-blue;
+        }
+
+        &--haskell {
+            background: $gh-light-purple;
+        }
+
+        &--elixir {
+            background: $gh-light-purple;
+        }
+
+        &--erlang {
+            background: $gh-light-red;
+        }
+
+        &--clojure {
+            background: $gh-light-green;
+        }
+
+        &--ocaml {
+            background: $gh-light-orange;
+        }
+
+        &--sql {
+            background: $gh-light-blue;
+        }
+
+        &--plsql {
+            background: $gh-light-red;
+        }
+
+        &--dockerfile {
+            background: $gh-blue-text;
+        }
+
+        &--terraform {
+            background: $gh-light-purple;
+        }
+
+        &--nix {
+            background: $gh-light-blue;
+        }
+
+        &--mdx {
+            background: $gh-light-blue;
+        }
+
+        &--graphql {
+            background: $gh-light-pink;
+        }
+
+        &--solidity {
+            background: $gh-light-blue;
+        }
+
+        &--zig {
+            background: $gh-light-orange;
+        }
+
+        &--elm {
+            background: $gh-light-blue;
+        }
+
+        &--jupiter {
             background: $gh-orange;
         }
 
@@ -391,7 +572,8 @@
 
     &__clear-btn {
         font-size: 14px;
-        color: $gh-light-text-muted !important;
+        color: $gh-light-red !important;
+        background: transparent !important;
         @apply dark:text-gh-text-muted;
 
         &:hover {
