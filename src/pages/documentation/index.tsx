@@ -190,7 +190,7 @@ const Documentation = () => {
                         <Flex vertical gap={2}>
                             <Text code className="documentation__history-file">{item?.target}</Text>
                             <Text type="secondary" className="documentation__history-meta">
-                                {DOC_TYPES?.find(d => d.value === item?.docType)?.label ?? item?.docType} · {timeAgo(item?.timeAgo)}
+                                {DOC_TYPES?.find(d => d.value === item?.docType)?.label ?? item?.docType} · {timeAgo(item?.timeAgo, t)}
                             </Text>
                         </Flex>
                     </Flex>

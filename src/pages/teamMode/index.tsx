@@ -489,7 +489,7 @@ const TeamMode = () => {
                                                     <Tag className="team-mode__tag--done" style={{ margin: 0 }}>
                                                         {item?.health_score ?? item?.score ?? 0}/100
                                                     </Tag>
-                                                    <Text className="team-mode__history-meta">{timeAgo(item?.timeAgo)}</Text>
+                                                    <Text className="team-mode__history-meta">{timeAgo(item?.timeAgo, t)}</Text>
                                                 </Flex>
                                             </Flex>
                                         </Flex>
