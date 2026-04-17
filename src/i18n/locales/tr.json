@@ -373,5 +373,15 @@
         "noHotspots": "Bug hotspot bulunamadı.",
         "noActivity": "Son aktivite bulunamadı.",
         "thisPeriod": "seçilen dönemde"
+    },
+    "timeAgo": {
+        "justNow": "az önce",
+        "minutesAgo": "{{count}} dakika önce",
+        "hoursAgo": "{{count}} saat önce",
+        "yesterday": "dün",
+        "daysAgo": "{{count}} gün önce",
+        "weeksAgo": "{{count}} hafta önce",
+        "monthsAgo": "{{count}} ay önce",
+        "yearsAgo": "{{count}} yıl önce"
     }
 }

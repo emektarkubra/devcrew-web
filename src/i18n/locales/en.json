@@ -373,5 +373,15 @@
         "noHotspots": "No bug hotspots detected.",
         "noActivity": "No recent activity.",
         "thisPeriod": "in selected period"
+    },
+    "timeAgo": {
+        "justNow": "just now",
+        "minutesAgo": "{{count}} minutes ago",
+        "hoursAgo": "{{count}} hours ago",
+        "yesterday": "yesterday",
+        "daysAgo": "{{count}} days ago",
+        "weeksAgo": "{{count}} weeks ago",
+        "monthsAgo": "{{count}} months ago",
+        "yearsAgo": "{{count}} years ago"
     }
 }
