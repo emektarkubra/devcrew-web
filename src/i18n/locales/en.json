@@ -69,7 +69,8 @@
         "documentation": "Documentation",
         "analysis": "Analysis",
         "architectureGraph": "Architecture Graph",
-        "repoIntelligence": "Repo Intelligence"
+        "repoIntelligence": "Repo Intelligence",
+        "selectRepository": "Select repository..."
     },
     "codebase": {
         "title": "Codebase Q&A",
@@ -307,7 +308,8 @@
         "description": "Description",
         "connections": "Connections",
         "analyzing": "analyzing",
-        "noNodes": "No nodes"
+        "noNodes": "No nodes",
+        "selectRepoFirst": "Select a repo first..."
     },
     "repoIntelligence": {
         "title": "Repo Intelligence",

@@ -69,7 +69,8 @@
         "documentation": "Dokümantasyon",
         "analysis": "Analiz",
         "architectureGraph": "Mimari Grafik",
-        "repoIntelligence": "Repo Zekası"
+        "repoIntelligence": "Repo Zekası",
+        "selectRepository": "Repo seçin..."
     },
     "codebase": {
         "title": "Kod Tabanı S&C",
@@ -307,7 +308,8 @@
         "description": "Açıklama",
         "connections": "Bağlantılar",
         "analyzing": "analiz ediliyor",
-        "noNodes": "Düğüm yok"
+        "noNodes": "Düğüm yok",
+        "selectRepoFirst": "Önce bir repo seçin..."
     },
     "repoIntelligence": {
         "title": "Repo Intelligence",

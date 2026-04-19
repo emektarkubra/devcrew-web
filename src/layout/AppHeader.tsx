@@ -12,14 +12,16 @@ import { getLanguageColor } from '../utils/languageColors'
 import { TbLogout } from 'react-icons/tb'
 import { GithubOutlined } from '@ant-design/icons'
 import '../assets/style/layout/AppHeader.scss'
+import { useTranslation } from 'react-i18next'
 
 const { Header } = Layout
 
 const AppHeader = () => {
+    const { t } = useTranslation()
     const dispatch = useDispatch()
     const collapsed = useSelector((state: any) => state.collapsed.collapsed)
     const { logout } = useContext(AuthContext)
-    const { repos, selectedRepo, setSelectedRepo, reposLoading } = useRepo()
+    const { repos, selectedRepo, setSelectedRepo, reposLoading, fetchRepos } = useRepo()
 
     useEffect(() => {
         const handleResize = () => {
@@ -57,16 +59,18 @@ const AppHeader = () => {
                             <div className="header-container__repo-select-wrapper">
                                 <Select
                                     style={{ width: '100%' }}
+                                    allowClear
                                     placeholder={
                                         <Flex align="center" gap={6}>
                                             <GithubOutlined />
-                                            <span>Select repository</span>
+                                            <span>{t('layout.selectRepository')}</span>
                                         </Flex>
                                     }
                                     value={selectedRepo}
                                     onChange={setSelectedRepo}
                                     showSearch
                                     loading={reposLoading}
+                                    onDropdownVisibleChange={(open) => { if (open) fetchRepos() }}
                                     options={repos?.map(repo => ({
                                         value: repo?.full_name,
                                         label: (
