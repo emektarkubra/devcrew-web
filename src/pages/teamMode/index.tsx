@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button, Card, Flex, Tag, Typography, Select, List, Tooltip, Collapse } from 'antd'
-import { GithubOutlined, CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons'
+import { CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { useTranslation } from 'react-i18next'
 import withLayout from '../../layout/withLayout'
 import { api } from '../../services/api'
-import { getLanguageColor } from '../../utils/languageColors'
 import { timeAgo } from '../../utils/timeAgo'
 import toast from 'react-hot-toast'
+import { useRepo } from '../../context/repoContext'
 import './index.scss'
 
 const { Text } = Typography
@@ -29,9 +29,8 @@ interface AgentState {
 
 const TeamMode = () => {
     const { t } = useTranslation()
-    const [repos, setRepos] = useState<any[]>([])
-    const [reposLoading, setReposLoading] = useState(false)
-    const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
+    const { selectedRepo, setSelectedRepo } = useRepo()
+
     const [selectedAgents, setSelectedAgents] = useState<string[]>([])
     const [running, setRunning] = useState(false)
     const [agentStates, setAgentStates] = useState<Record<string, AgentState>>({})
@@ -39,30 +38,17 @@ const TeamMode = () => {
     const [history, setHistory] = useState<any[]>([])
     const [historyLoading, setHistoryLoading] = useState(false)
 
+    const restoringRef = useRef(false)
+
     const token = localStorage.getItem('dt-token') || ''
     const allDone = selectedAgents.length > 0 && selectedAgents.every(k => agentStates[k]?.status === 'done')
     const hasStarted = Object.keys(agentStates).length > 0
 
     const agents = [
-        {
-            key: 'codebase',
-            label: t('teamMode.agents_codebase'),
-            tooltip: t('teamMode.tooltip_codebase')
-        },
-        {
-            key: 'pr_review', label: t('teamMode.agents_pr_review'),
-            tooltip: t('teamMode.tooltip_pr_review')
-        },
-        {
-            key: 'test',
-            label: t('teamMode.agents_test'),
-            tooltip: t('teamMode.tooltip_test')
-        },
-        {
-            key: 'documentation',
-            label: t('teamMode.agents_documentation'),
-            tooltip: t('teamMode.tooltip_documentation')
-        },
+        { key: 'codebase', label: t('teamMode.agents_codebase'), tooltip: t('teamMode.tooltip_codebase') },
+        { key: 'pr_review', label: t('teamMode.agents_pr_review'), tooltip: t('teamMode.tooltip_pr_review') },
+        { key: 'test', label: t('teamMode.agents_test'), tooltip: t('teamMode.tooltip_test') },
+        { key: 'documentation', label: t('teamMode.agents_documentation'), tooltip: t('teamMode.tooltip_documentation') },
     ]
 
     const steps = [
@@ -72,35 +58,12 @@ const TeamMode = () => {
         { icon: '4', label: t('teamMode.step4') },
     ]
 
-    // get repos
-    const getRepos = async () => {
-        setReposLoading(true)
-
-        try {
-            const { data, error } = await api.profile.getRepos(token)
-            if (error) {
-                toast.error(error)
-            } else {
-                setRepos(data)
-            }
-        } catch (error) {
-            console.error(error)
-        } finally {
-            setReposLoading(false)
-        }
-    }
-
-
-    // get history
     const getHistory = async () => {
         setHistoryLoading(true)
         try {
             const { data, error } = await api.agents.teamModeHistory(token)
-            if (error) {
-                toast.error(error)
-            } else {
-                setHistory(data)
-            }
+            if (error) toast.error(error)
+            else setHistory(data)
         } catch (error) {
             console.error(error)
         } finally {
@@ -109,12 +72,19 @@ const TeamMode = () => {
     }
 
     useEffect(() => {
-        getRepos()
         getHistory()
     }, [])
 
+    useEffect(() => {
+        if (restoringRef.current) {
+            restoringRef.current = false
+            return
+        }
+        setAgentStates({})
+        setSummary(null)
+        setSelectedAgents([])
+    }, [selectedRepo])
 
-    // run team mode
     const handleRun = () => {
         if (!selectedRepo || selectedAgents.length === 0) return
 
@@ -183,8 +153,8 @@ const TeamMode = () => {
         })
     }
 
-    // history click
     const handleHistoryClick = (item: any) => {
+        restoringRef.current = true
         setSelectedRepo(item?.repo)
         setSelectedAgents(item?.agents)
         setSummary({
@@ -264,54 +234,21 @@ const TeamMode = () => {
 
             <Flex vertical gap={20} className="team-mode__body">
 
-                <Flex vertical gap={12} className="team-mode__config-row" >
-                    <Text className="team-mode__section-label">{t('teamMode.repo')}</Text>
-                    <Flex gap={6} style={{ flex: 1 }}>
-                        <Select
-                            className="team-mode__select"
-                            placeholder={<Flex align="center" gap={8}><GithubOutlined /><span>{t('teamMode.selectRepo')}</span></Flex>}
-                            value={selectedRepo}
-                            onChange={setSelectedRepo}
-                            showSearch
-                            loading={reposLoading}
-                            disabled={running}
-                            options={repos?.map(repo => ({
-                                value: repo?.full_name,
-                                label: (
-                                    <Flex align="center" justify="space-between">
-                                        <Flex align="center" gap={8}>
-                                            <GithubOutlined />
-                                            <span>{repo?.full_name}</span>
-                                        </Flex>
-                                        {repo?.language && (
-                                            <Flex align="center" gap={4}>
-                                                <div className="team-mode__lang-dot" style={{ background: getLanguageColor(repo?.language) }} />
-                                                <Text className="team-mode__lang-text">{repo?.language}</Text>
-                                            </Flex>
-                                        )}
-                                    </Flex>
-                                ),
-                            }))}
-                        />
-                        <Select
-                            mode="multiple"
-                            className="team-mode__select"
-                            placeholder={t('teamMode.selectAgents')}
-                            value={selectedAgents}
-                            onChange={setSelectedAgents}
-                            disabled={running}
-                            maxTagCount="responsive"
-                            options={agents?.map(agent => ({
-                                value: agent?.key,
-                                label: (
-                                    <Flex align="center" justify="space-between">
-                                        <span>{agent?.label}</span>
-                                    </Flex>
-                                ),
-                            }))}
-                        />
-                    </Flex>
-
+                <Flex vertical gap={12} className="team-mode__config-row">
+                    <Text className="team-mode__section-label">{t('teamMode.agents')}</Text>
+                    <Select
+                        mode="multiple"
+                        className="team-mode__select"
+                        placeholder={t('teamMode.selectAgents')}
+                        value={selectedAgents}
+                        onChange={setSelectedAgents}
+                        disabled={running}
+                        maxTagCount="responsive"
+                        options={agents?.map(agent => ({
+                            value: agent?.key,
+                            label: <span>{agent?.label}</span>,
+                        }))}
+                    />
                 </Flex>
 
                 <Flex gap={8}>
@@ -325,12 +262,9 @@ const TeamMode = () => {
                     </Button>
                     {hasStarted && !running && (
                         <Button
-                            onClick={() => {
-                                setAgentStates({})
-                                setSummary(null)
-                                setRunning(false)
-                            }}
-                            className="team-mode__reset-btn">
+                            onClick={() => { setAgentStates({}); setSummary(null); setRunning(false) }}
+                            className="team-mode__reset-btn"
+                        >
                             {t('teamMode.reset')}
                         </Button>
                     )}
@@ -345,7 +279,7 @@ const TeamMode = () => {
                                 const state = agentStates[key]
                                 const status = state?.status ?? 'idle'
                                 return (
-                                    <Flex key={key} align="center" style={{ flex: idx === selectedAgents.length - 1 ? 'unset' : 1 }} justify='space-between'>
+                                    <Flex key={key} align="center" style={{ flex: idx === selectedAgents.length - 1 ? 'unset' : 1 }} justify="space-between">
                                         <Flex vertical align="center" gap={6} className={`team-mode__step team-mode__step--${status}`}>
                                             <div className={getStepIconClass(key, status)}>
                                                 {getStatusIcon(status)}
@@ -391,11 +325,18 @@ const TeamMode = () => {
                                 <Text className="team-mode__stat-value-green">{summary?.docs}</Text>
                             </Card>
                         </Flex>
-
                         {summary?.text && (
-                            <Text className="team-mode__summary-text">{summary?.text}</Text>
+                            <Text className={
+                                summary.text.toLowerCase().includes('rate limit') || summary.text.toLowerCase().includes('error')
+                                    ? 'team-mode__summary-text--error'
+                                    : 'team-mode__summary-text'
+                            }>
+                                {summary.text.toLowerCase().includes('rate limit') || summary.text.toLowerCase().includes('error')
+                                    ? t('teamMode.rateLimitWarning')
+                                    : summary.text
+                                }
+                            </Text>
                         )}
-
                         {summary?.top_actions?.length > 0 && (
                             <Flex vertical gap={4}>
                                 <Text className="team-mode__output-actions-label">{t('teamMode.topActions')}</Text>
