@@ -244,7 +244,9 @@
         "tooltipChangelog": "Generates a changelog summarizing recent code changes and their impact.",
         "repoLevelInfo": "Will analyze full repo: {{repo}}",
         "selectFile": "Select a file...",
-        "guideWarning": "User Guide works best for frontend repositories (React, Vue, etc.). For backend repos, consider using API Reference or Architecture instead."
+        "guideWarning": "User Guide works best for frontend repositories (React, Vue, etc.). For backend repos, consider using API Reference or Architecture instead.",
+        "draftWarning": "This is an AI-generated draft. Review and edit before publishing.",
+        "exportDraft": "Export Draft"
     },
     "teamMode": {
         "title": "Team Mode",

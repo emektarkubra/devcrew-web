@@ -290,6 +290,14 @@ const Documentation = () => {
                 {result && !loading && (
                     <Flex gap={16} className="documentation__stretch-row">
                         <Flex vertical gap={8} className="documentation__preview-col">
+
+                            <Alert
+                                type="info"
+                                showIcon
+                                message={t('documentation.draftWarning')}
+                                className="documentation__draft-warning"
+                            />
+
                             <Flex align="center" justify="space-between" className="documentation__preview-head">
                                 <Text className="documentation__section-label">{t('documentation.preview')}</Text>
                                 <Flex gap={6}>
@@ -335,7 +343,7 @@ const Documentation = () => {
                                 onClick={handleExport}
                                 disabled={!result?.markdown}
                             >
-                                {t('documentation.exportMarkdown')}
+                                {t('documentation.exportDraft')}
                             </Button>
                         </Flex>
 

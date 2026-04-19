@@ -244,7 +244,9 @@
         "tooltipChangelog": "Son kod değişikliklerini ve etkilerini özetleyen bir değişiklik günlüğü oluşturur.",
         "repoLevelInfo": "Tüm repo analiz edilecek: {{repo}}",
         "selectFile": "Bir dosya seçin...",
-        "guideWarning": "Kullanıcı Rehberi, frontend repolar (React, Vue vb.) için en iyi sonucu verir. Backend repolar için API Referansı veya Mimari seçeneklerini tercih edebilirsiniz."
+        "guideWarning": "Kullanıcı Rehberi, frontend repolar (React, Vue vb.) için en iyi sonucu verir. Backend repolar için API Referansı veya Mimari seçeneklerini tercih edebilirsiniz.",
+        "draftWarning": "Bu yapay zeka tarafından oluşturulmuş bir taslaktır. Yayınlamadan önce gözden geçirin.",
+        "exportDraft": "Taslağı Dışa Aktar"
     },
     "teamMode": {
         "title": "Takım Modu",
