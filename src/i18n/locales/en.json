@@ -69,7 +69,8 @@
         "documentation": "Documentation",
         "analysis": "Analysis",
         "architectureGraph": "Architecture Graph",
-        "repoIntelligence": "Repo Intelligence"
+        "repoIntelligence": "Repo Intelligence",
+        "selectRepository": "Select repository..."
     },
     "codebase": {
         "title": "Codebase Q&A",
@@ -290,7 +291,8 @@
         "tooltip_codebase": "Analyzes codebase structure, dependencies, and code quality.",
         "tooltip_pr_review": "Reviews all open pull requests, checks for issues and suggests improvements.",
         "tooltip_test": "Generates unit, edge case, and integration tests for the most critical files.",
-        "tooltip_documentation": "Generates README, API reference, architecture overview, and onboarding guide."
+        "tooltip_documentation": "Generates README, API reference, architecture overview, and onboarding guide.",
+        "rateLimitWarning": "Some agents could not complete due to API rate limits. Results show partial analysis. Please try again later."
     },
     "architectureGraph": {
         "title": "Architecture Graph",
@@ -307,7 +309,8 @@
         "description": "Description",
         "connections": "Connections",
         "analyzing": "analyzing",
-        "noNodes": "No nodes"
+        "noNodes": "No nodes",
+        "selectRepoFirst": "Select a repo first..."
     },
     "repoIntelligence": {
         "title": "Repo Intelligence",

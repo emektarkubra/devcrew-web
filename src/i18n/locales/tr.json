@@ -69,7 +69,8 @@
         "documentation": "Dokümantasyon",
         "analysis": "Analiz",
         "architectureGraph": "Mimari Grafik",
-        "repoIntelligence": "Repo Zekası"
+        "repoIntelligence": "Repo Zekası",
+        "selectRepository": "Repo seçin..."
     },
     "codebase": {
         "title": "Kod Tabanı S&C",
@@ -290,7 +291,8 @@
         "tooltip_codebase": "Codebase yapısını, bağımlılıklarını ve kod kalitesini analiz eder.",
         "tooltip_pr_review": "Tüm açık pull request'leri inceler, sorunları kontrol eder ve iyileştirmeler önerir.",
         "tooltip_test": "En kritik dosyalar için unit, edge case ve integration testleri üretir.",
-        "tooltip_documentation": "README, API referansı, mimari genel bakış ve onboarding kılavuzu üretir."
+        "tooltip_documentation": "README, API referansı, mimari genel bakış ve onboarding kılavuzu üretir.",
+        "rateLimitWarning": "Bazı agent'lar API rate limit nedeniyle tamamlanamadı. Sonuçlar kısmi analiz göstermektedir. Lütfen daha sonra tekrar deneyin."
     },
     "architectureGraph": {
         "title": "Mimari Grafiği",
@@ -307,7 +309,8 @@
         "description": "Açıklama",
         "connections": "Bağlantılar",
         "analyzing": "analiz ediliyor",
-        "noNodes": "Düğüm yok"
+        "noNodes": "Düğüm yok",
+        "selectRepoFirst": "Önce bir repo seçin..."
     },
     "repoIntelligence": {
         "title": "Repo Intelligence",
