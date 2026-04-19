@@ -14,8 +14,12 @@ const Login = () => {
 
     const handleLogin = async () => {
         setIsLoading(true)
-        const baseURL = import.meta.env.VITE_API_BASE_URL || (window as any).API_BASE_URL
-        window.location.href = `${baseURL}/auth/github/login`
+        try {
+            const baseURL = import.meta.env.VITE_API_BASE_URL || (window as any).API_BASE_URL
+            window.location.href = `${baseURL}/auth/github/login`
+        } catch {
+            setIsLoading(false)
+        }
     }
 
     const toggleDark = () => {

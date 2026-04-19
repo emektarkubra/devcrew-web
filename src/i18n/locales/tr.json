@@ -53,7 +53,9 @@
         "selectType": "Tip seç",
         "selectLanguage": "Dil seç",
         "selectSort": "Sıralama seç",
-        "clear": "Temizle"
+        "clear": "Temizle",
+        "debug": "Hata",
+        "documentation": "Dokümantasyon"
     },
     "layout": {
         "general": "Genel",
@@ -242,7 +244,9 @@
         "tooltipChangelog": "Son kod değişikliklerini ve etkilerini özetleyen bir değişiklik günlüğü oluşturur.",
         "repoLevelInfo": "Tüm repo analiz edilecek: {{repo}}",
         "selectFile": "Bir dosya seçin...",
-        "guideWarning": "Kullanıcı Rehberi, frontend repolar (React, Vue vb.) için en iyi sonucu verir. Backend repolar için API Referansı veya Mimari seçeneklerini tercih edebilirsiniz."
+        "guideWarning": "Kullanıcı Rehberi, frontend repolar (React, Vue vb.) için en iyi sonucu verir. Backend repolar için API Referansı veya Mimari seçeneklerini tercih edebilirsiniz.",
+        "draftWarning": "Bu yapay zeka tarafından oluşturulmuş bir taslaktır. Yayınlamadan önce gözden geçirin.",
+        "exportDraft": "Taslağı Dışa Aktar"
     },
     "teamMode": {
         "title": "Takım Modu",
@@ -371,5 +375,15 @@
         "noHotspots": "Bug hotspot bulunamadı.",
         "noActivity": "Son aktivite bulunamadı.",
         "thisPeriod": "seçilen dönemde"
+    },
+    "timeAgo": {
+        "justNow": "az önce",
+        "minutesAgo": "{{count}} dakika önce",
+        "hoursAgo": "{{count}} saat önce",
+        "yesterday": "dün",
+        "daysAgo": "{{count}} gün önce",
+        "weeksAgo": "{{count}} hafta önce",
+        "monthsAgo": "{{count}} ay önce",
+        "yearsAgo": "{{count}} yıl önce"
     }
 }

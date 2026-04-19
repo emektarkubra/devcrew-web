@@ -53,7 +53,9 @@
         "selectType": "Select type",
         "selectLanguage": "Select language",
         "selectSort": "Select sort",
-        "clear": "Clear"
+        "clear": "Clear",
+        "debug": "Debug",
+        "documentation": "Documentation"
     },
     "layout": {
         "general": "General",
@@ -242,7 +244,9 @@
         "tooltipChangelog": "Generates a changelog summarizing recent code changes and their impact.",
         "repoLevelInfo": "Will analyze full repo: {{repo}}",
         "selectFile": "Select a file...",
-        "guideWarning": "User Guide works best for frontend repositories (React, Vue, etc.). For backend repos, consider using API Reference or Architecture instead."
+        "guideWarning": "User Guide works best for frontend repositories (React, Vue, etc.). For backend repos, consider using API Reference or Architecture instead.",
+        "draftWarning": "This is an AI-generated draft. Review and edit before publishing.",
+        "exportDraft": "Export Draft"
     },
     "teamMode": {
         "title": "Team Mode",
@@ -371,5 +375,15 @@
         "noHotspots": "No bug hotspots detected.",
         "noActivity": "No recent activity.",
         "thisPeriod": "in selected period"
+    },
+    "timeAgo": {
+        "justNow": "just now",
+        "minutesAgo": "{{count}} minutes ago",
+        "hoursAgo": "{{count}} hours ago",
+        "yesterday": "yesterday",
+        "daysAgo": "{{count}} days ago",
+        "weeksAgo": "{{count}} weeks ago",
+        "monthsAgo": "{{count}} months ago",
+        "yearsAgo": "{{count}} years ago"
     }
 }

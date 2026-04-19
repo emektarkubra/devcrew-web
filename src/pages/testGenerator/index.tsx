@@ -210,7 +210,7 @@ const TestGenerator = () => {
                                 {t('testGenerator.historyMeta', {
                                     count: item?.testCount,
                                     coverage: item?.coverage,
-                                    time: timeAgo(item?.timeAgo),
+                                    time: timeAgo(item?.timeAgo, t),
                                 })}
                             </Text>
                         </Flex>

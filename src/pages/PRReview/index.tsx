@@ -123,7 +123,7 @@ const PRReview = () => {
             title: item.title,
             number: item.pr,
             author: '',
-            timeAgo: timeAgo(item.timeAgo),
+            timeAgo: timeAgo(item.timeAgo, t),
             riskScore: item.riskScore,
             changedFiles: item.changedFiles,
             criticalIssues: item.issues?.filter((i: any) => i.severity === 'high').length ?? 0,
@@ -157,7 +157,7 @@ const PRReview = () => {
                                         <Text className="pr-review__history-title">{item?.title}</Text>
                                     </Flex>
                                     <Text type="secondary" className="pr-review__history-meta">
-                                        {t('prReview.issuesCount', { count: item?.issueCount })} · {timeAgo(item?.timeAgo)}
+                                        {t('prReview.issuesCount', { count: item?.issueCount })} · {timeAgo(item?.timeAgo, t)}
                                     </Text>
                                 </Flex>
                             </Flex>

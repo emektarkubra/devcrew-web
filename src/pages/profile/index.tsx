@@ -5,24 +5,73 @@ import { RiGitRepositoryLine } from 'react-icons/ri'
 import { GoStar, GoGitPullRequest, GoRepoForked, GoEye, GoLocation, GoOrganization, GoMail, GoLinkExternal } from 'react-icons/go'
 import { VscCode, VscBeaker } from 'react-icons/vsc'
 import { MdLockOpen } from 'react-icons/md'
-import { TbZoomCode } from 'react-icons/tb'
+import { TbZoomCode, TbBug, TbFileDescription } from 'react-icons/tb'
 import { useTranslation } from 'react-i18next'
 import withLayout from '../../layout/withLayout'
 import { AuthContext } from '../../context/authContext'
 import { api } from '../../services'
 import toast from 'react-hot-toast'
 import { LuFilterX } from "react-icons/lu"
+import { useRepo } from '../../context/repoContext'
+import { useNavigate } from 'react-router-dom'
 import './index.scss'
 
 const { Text, Link } = Typography
 
 const languageColors: Record<string, string> = {
-    Python: 'lang-dot--python',
-    TypeScript: 'lang-dot--typescript',
-    JavaScript: 'lang-dot--javascript',
-    Go: 'lang-dot--go',
-    Rust: 'lang-dot--rust',
-    Java: 'lang-dot--java',
+    'Python': 'lang-dot--python',
+    'TypeScript': 'lang-dot--typescript',
+    'JavaScript': 'lang-dot--javascript',
+    'HTML': 'lang-dot--html',
+    'CSS': 'lang-dot--css',
+    'SCSS': 'lang-dot--scss',
+    'Sass': 'lang-dot--sass',
+    'Vue': 'lang-dot--vue',
+    'Svelte': 'lang-dot--svelte',
+    'Astro': 'lang-dot--astro',
+    'Go': 'lang-dot--go',
+    'Rust': 'lang-dot--rust',
+    'C': 'lang-dot--c',
+    'C++': 'lang-dot--cpp',
+    'C#': 'lang-dot--csharp',
+    'F#': 'lang-dot--fsharp',
+    'Java': 'lang-dot--java',
+    'Kotlin': 'lang-dot--kotlin',
+    'Scala': 'lang-dot--scala',
+    'Groovy': 'lang-dot--groovy',
+    'Ruby': 'lang-dot--ruby',
+    'PHP': 'lang-dot--php',
+    'Perl': 'lang-dot--perl',
+    'Lua': 'lang-dot--lua',
+    'Shell': 'lang-dot--shell',
+    'Bash': 'lang-dot--bash',
+    'PowerShell': 'lang-dot--powershell',
+    'R': 'lang-dot--r',
+    'Julia': 'lang-dot--julia',
+    'MATLAB': 'lang-dot--matlab',
+    'Swift': 'lang-dot--swift',
+    'Dart': 'lang-dot--dart',
+    'Objective-C': 'lang-dot--objectivec',
+    'Haskell': 'lang-dot--haskell',
+    'Elixir': 'lang-dot--elixir',
+    'Erlang': 'lang-dot--erlang',
+    'Clojure': 'lang-dot--clojure',
+    'OCaml': 'lang-dot--ocaml',
+    'SQL': 'lang-dot--sql',
+    'PLpgSQL': 'lang-dot--plsql',
+    'Dockerfile': 'lang-dot--dockerfile',
+    'Terraform': 'lang-dot--terraform',
+    'Nix': 'lang-dot--nix',
+    'MDX': 'lang-dot--mdx',
+    'GraphQL': 'lang-dot--graphql',
+    'Solidity': 'lang-dot--solidity',
+    'Zig': 'lang-dot--zig',
+    'Elm': 'lang-dot--elm',
+    'Jupyter Notebook': 'lang-dot--jupiter',
+}
+
+export const getLanguageColor = (language: string): string => {
+    return languageColors[language] ?? 'lang-dot--default'
 }
 
 const normalizeSearch = (text: string) =>
@@ -38,6 +87,8 @@ const normalizeSearch = (text: string) =>
 const Profile = () => {
     const { t } = useTranslation()
     const { user, token } = useContext(AuthContext)
+    const { setSelectedRepo } = useRepo()
+    const navigate = useNavigate()
 
     const [allRepos, setAllRepos] = useState<any[]>([])
     const [repos, setRepos] = useState<any[]>([])
@@ -113,9 +164,18 @@ const Profile = () => {
         }
     }
 
-    useEffect(() => { getRepos(); getStats() }, [token])
-    useEffect(() => { getReposWithSearch() }, [token, typeFilter, languageFilter, sortBy, search, currentPage])
-    useEffect(() => { setCurrentPage(0) }, [typeFilter, languageFilter, sortBy, search])
+    useEffect(() => {
+        getRepos();
+        getStats()
+    }, [token])
+
+    useEffect(() => {
+        getReposWithSearch()
+    }, [token, typeFilter, languageFilter, sortBy, search, currentPage])
+
+    useEffect(() => {
+        setCurrentPage(0)
+    }, [typeFilter, languageFilter, sortBy, search])
 
     const languages = ['all', ...Array.from(new Set(allRepos.map(r => r.language).filter(Boolean)))]
 
@@ -225,11 +285,63 @@ const Profile = () => {
         },
         {
             title: t('profile.actions'), key: 'actions',
-            render: (_: any, _repo: any) => (
+            render: (_: any, repo: any) => (
                 <Space>
-                    <Tooltip title={t('profile.analyzeCodebase')}><Button size="small" type="text" icon={<TbZoomCode size={20} />} /></Tooltip>
-                    <Tooltip title={t('profile.writeTests')}><Button size="small" type="text" icon={<VscBeaker size={20} />} /></Tooltip>
-                    <Tooltip title={t('profile.prReview')}><Button size="small" type="text" icon={<GoGitPullRequest size={20} />} /></Tooltip>
+                    <Tooltip title={t('profile.analyzeCodebase')}>
+                        <Button
+                            size="small"
+                            type="text"
+                            icon={<TbZoomCode size={20} />}
+                            onClick={() => {
+                                setSelectedRepo(repo.full_name)
+                                navigate('/agents/codebase-qa')
+                            }}
+                        />
+                    </Tooltip>
+                    <Tooltip title={t('profile.writeTests')}>
+                        <Button
+                            size="small"
+                            type="text"
+                            icon={<VscBeaker size={20} />}
+                            onClick={() => {
+                                setSelectedRepo(repo.full_name)
+                                navigate('/agents/test-generator')
+                            }}
+                        />
+                    </Tooltip>
+                    <Tooltip title={t('profile.prReview')}>
+                        <Button
+                            size="small"
+                            type="text"
+                            icon={<GoGitPullRequest size={20} />}
+                            onClick={() => {
+                                setSelectedRepo(repo.full_name)
+                                navigate('/agents/pr-review')
+                            }}
+                        />
+                    </Tooltip>
+                    <Tooltip title={t('profile.debug')}>
+                        <Button
+                            size="small"
+                            type="text"
+                            icon={<TbBug size={20} />}
+                            onClick={() => {
+                                setSelectedRepo(repo.full_name)
+                                navigate('/agents/debugging')
+                            }}
+                        />
+                    </Tooltip>
+                    <Tooltip title={t('profile.documentation')}>
+                        <Button
+                            size="small"
+                            type="text"
+                            icon={<TbFileDescription size={20} />}
+                            onClick={() => {
+                                setSelectedRepo(repo.full_name)
+                                navigate('/agents/documentation')
+                            }}
+                        />
+                    </Tooltip>
                 </Space>
             ),
         },

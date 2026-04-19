@@ -18,14 +18,14 @@ const Debugging = () => {
     const { t } = useTranslation()
     const { selectedRepo } = useRepo()
 
-    const [input, setInput]                   = useState('')
-    const [result, setResult]                 = useState<any>(null)
-    const [loading, setLoading]               = useState(false)
-    const [history, setHistory]               = useState<any[]>([])
+    const [input, setInput] = useState('')
+    const [result, setResult] = useState<any>(null)
+    const [loading, setLoading] = useState(false)
+    const [history, setHistory] = useState<any[]>([])
     const [selectedHistory, setSelectedHistory] = useState<number | null>(null)
-    const [indexStatus, setIndexStatus]       = useState<IndexStatus>('idle')
+    const [indexStatus, setIndexStatus] = useState<IndexStatus>('idle')
     const [indexedFileCount, setIndexedFileCount] = useState(0)
-    const [applyLoading, setApplyLoading]     = useState(false)
+    const [applyLoading, setApplyLoading] = useState(false)
     const [applyModalOpen, setApplyModalOpen] = useState(false)
 
     const token = localStorage.getItem('dt-token') || ''
@@ -72,7 +72,6 @@ const Debugging = () => {
         }
     }
 
-    // get history
     const getHistory = async (owner: string, repo: string) => {
         const { data, error } = await api.agents.debugHistory(token, owner, repo)
         if (error) {
@@ -82,7 +81,6 @@ const Debugging = () => {
         }
     }
 
-    // analyze
     const handleAnalyze = async () => {
         if (!input.trim() || !selectedRepo) return
         setLoading(true)
@@ -105,17 +103,19 @@ const Debugging = () => {
         }
     }
 
-    // click history
     const handleHistoryClick = (item: any, index: number) => {
         setSelectedHistory(index)
-        setInput(item.error)
+        setInput(item?.error ?? '')
         setResult({
-            rootCause:     item.rootCause,
-            severity:      item.severity,
-            affectedFiles: item.affectedFiles ?? [],
-            issues:        item.issues ?? [],
-            explanation:   item.explanation ?? '',
-            confidence:    null,
+            rootCause: item.rootCause,
+            severity: item.severity,
+            affectedFiles: (item.affectedFiles ?? []).map((f: any) =>
+                typeof f === 'string' ? { path: f, name: f.split('/').pop() } : f
+            ),
+            issues: item.issues ?? [],
+            explanation: item.explanation ?? '',
+            fixSuggestion: item.issues?.[0]?.fixSuggestion ?? '',
+            confidence: null,
         })
     }
 
@@ -124,7 +124,6 @@ const Debugging = () => {
         return t(`debugging.severity.${severity}`)
     }
 
-    // apply fix
     const handleApplyFix = async (selectedIssues: any[]) => {
         if (!selectedRepo || !result) return
         setApplyLoading(true)
@@ -258,12 +257,10 @@ const Debugging = () => {
 
                         <Flex gap={16} className="debugging__stretch-row debugging__stack-on-mobile">
                             <Flex vertical gap={8} className="debugging__col">
-                                <Flex vertical gap={8} className="debugging__col">
-                                    <Text className="debugging__section-label">{t('debugging.suggestedFix')}</Text>
-                                    <Card size="small" className="debugging__fix-card debugging__fix-card--padded">
-                                        {result?.fixSuggestion}
-                                    </Card>
-                                </Flex>
+                                <Text className="debugging__section-label">{t('debugging.suggestedFix')}</Text>
+                                <Card size="small" className="debugging__fix-card debugging__fix-card--padded">
+                                    {result?.fixSuggestion}
+                                </Card>
                                 <Flex gap={8} className="debugging__actions-row">
                                     <Button
                                         type="primary"
@@ -280,24 +277,30 @@ const Debugging = () => {
                                 <Text className="debugging__section-label">{t('debugging.affectedFiles')}</Text>
                                 <div className="debugging__files-scroll">
                                     {result?.affectedFiles?.length > 0 ? (
-                                        result?.affectedFiles?.map((file: any) => (
-                                            <Flex
-                                                key={file?.path}
-                                                align="center"
-                                                gap={10}
-                                                className="debugging__file-item"
-                                            >
-                                                <Avatar
-                                                    icon={<FileOutlined />}
-                                                    className="debugging__file-avatar"
-                                                    size={32}
-                                                />
-                                                <Flex vertical gap={2} className="debugging__file-info">
-                                                    <Text code className="debugging__file-name">{file?.name}</Text>
-                                                    <Text type="secondary" className="debugging__file-meta">{file?.path}</Text>
+                                        result?.affectedFiles?.map((file: any, index: number) => {
+                                            const filePath = typeof file === 'string' ? file : file?.path ?? ''
+                                            const fileName = typeof file === 'string'
+                                                ? file.split('/').pop()
+                                                : file?.name ?? file?.path?.split('/').pop() ?? ''
+                                            return (
+                                                <Flex
+                                                    key={filePath || index}
+                                                    align="center"
+                                                    gap={10}
+                                                    className="debugging__file-item"
+                                                >
+                                                    <Avatar
+                                                        icon={<FileOutlined />}
+                                                        className="debugging__file-avatar"
+                                                        size={32}
+                                                    />
+                                                    <Flex vertical gap={2} className="debugging__file-info">
+                                                        <Text code className="debugging__file-name">{fileName}</Text>
+                                                        <Text type="secondary" className="debugging__file-meta">{filePath}</Text>
+                                                    </Flex>
                                                 </Flex>
-                                            </Flex>
-                                        ))
+                                            )
+                                        })
                                     ) : (
                                         <Text type="secondary" className="debugging__card-label">
                                             {t('debugging.noAffectedFiles')}
@@ -330,7 +333,7 @@ const Debugging = () => {
                                                 <Flex vertical gap={2} className="debugging__history-content">
                                                     <Text className="debugging__history-error">{item?.error}</Text>
                                                     <Text type="secondary" className="debugging__history-meta">
-                                                        {item?.rootCause} · {timeAgo(item?.timeAgo)}
+                                                        {item?.rootCause} · {timeAgo(item?.timeAgo, t)}
                                                     </Text>
                                                 </Flex>
                                             </Flex>

@@ -259,7 +259,7 @@ const CodebaseQA = () => {
                                             <Flex align="center" gap={30}>
                                                 <Text className="codebase-qa__history-question">{item?.question}</Text>
                                                 <Text type="secondary" className="codebase-qa__history-meta">
-                                                    {item?.filesFound} {t('codebase.files')} · {timeAgo(item?.timeAgo)}
+                                                    {item?.filesFound} {t('codebase.files')} · {timeAgo(item?.timeAgo, t)}
                                                 </Text>
                                             </Flex>
                                         </Flex>

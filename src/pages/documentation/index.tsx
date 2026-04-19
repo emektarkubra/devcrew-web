@@ -3,6 +3,7 @@ import { Button, Card, Flex, Tag, Typography, List, Select, Spin, Tooltip, Alert
 import { LoadingOutlined, FileOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import { GithubOutlined, CopyOutlined, CheckOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import ReactMarkdown from 'react-markdown'
 import withLayout from '../../layout/withLayout'
 import { api } from '../../services/api'
 import toast from 'react-hot-toast'
@@ -47,7 +48,6 @@ const Documentation = () => {
     const isFrontendRepo = FRONTEND_LANGUAGES.includes(repoLanguage)
     const showGuideWarning = docType === 'guide' && selectedRepo && !isFrontendRepo
 
-    // selectedRepo header'dan değişince dosyaları ve history'i çek
     useEffect(() => {
         if (!selectedRepo) return
         const [owner, repo] = selectedRepo.split('/')
@@ -59,7 +59,6 @@ const Documentation = () => {
         getHistory(owner, repo)
     }, [selectedRepo])
 
-    // get repo files
     const fetchRepoFiles = async (owner: string, repo: string) => {
         setFilesLoading(true)
         try {
@@ -76,7 +75,6 @@ const Documentation = () => {
         }
     }
 
-    // get history
     const getHistory = async (owner: string, repo: string) => {
         const { data, error } = await api.agents.documentationHistory(token, owner, repo)
         if (error) {
@@ -86,7 +84,6 @@ const Documentation = () => {
         }
     }
 
-    // onchange doc type
     const handleDocTypeChange = (value: string) => {
         setDocType(value)
         if (REPO_LEVEL_TYPES.includes(value)) {
@@ -96,7 +93,6 @@ const Documentation = () => {
         }
     }
 
-    // generate
     const handleGenerate = async () => {
         if (!selectedRepo) return
         if (!isRepoLevel && !selectedFile) return
@@ -122,7 +118,6 @@ const Documentation = () => {
         }
     }
 
-    // click history
     const handleHistoryClick = (item: any) => {
         setSelectedFile(item?.target)
         setDocType(item?.docType)
@@ -134,7 +129,6 @@ const Documentation = () => {
         })
     }
 
-    // export
     const handleExport = () => {
         if (!result?.markdown) return
         const blob = new Blob([result.markdown], { type: 'text/markdown' })
@@ -146,7 +140,6 @@ const Documentation = () => {
         URL.revokeObjectURL(url)
     }
 
-    // copy
     const handleCopy = async () => {
         if (!result?.markdown) return
         try {
@@ -190,7 +183,7 @@ const Documentation = () => {
                         <Flex vertical gap={2}>
                             <Text code className="documentation__history-file">{item?.target}</Text>
                             <Text type="secondary" className="documentation__history-meta">
-                                {DOC_TYPES?.find(d => d.value === item?.docType)?.label ?? item?.docType} · {timeAgo(item?.timeAgo)}
+                                {DOC_TYPES?.find(d => d.value === item?.docType)?.label ?? item?.docType} · {timeAgo(item?.timeAgo, t)}
                             </Text>
                         </Flex>
                     </Flex>
@@ -297,6 +290,14 @@ const Documentation = () => {
                 {result && !loading && (
                     <Flex gap={16} className="documentation__stretch-row">
                         <Flex vertical gap={8} className="documentation__preview-col">
+
+                            <Alert
+                                type="info"
+                                showIcon
+                                message={t('documentation.draftWarning')}
+                                className="documentation__draft-warning"
+                            />
+
                             <Flex align="center" justify="space-between" className="documentation__preview-head">
                                 <Text className="documentation__section-label">{t('documentation.preview')}</Text>
                                 <Flex gap={6}>
@@ -328,39 +329,9 @@ const Documentation = () => {
                                     icon={copied ? <CheckOutlined /> : <CopyOutlined />}
                                 />
                                 {view === 'preview' ? (
-                                    <Flex vertical gap={12}>
-                                        <div>
-                                            <Text className="documentation__file-title">{result?.fileName}</Text>
-                                            <Text type="secondary" className="documentation__file-desc">
-                                                {result?.description}
-                                            </Text>
-                                        </div>
-                                        {result?.methods?.length > 0 ? (
-                                            <div>
-                                                <Text className="documentation__methods-label">{t('documentation.methods')}</Text>
-                                                <Flex vertical gap={6}>
-                                                    {result?.methods?.map((item: any) => (
-                                                        <div key={item?.name} className="documentation__method-item">
-                                                            <Flex align="center" gap={8} className="documentation__method-header">
-                                                                <Text code className="documentation__method-name">{item?.name}</Text>
-                                                                <Text type="secondary" className="documentation__method-params">
-                                                                    ({item?.params})
-                                                                </Text>
-                                                                <Text className="documentation__method-returns">
-                                                                    → {item?.returns}
-                                                                </Text>
-                                                            </Flex>
-                                                            <Text type="secondary" className="documentation__method-desc">
-                                                                {item?.description}
-                                                            </Text>
-                                                        </div>
-                                                    ))}
-                                                </Flex>
-                                            </div>
-                                        ) : (
-                                            <pre className="documentation__markdown">{result?.markdown}</pre>
-                                        )}
-                                    </Flex>
+                                    <div className="documentation__markdown-rendered">
+                                        <ReactMarkdown>{result?.markdown ?? ''}</ReactMarkdown>
+                                    </div>
                                 ) : (
                                     <pre className="documentation__markdown">{result?.markdown}</pre>
                                 )}
@@ -372,7 +343,7 @@ const Documentation = () => {
                                 onClick={handleExport}
                                 disabled={!result?.markdown}
                             >
-                                {t('documentation.exportMarkdown')}
+                                {t('documentation.exportDraft')}
                             </Button>
                         </Flex>
 
