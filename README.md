@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="./banner.png" alt="DevCrew Banner" width="100%" />
-</p>
-
 <h1 align="center">DevCrew — AI Dev Team Frontend</h1>
 
 <p align="center">
@@ -15,14 +11,6 @@
 
 <p align="center">
   React + TypeScript frontend for the DevCrew AI Dev Team platform — featuring codebase Q&A, PR review, debugging, test generation, documentation, team mode, and architecture graph screens.
-</p>
-
----
-
-## 🎬 Demo
-
-<p align="center">
-  <img src="./demo.gif" alt="DevCrew Demo" width="100%" />
 </p>
 
 ---
@@ -44,75 +32,80 @@
 
 ## 📸 Screenshots
 
-### 🔍 Codebase Q&A
-<p align="center">
-  <img src="./screenshots/codebase-qa.png" alt="Codebase Q&A" width="100%" />
-</p>
-
-Ask natural language questions about any GitHub repository. The agent indexes your codebase using RAG (Retrieval-Augmented Generation), finds the most relevant files, and returns accurate, context-aware answers. Great for onboarding, exploring unfamiliar codebases, or quickly locating logic across a large project.
-
----
-
-### 🔀 PR Review
-<p align="center">
-  <img src="./screenshots/pr-review.png" alt="PR Review" width="100%" />
-</p>
-
-Select any open pull request and get an instant AI-powered code review. The agent analyzes the diff, identifies bugs, security issues, and code quality problems, assigns a risk score, and generates fix suggestions. You can apply the suggested fixes directly to the PR branch with one click.
-
----
-
-### 🐛 Debug Agent
-<p align="center">
-  <img src="./screenshots/debugging.png" alt="Debug Agent" width="100%" />
-</p>
-
-Paste an error message or stack trace and let the agent find the root cause. It searches the codebase for relevant files, explains what went wrong, suggests a fix, and can open a pull request with the applied changes — all without leaving the platform.
-
----
-
-### 🧪 Test Generator
-<p align="center">
-  <img src="./screenshots/test-generator.png" alt="Test Generator" width="100%" />
-</p>
-
-Select a file from your repository and generate unit, edge case, and integration tests automatically. The agent reads the actual file content, understands the logic, and produces ready-to-run test code with estimated coverage. Supports Jest (TypeScript/JavaScript) and pytest (Python).
-
----
-
-### 📄 Documentation
-<p align="center">
-  <img src="./screenshots/documentation.png" alt="Documentation" width="100%" />
-</p>
-
-Generate README files, API references, or architecture documentation for any file or the whole repository. The agent reads the source code and produces clean, structured markdown that you can review and publish directly to your repo.
-
----
-
-### 🤝 Team Mode
-<p align="center">
-  <img src="./screenshots/team-mode.png" alt="Team Mode" width="100%" />
-</p>
-
-Run multiple AI agents simultaneously on your repository. Select any combination of agents (Codebase, PR Review, Test, Documentation) and watch them execute in a real-time pipeline via SSE streaming. When all agents finish, an aggregator produces a unified health score and a prioritized action plan for your project.
-
----
-
-### 🗺 Architecture Graph
-<p align="center">
-  <img src="./screenshots/architecture-graph.png" alt="Architecture Graph" width="100%" />
-</p>
-
-Visualize your project's dependency graph as an interactive node-based diagram. The agent performs static analysis on your repository files (Python and TypeScript/JavaScript), extracts import relationships, and renders them using ReactFlow with dagre layout. Nodes are color-coded by type: service, database, external, and middleware.
-
----
-
-### 📊 Repo Intelligence
-<p align="center">
-  <img src="./screenshots/repo-intelligence.png" alt="Repo Intelligence" width="100%" />
-</p>
-
-Get a real-time health overview of your repository. Displays key metrics including open PRs, bug counts, total commits, and a risk score. Shows the most frequently changed modules, bug hotspots, recent activity feed, and top contributors — all fetched live from the GitHub API.
+<table>
+  <tr>
+    <td width="55%">
+      <img src="https://github.com/user-attachments/assets/adb7ad3d-479b-49c2-8b02-64f36fd1d990" alt="Codebase Q&A" width="100%" />
+    </td>
+    <td width="45%" valign="middle">
+      <h3>🔍 Codebase Q&A</h3>
+      <p>Ask natural language questions about any GitHub repository. The agent indexes your codebase using RAG, finds the most relevant files, and returns accurate, context-aware answers. Great for onboarding or exploring unfamiliar codebases.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <img src="https://github.com/user-attachments/assets/f7092fac-36b8-43b7-9fbd-0a2bc33ed98c" alt="PR Review" width="100%" />
+    </td>
+    <td width="45%" valign="middle">
+      <h3>🔀 PR Review</h3>
+      <p>Select any open pull request and get an instant AI-powered code review. The agent analyzes the diff, identifies bugs and security issues, assigns a risk score, and generates fix suggestions you can apply directly to the PR branch with one click.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <img src="https://github.com/user-attachments/assets/4551214b-4b9e-42ec-aa1b-a85b67b5b811" alt="Debug Agent" width="100%" />
+    </td>
+    <td width="45%" valign="middle">
+      <h3>🐛 Debug Agent</h3>
+      <p>Paste an error message or stack trace and let the agent find the root cause. It searches the codebase for relevant files, explains what went wrong, suggests a fix, and can open a pull request with the applied changes.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <img src="https://github.com/user-attachments/assets/1f0054cd-6740-411d-b69c-7e33806cf1d5" alt="Test Generator" width="100%" />
+    </td>
+    <td width="45%" valign="middle">
+      <h3>🧪 Test Generator</h3>
+      <p>Select a file from your repository and generate unit, edge case, and integration tests automatically. The agent reads the actual file content and produces ready-to-run test code with estimated coverage. Supports Jest and pytest.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <img src="https://github.com/user-attachments/assets/04f48841-c5fc-48cf-8042-5ca1edc3f96b" alt="Documentation" width="100%" />
+    </td>
+    <td width="45%" valign="middle">
+      <h3>📄 Documentation</h3>
+      <p>Generate README files, API references, or architecture documentation for any file or the whole repository. The agent reads the source code and produces clean, structured markdown you can review and publish directly to your repo.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <img src="https://github.com/user-attachments/assets/1e7eb0a9-61c0-4529-b238-226a9a4261b9" alt="Team Mode" width="100%" />
+    </td>
+    <td width="45%" valign="middle">
+      <h3>🤝 Team Mode</h3>
+      <p>Run multiple AI agents simultaneously on your repository. Watch them execute in a real-time pipeline via SSE streaming. When all agents finish, an aggregator produces a unified health score and a prioritized action plan for your project.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <img src="https://github.com/user-attachments/assets/a0712dad-5905-4ca4-94b2-46a197dae8fe" alt="Architecture Graph" width="100%" />
+    </td>
+    <td width="45%" valign="middle">
+      <h3>🗺 Architecture Graph</h3>
+      <p>Visualize your project's dependency graph as an interactive node-based diagram. The agent performs static analysis on Python and TypeScript/JavaScript files, extracts import relationships, and renders them with ReactFlow and dagre layout.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="55%">
+      <img src="https://github.com/user-attachments/assets/90cd31ef-18ad-480e-8cff-b5aeb4e93225" alt="Repo Intelligence" width="100%" />
+    </td>
+    <td width="45%" valign="middle">
+      <h3>📊 Repo Intelligence</h3>
+      <p>Get a real-time health overview of your repository. Displays key metrics including open PRs, bug counts, total commits, and a risk score. Shows the most frequently changed modules, bug hotspots, recent activity feed, and top contributors.</p>
+    </td>
+  </tr>
+</table>
 
 ---
 
