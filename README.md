@@ -1,6 +1,6 @@
 <h1 align="center">DevCrew — AI Dev Team Frontend</h1>
 
-<p align="center">
+<p align="center"> 
   <a href="https://react.dev"><img src="https://img.shields.io/badge/React-18+-blue.svg" alt="React"/></a>
   <a href="https://vitejs.dev"><img src="https://img.shields.io/badge/Vite-5+-purple.svg" alt="Vite"/></a>
   <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-5+-blue.svg" alt="TypeScript"/></a>
