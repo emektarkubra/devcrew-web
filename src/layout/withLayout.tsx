@@ -3,7 +3,6 @@ import { Content } from "antd/es/layout/layout";
 import "../assets/style/layout/layout.scss"
 import AppHeader from "./AppHeader";
 import AppSidebar from "./AppSidebar";
-import logo from "../assets/images/devCrew1.png"
 
 const withLayout = (PageContent: any) => {
 
