@@ -4,34 +4,126 @@
     .ant-layout-header {
         display: flex;
         align-items: center;
-        background-color: $white;
+        background-color: $gh-light-bg-primary;
         height: 64px;
-        padding: 0px;
+        padding: 0;
         line-height: 64px;
-        // box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 20px -10px;
-        border-bottom: 1px solid $light-gray3;
+        border-bottom: 1px solid $gh-light-border;
         position: fixed;
         z-index: 2;
         width: 100%;
+        @apply dark:bg-gh-bg-secondary dark:border-gh-border;
     }
 
     .ant-btn-icon {
         display: flex;
         align-items: center;
-        color: $primary-color;
+        color: $gh-light-blue;
+        @apply dark:text-gh-blue-text;
 
         .exit-icon {
-            color: $dark-gray !important;
+            color: $gh-light-text-secondary !important;
+            @apply dark:text-gh-text-muted;
         }
+    }
+
+    &__inner {
+        width: 100%;
+    }
+
+    &__left {
+        padding: 0 8px;
+        gap: 8px;
+    }
+
+    &__right {
+        padding: 0 8px;
+        gap: 4px;
+    }
+
+    &__icon-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: 1px solid $gh-light-border;
+        background: $gh-light-bg-primary;
+        color: $gh-light-text-secondary;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        flex-shrink: 0;
+        @apply dark:bg-gh-bg-secondary dark:border-gh-border dark:text-gh-text-secondary;
+
+        &:hover {
+            background: $gh-light-bg-secondary;
+            color: $gh-light-text-primary;
+            @apply dark:bg-gh-bg-tertiary dark:text-gh-text-primary;
+        }
+    }
+
+    &__center {
+        flex: 1;
+        justify-content: center;
+        padding: 0 16px;
+    }
+
+    &__repo-select-wrapper {
+        width: 350px;
+
+        @media (max-width: 768px) {
+            width: 160px;
+        }
+
+        @media (max-width: 576px) {
+            display: none;
+        }
+    }
+
+    &__lang-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__repo-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+        flex: 1;
+        font-size: 13px;
+    }
+
+    &__lang-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__lang-text {
+        font-size: 11px;
+        color: $gh-light-text-muted;
+        flex-shrink: 0;
+        @apply dark:text-gh-text-muted;
     }
 }
 
 .title-container {
-    background-color: $white;
-
+    background-color: $gh-light-bg-primary;
+    @apply dark:bg-gh-bg-primary;
 }
 
 .page-title {
     text-align: start;
-    padding: 15px 15px 0px 15px;
+    padding: 15px 15px 0 15px;
+    color: $gh-light-text-primary;
+    @apply dark:text-gh-text-primary;
+}
+
+.collapse-icon {
+    @apply dark:text-gh-text-primary;
 }

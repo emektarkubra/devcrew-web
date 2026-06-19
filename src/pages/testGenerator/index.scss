@@ -1,60 +1,273 @@
+@import '../../assets/style/variables';
+
 .test-generator {
     border-radius: 6px;
     overflow: hidden;
-    background-color: #fff;
+    border: 1px solid $gh-light-border;
+    background-color: $gh-light-bg-primary;
     margin: 20px;
+
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border;
 
     &__header {
         padding: 14px 20px;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-    &__dot {
-        width: 9px;
-        height: 9px;
-        border-radius: 50%;
-        background: #3B6D11;
-        flex-shrink: 0;
+        border-bottom: 1px solid $gh-light-border;
+        background-color: $gh-light-bg-secondary;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
     }
 
     &__body {
         padding: 20px;
     }
 
-    &__section-label {
-        font-size: 14px !important;
-        font-weight: 500 !important;
-        display: block !important;
+    &__spin-wrap {
+        padding: 8px 0;
     }
 
-    &__input {
+    &__stretch-row {
+        align-items: stretch;
+    }
+
+    &__controls-row {
+        align-items: flex-end;
+    }
+
+    &__target-col {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__framework-col {
+        flex-shrink: 0;
+    }
+
+    &__tests-col {
+        flex: 2;
+        min-width: 0;
+    }
+
+    &__history-col {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__repo-option {
+        width: 100%;
+    }
+
+    &__repo-option-left {
+        min-width: 0;
         flex: 1;
     }
 
+    &__repo-option-right {
+        flex-shrink: 0;
+    }
+
+    &__repo-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+
+        &--idle {
+            background: $gh-light-text-muted;
+            @apply dark:bg-gh-text-muted;
+        }
+
+        &--active {
+            background: $gh-light-green;
+            box-shadow: 0 0 6px rgba(26, 127, 55, 0.4);
+            animation: test-pulse 1.2s ease-in-out infinite;
+            @apply dark:bg-gh-green-text;
+        }
+
+        &--ready {
+            background: $gh-light-green;
+            box-shadow: 0 0 6px rgba(26, 127, 55, 0.4);
+            @apply dark:bg-gh-green-text;
+        }
+    }
+
+    @keyframes test-pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.4;
+        }
+    }
+
+    &__title {
+        font-size: 15px;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
+    }
+
+    &__subtitle {
+        font-size: 12px;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
+    }
+
+    &__section-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        display: block;
+        align-self: flex-start;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__card-label {
+        font-size: 11px;
+        display: block;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
+    }
+
+    &__tag--ready {
+        background-color: $gh-light-green-bg;
+        border-color: $gh-light-green-border;
+        color: $gh-light-green;
+        font-size: 11px;
+        border-radius: 20px;
+        padding: 2px 10px;
+        @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
+    }
+
+    &__select {
+        width: 100%;
+    }
+
+    &__framework-select {
+        width: 130px;
+        flex-shrink: 0;
+    }
+
+    &__filter-select {
+        width: 130px;
+    }
+
+    &__lang-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__lang-text {
+        font-size: 12px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
+    &__file-icon {
+        font-size: 12px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
+    }
+
     &__generate-btn {
-        background: #3B6D11 !important;
+        background: $gh-light-green-btn !important;
+        border-color: $gh-light-green-btn !important;
+        align-self: flex-start;
+
+        &:hover {
+            background: $gh-light-green-hover !important;
+            border-color: $gh-light-green-hover !important;
+        }
+
+        &.ant-btn-disabled,
+        &[disabled] {
+            background: $gh-light-bg-tertiary;
+            border-color: $gh-light-border;
+            color: $gh-light-text-muted;
+
+            @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
+        }
+    }
+
+    &__save-btn {
+        flex: 1;
+        background: $gh-light-green-btn !important;
+        border-color: $gh-light-green-btn !important;
+
+        &:hover {
+            background: $gh-light-green-hover !important;
+            border-color: $gh-light-green-hover !important;
+        }
+
+        &.ant-btn-disabled,
+        &[disabled] {
+            background: $gh-light-bg-tertiary;
+            border-color: $gh-light-border;
+            color: $gh-light-text-muted;
+
+            @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
+        }
+    }
+
+    &__run-btn {
+        flex: 1;
+    }
+
+    &__actions-row {
+        flex-wrap: wrap;
+    }
+
+    &__score-cards {
+        .ant-card-body {
+            border-radius: 10px !important;
+            @apply dark:bg-gh-green-bg dark:border-gh-green-border !important;
+        }
     }
 
     &__card-green {
         flex: 1;
-        background: #f0fdf4 !important;
-        border: 1px solid #bbf7d0 !important;
+        border-radius: 10px !important;
+        background: $gh-light-bg-secondary !important;
+        border: 1px solid $gh-light-border !important;
+        min-width: 0;
+        @apply dark:bg-gh-green-bg dark:border-gh-green-border !important;
     }
 
     &__card-neutral {
         flex: 1;
-        background: #f9fafb !important;
+        border-radius: 10px !important;
+        background: $gh-light-bg-secondary !important;
+        border: 1px solid $gh-light-border !important;
+        min-width: 0;
+        @apply dark:bg-gh-green-bg dark:border-gh-green-border !important;
     }
 
     &__stat-value-green {
-        font-size: 22px !important;
-        font-weight: 500 !important;
-        color: #16a34a !important;
+        font-size: 22px;
+        font-weight: 500;
+        color: $gh-light-green;
+        @apply dark:text-gh-green-text !important;
     }
 
     &__stat-value {
-        font-size: 22px !important;
-        font-weight: 500 !important;
+        font-size: 22px;
+        font-weight: 500;
+        color: $gh-light-green;
+        @apply dark:text-gh-green-text !important;
+    }
+
+    &__tests-head {
+        gap: 8px;
     }
 
     &__tests-scroll {
@@ -66,49 +279,81 @@
     }
 
     &__test-item {
-        border: 1px solid #f0f0f0;
+        border: 1px solid $gh-light-border;
         border-radius: 6px;
-        overflow: hidden;
+        // overflow: hidden;
+        @apply dark:border-gh-border;
     }
 
     &__test-header {
         padding: 9px 12px;
-        background: #f9fafb;
+        background: $gh-light-bg-secondary;
         cursor: pointer;
+        transition: background 0.15s;
+        @apply dark:bg-gh-bg-tertiary;
+
+        &:hover {
+            background: $gh-light-bg-tertiary;
+            @apply dark:bg-gh-bg-overlay;
+        }
 
         &--expanded {
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid $gh-light-border;
+            @apply dark:border-gh-border;
         }
+    }
+
+    &__test-header-left {
+        min-width: 0;
+        flex: 1;
+    }
+
+    &__type-tag {
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    &__test-name {
+        font-size: 12px;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
+    }
+
+    &__test-chevron {
+        font-size: 10px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
     }
 
     &__test-body {
         padding: 10px 12px;
+        background: $gh-light-bg-primary;
+        height: 250px;
+        min-height: 250px;
+        overflow-y: auto;
+        @apply dark:bg-gh-bg-secondary;
     }
 
     &__test-description {
-        font-size: 12px !important;
-        display: block !important;
-        margin-bottom: 8px !important;
+        font-size: 12px;
+        display: block;
+        margin-bottom: 8px;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
     }
 
     &__test-code {
-        background: #f9fafb;
+        background: $gh-light-bg-secondary;
         border-radius: 4px;
         padding: 10px 12px;
         font-family: monospace;
         font-size: 12px;
         line-height: 1.7;
-        color: #111;
+        color: $gh-light-text-primary;
         white-space: pre;
-    }
-
-    &__save-btn {
-        flex: 1;
-        background: #3B6D11 !important;
-    }
-
-    &__run-btn {
-        flex: 1;
+        overflow-x: auto;
+        margin: 0;
+        @apply dark:bg-gh-bg-tertiary dark:text-gh-text-primary;
     }
 
     &__history-scroll {
@@ -116,26 +361,249 @@
         overflow-y: auto;
     }
 
+    &__history-list-item {
+        padding: 0 !important;
+    }
+
     &__history-item {
-        padding: 10px 0;
         cursor: pointer;
+        border-radius: 6px;
+        padding: 10px;
         width: 100%;
+        transition: background 0.15s;
+
+        &:hover {
+            background: $gh-light-bg-tertiary;
+            @apply dark:bg-gh-bg-tertiary;
+        }
     }
 
     &__history-dot {
         width: 7px;
         height: 7px;
         border-radius: 50%;
-        background: #3B6D11;
+        background: $gh-light-green;
         margin-top: 6px;
         flex-shrink: 0;
+        @apply dark:bg-gh-green-text;
+    }
+
+    &__history-content {
+        min-width: 0;
     }
 
     &__history-file {
-        font-size: 12px !important;
+        font-size: 12px;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
     }
 
     &__history-meta {
-        font-size: 11px !important;
+        font-size: 11px;
+        color: $gh-light-text-muted;
+        @apply dark:text-gh-text-muted;
     }
+
+    @media (max-width: 992px) {
+        margin: 16px;
+
+        &__body {
+            padding: 16px;
+        }
+
+        &__stretch-row,
+        &__controls-row,
+        &__score-cards {
+            flex-direction: column;
+        }
+
+        &__framework-col,
+        &__target-col,
+        &__tests-col,
+        &__history-col,
+        &__card-green,
+        &__card-neutral {
+            width: 100%;
+        }
+
+        &__framework-select,
+        &__filter-select {
+            width: 100%;
+        }
+
+        &__generate-btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        margin: 12px;
+
+        &__header {
+            padding: 12px 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        &__body {
+            padding: 14px;
+        }
+
+        &__title {
+            font-size: 14px;
+        }
+
+        &__subtitle {
+            font-size: 11px;
+        }
+
+        &__tests-head,
+        &__test-header,
+        &__actions-row {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+
+        &__test-body {
+            height: auto;
+            min-height: 180px;
+            max-height: 280px;
+        }
+
+        &__save-btn,
+        &__run-btn {
+            width: 100%;
+        }
+
+        &__tests-scroll,
+        &__history-scroll {
+            max-height: 320px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        margin: 8px;
+
+        &__header {
+            padding: 10px 12px;
+        }
+
+        &__body {
+            padding: 12px;
+        }
+
+        &__section-label {
+            font-size: 10px;
+        }
+
+        &__stat-value,
+        &__stat-value-green {
+            font-size: 18px;
+        }
+
+        &__tests-scroll,
+        &__history-scroll {
+            max-height: 260px;
+        }
+    }
+}
+
+// run tests modal
+.run-tests-modal {
+    &__body {
+        padding: 8px 0;
+    }
+
+    &__description {
+        font-size: 13px;
+        color: $gh-light-text-secondary;
+        @apply dark:text-gh-text-secondary;
+    }
+
+    &__step-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: $gh-light-text-primary;
+        @apply dark:text-gh-text-primary;
+    }
+
+    &__code-block {
+        position: relative;
+        background: $gh-light-bg-secondary;
+        border: 1px solid $gh-light-border;
+        border-radius: 6px;
+        padding: 12px 14px;
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
+    }
+
+    &__pre {
+        font-family: monospace;
+        font-size: 12px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        word-break: break-word;
+        margin: 0;
+        padding-right: 70px;
+        color: $gh-light-text-primary;
+        max-height: 300px;
+        overflow-y: auto;
+        @apply dark:text-gh-text-primary;
+    }
+
+
+    &__copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 30px;
+        font-size: 11px;
+        width: 30px !important;
+        height: 30px !important;
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 8px;
+        padding: 4px;
+        transition: all 0.2s ease;
+
+        background-color: $gh-light-bg-tertiary;
+        border: 1px solid $gh-light-border;
+
+        .anticon {
+            color: $gh-light-text-muted;
+            font-size: 16px !important;
+            transition: all 0.2s ease;
+        }
+
+        &:hover {
+            background-color: #e0f2fe;
+            border-color: #38bdf8;
+
+            .anticon {
+                color: #0284c7;
+            }
+        }
+
+        &:active {
+            transform: scale(0.92);
+            background-color: #bae6fd;
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+        }
+
+        @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
+
+        @apply dark:[&_.anticon]:text-gh-text-muted;
+
+        @apply dark:hover:bg-[#0f172a] dark:hover:border-[#38bdf8];
+
+        @apply dark:hover:[&_.anticon]:text-[#38bdf8];
+
+        @apply dark:active:bg-[#020617];
+    }
+
 }

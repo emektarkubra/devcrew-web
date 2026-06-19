@@ -7,17 +7,23 @@ import "./assets/style/custom.scss"
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { store } from './redux/store.tsx'
-import './i18n/i18n';
 import AuthProvider from './context/authContext.tsx'
+import { ThemeProvider } from './context/themeContext';
+import { RepoProvider } from './context/repoContext.tsx'
+import './i18n/i18n';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <AuthProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </AuthProvider>
-    </Provider>
+    <ThemeProvider>
+      <Provider store={store}>
+        <AuthProvider>
+          <RepoProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </RepoProvider>
+        </AuthProvider>
+      </Provider>
+    </ThemeProvider>
   </React.StrictMode>,
 )

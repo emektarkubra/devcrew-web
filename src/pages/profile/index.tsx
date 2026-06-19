@@ -1,96 +1,222 @@
 import { useEffect, useState, useContext } from 'react'
 import { Table, Input, Button, Tag, Avatar, Card, Row, Col, Space, Typography, Tooltip, Flex, Select } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
+import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons'
 import { RiGitRepositoryLine } from 'react-icons/ri'
-import { GoStar, GoGitPullRequest, GoRepoForked, GoIssueOpened, GoEye, GoLocation, GoOrganization, GoMail, GoLinkExternal } from 'react-icons/go'
+import { GoStar, GoGitPullRequest, GoRepoForked, GoEye, GoLocation, GoOrganization, GoMail, GoLinkExternal } from 'react-icons/go'
 import { VscCode, VscBeaker } from 'react-icons/vsc'
 import { MdLockOpen } from 'react-icons/md'
-import { TbZoomCode } from 'react-icons/tb'
+import { TbZoomCode, TbBug, TbFileDescription } from 'react-icons/tb'
+import { useTranslation } from 'react-i18next'
 import withLayout from '../../layout/withLayout'
 import { AuthContext } from '../../context/authContext'
 import { api } from '../../services'
+import toast from 'react-hot-toast'
+import { LuFilterX } from "react-icons/lu"
+import { useRepo } from '../../context/repoContext'
+import { useNavigate } from 'react-router-dom'
 import './index.scss'
 
 const { Text, Link } = Typography
 
 const languageColors: Record<string, string> = {
-    Python: '#3572A5',
-    TypeScript: '#2b7489',
-    JavaScript: '#f1e05a',
-    Go: '#00ADD8',
-    Rust: '#dea584',
-    Java: '#b07219',
+    'Python': 'lang-dot--python',
+    'TypeScript': 'lang-dot--typescript',
+    'JavaScript': 'lang-dot--javascript',
+    'HTML': 'lang-dot--html',
+    'CSS': 'lang-dot--css',
+    'SCSS': 'lang-dot--scss',
+    'Sass': 'lang-dot--sass',
+    'Vue': 'lang-dot--vue',
+    'Svelte': 'lang-dot--svelte',
+    'Astro': 'lang-dot--astro',
+    'Go': 'lang-dot--go',
+    'Rust': 'lang-dot--rust',
+    'C': 'lang-dot--c',
+    'C++': 'lang-dot--cpp',
+    'C#': 'lang-dot--csharp',
+    'F#': 'lang-dot--fsharp',
+    'Java': 'lang-dot--java',
+    'Kotlin': 'lang-dot--kotlin',
+    'Scala': 'lang-dot--scala',
+    'Groovy': 'lang-dot--groovy',
+    'Ruby': 'lang-dot--ruby',
+    'PHP': 'lang-dot--php',
+    'Perl': 'lang-dot--perl',
+    'Lua': 'lang-dot--lua',
+    'Shell': 'lang-dot--shell',
+    'Bash': 'lang-dot--bash',
+    'PowerShell': 'lang-dot--powershell',
+    'R': 'lang-dot--r',
+    'Julia': 'lang-dot--julia',
+    'MATLAB': 'lang-dot--matlab',
+    'Swift': 'lang-dot--swift',
+    'Dart': 'lang-dot--dart',
+    'Objective-C': 'lang-dot--objectivec',
+    'Haskell': 'lang-dot--haskell',
+    'Elixir': 'lang-dot--elixir',
+    'Erlang': 'lang-dot--erlang',
+    'Clojure': 'lang-dot--clojure',
+    'OCaml': 'lang-dot--ocaml',
+    'SQL': 'lang-dot--sql',
+    'PLpgSQL': 'lang-dot--plsql',
+    'Dockerfile': 'lang-dot--dockerfile',
+    'Terraform': 'lang-dot--terraform',
+    'Nix': 'lang-dot--nix',
+    'MDX': 'lang-dot--mdx',
+    'GraphQL': 'lang-dot--graphql',
+    'Solidity': 'lang-dot--solidity',
+    'Zig': 'lang-dot--zig',
+    'Elm': 'lang-dot--elm',
+    'Jupyter Notebook': 'lang-dot--jupiter',
 }
 
+export const getLanguageColor = (language: string): string => {
+    return languageColors[language] ?? 'lang-dot--default'
+}
+
+const normalizeSearch = (text: string) =>
+    text
+        .replace(/ı/g, 'i').replace(/İ/g, 'i')
+        .replace(/ğ/g, 'g').replace(/Ğ/g, 'g')
+        .replace(/ü/g, 'u').replace(/Ü/g, 'u')
+        .replace(/ş/g, 's').replace(/Ş/g, 's')
+        .replace(/ö/g, 'o').replace(/Ö/g, 'o')
+        .replace(/ç/g, 'c').replace(/Ç/g, 'c')
+        .toLowerCase()
+
 const Profile = () => {
+    const { t } = useTranslation()
     const { user, token } = useContext(AuthContext)
+    const { setSelectedRepo } = useRepo()
+    const navigate = useNavigate()
+
+    const [allRepos, setAllRepos] = useState<any[]>([])
     const [repos, setRepos] = useState<any[]>([])
+    const [total, setTotal] = useState(0)
     const [loading, setLoading] = useState(false)
+    const [allReposLoading, setAllReposLoading] = useState(false)
     const [search, setSearch] = useState('')
     const [typeFilter, setTypeFilter] = useState<string>('all')
     const [languageFilter, setLanguageFilter] = useState<string>('all')
     const [sortBy, setSortBy] = useState<string>('updated')
+    const [currentPage, setCurrentPage] = useState(0)
+    const [stats, setStats] = useState<any>(null)
 
-    useEffect(() => {
+    const isFiltered = search || typeFilter !== 'all' || languageFilter !== 'all' || sortBy !== 'updated'
+
+    const clearFilters = () => {
+        setSearch('')
+        setTypeFilter('all')
+        setLanguageFilter('all')
+        setSortBy('updated')
+        setCurrentPage(0)
+    }
+
+    const getRepos = async () => {
+        if (!token) return
+        try {
+            const { data, error } = await api.profile.getRepos(token)
+            if (error) toast.error(error)
+            else setAllRepos(Array.isArray(data) ? data : [])
+        } catch (error) {
+            console.error('Error fetching repositories:', error)
+            toast.error(t('profile.fetchReposError'))
+        }
+    }
+
+    const getStats = async () => {
+        if (!token) return
+        setAllReposLoading(true)
+        try {
+            const { data, error } = await api.profile.getRepoStats(token)
+            if (error) toast.error(error)
+            else setStats(data)
+        } catch (err) {
+            console.error(err)
+        } finally {
+            setAllReposLoading(false)
+        }
+    }
+
+    const getReposWithSearch = async () => {
         if (!token) return
         setLoading(true)
-        api.login.getRepos(token)
-            .then((r: any) => setRepos(r.data || []))
-            .finally(() => setLoading(false))
+        try {
+            const payload = {
+                type: typeFilter,
+                language: languageFilter,
+                sort: sortBy,
+                search,
+                page: currentPage,
+                per_page: 10,
+            }
+            const { data, error } = await api.profile.getReposWithSearch(token, payload)
+            if (error) toast.error(error)
+            else {
+                setRepos(Array.isArray(data?.items) ? data.items : [])
+                setTotal(typeof data?.total === 'number' ? data.total : 0)
+            }
+        } catch (error) {
+            console.error('Error fetching repositories with search:', error)
+            toast.error(t('profile.fetchFilteredReposError'))
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        getRepos();
+        getStats()
     }, [token])
 
-    const languages = ['all', ...Array.from(new Set(repos.map(r => r.language).filter(Boolean)))]
+    useEffect(() => {
+        getReposWithSearch()
+    }, [token, typeFilter, languageFilter, sortBy, search, currentPage])
+
+    useEffect(() => {
+        setCurrentPage(0)
+    }, [typeFilter, languageFilter, sortBy, search])
+
+    const languages = ['all', ...Array.from(new Set(allRepos.map(r => r.language).filter(Boolean)))]
 
     const statItems = [
         {
-            label: 'Total Repositories',
-            value: repos.length,
+            label: t('profile.totalRepositories'),
+            value: stats?.total ?? 0,
             icon: <RiGitRepositoryLine size={20} />,
-            iconBg: '#ddf4ff',
-            iconColor: '#0969da',
-            sub: `${repos.filter(r => r.private).length} private`,
+            iconClass: 'stat-icon--blue'
         },
         {
-            label: 'Languages',
-            value: [...new Set(repos.map(r => r.language).filter(Boolean))].length,
+            label: t('profile.languages'),
+            value: stats?.languages ?? 0,
             icon: <VscCode size={20} />,
-            iconBg: '#fbefff',
-            iconColor: '#8250df',
-            sub: 'different languages',
+            iconClass: 'stat-icon--purple'
         },
         {
-            label: 'Total Stars',
-            value: repos.reduce((a, r) => a + r.stargazers_count, 0),
+            label: t('profile.totalStars'),
+            value: stats?.stars ?? 0,
             icon: <GoStar size={20} />,
-            iconBg: '#fff1e5',
-            iconColor: '#bc4c00',
-            sub: 'across all repos',
+            iconClass: 'stat-icon--orange'
         },
         {
-            label: 'Public Repos',
-            value: repos.filter(r => !r.private).length,
+            label: t('profile.publicRepos'),
+            value: stats?.public ?? 0,
             icon: <MdLockOpen size={20} />,
-            iconBg: '#ffeff7',
-            iconColor: '#bf3989',
-            sub: `${repos.filter(r => r.private).length} private repos`,
+            iconClass: 'stat-icon--pink'
         },
     ]
 
     const columns = [
         {
-            title: 'Repository',
-            dataIndex: 'name',
-            key: 'name',
+            title: t('profile.repository'), dataIndex: 'name', key: 'name',
             render: (_: any, repo: any) => (
                 <div>
                     <Link href={repo.html_url} target="_blank" className="repo-name">{repo.name}</Link>
-                    <div className="repo-desc">{repo.description || '—'}</div>
-                    {repo.topics?.length > 0 && (
-                        <div style={{ marginTop: 4, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                    <div className="repo-desc">{repo.description || t('profile.noDescription')}</div>
+                    {repo?.topics?.length > 0 && (
+                        <div className="repo-topics">
                             {repo.topics.slice(0, 3).map((topic: string) => (
-                                <Tag key={topic} style={{ fontSize: 11, borderRadius: 20, margin: 0, background: '#ddf4ff', color: '#0550ae', borderColor: '#54aeff66' }}>
-                                    {topic}
-                                </Tag>
+                                <Tag key={topic} className="repo-topic-tag">{topic}</Tag>
                             ))}
                         </div>
                     )}
@@ -98,116 +224,123 @@ const Profile = () => {
             ),
         },
         {
-            title: 'Language',
-            dataIndex: 'language',
-            key: 'language',
+            title: t('profile.language'), dataIndex: 'language', key: 'language',
             render: (lang: string) => lang ? (
                 <span className="lang-badge">
-                    <span className="lang-dot" style={{ background: languageColors[lang] || '#8b949e' }} />
+                    <span className={`lang-dot ${languageColors[lang] || 'lang-dot--default'}`} />
                     {lang}
                 </span>
             ) : '—',
         },
         {
-            title: 'Branch',
-            dataIndex: 'default_branch',
-            key: 'default_branch',
-            render: (branch: string) => (
-                <Tag style={{ fontSize: 11, borderRadius: 20, background: '#f6f8fa', color: '#656d76', borderColor: '#d0d7de' }}>
-                    {branch || 'main'}
-                </Tag>
-            ),
+            title: t('profile.branch'), dataIndex: 'default_branch', key: 'default_branch',
+            render: (branch: string) => <Tag className="branch-tag">{branch || 'main'}</Tag>,
         },
         {
-            title: 'Visibility',
-            dataIndex: 'private',
-            key: 'private',
+            title: t('profile.visibility'), dataIndex: 'is_private', key: 'is_private',
             render: (isPrivate: boolean) => (
                 <Tag className={`visibility ${isPrivate ? 'private' : 'public'}`}>
-                    {isPrivate ? 'Private' : 'Public'}
+                    {isPrivate ? t('profile.privateLabel') : t('profile.publicLabel')}
                 </Tag>
             ),
         },
         {
-            title: 'Stars',
-            dataIndex: 'stargazers_count',
-            key: 'stargazers_count',
-            sorter: (a: any, b: any) => a.stargazers_count - b.stargazers_count,
+            title: t('profile.stars'), dataIndex: 'stars', key: 'stars',
             render: (count: number) => (
-                <Space size={4}>
-                    <GoStar size={13} style={{ color: '#bc4c00' }} />
-                    <Text style={{ fontSize: 12, color: '#656d76' }}>{count}</Text>
+                <Space size={4} className="profile-page__cell">
+                    <GoStar className="profile-page__cell-icon profile-page__cell-icon--orange" size={13} />
+                    <Text className="profile-page__cell-text">{count}</Text>
                 </Space>
             ),
         },
         {
-            title: 'Forks',
-            dataIndex: 'forks_count',
-            key: 'forks_count',
-            sorter: (a: any, b: any) => a.forks_count - b.forks_count,
+            title: t('profile.forks'), dataIndex: 'forks_count', key: 'forks_count',
             render: (count: number) => (
-                <Space size={4}>
-                    <GoRepoForked size={13} style={{ color: '#8250df' }} />
-                    <Text style={{ fontSize: 12, color: '#656d76' }}>{count}</Text>
+                <Space size={4} className="profile-page__cell">
+                    <GoRepoForked className="profile-page__cell-icon profile-page__cell-icon--purple" size={13} />
+                    <Text className="profile-page__cell-text">{count}</Text>
                 </Space>
             ),
         },
         {
-            title: 'Issues',
-            dataIndex: 'open_issues_count',
-            key: 'open_issues_count',
-            sorter: (a: any, b: any) => a.open_issues_count - b.open_issues_count,
+            title: t('profile.watchers'), dataIndex: 'watchers_count', key: 'watchers_count',
             render: (count: number) => (
-                <Space size={4}>
-                    <GoIssueOpened size={13} style={{ color: count > 0 ? '#0969da' : '#8c959f' }} />
-                    <Text style={{ fontSize: 12, color: count > 0 ? '#0969da' : '#656d76' }}>{count}</Text>
+                <Space size={4} className="profile-page__cell">
+                    <GoEye className="profile-page__cell-icon profile-page__cell-icon--muted" size={13} />
+                    <Text className="profile-page__cell-text">{count}</Text>
                 </Space>
             ),
         },
         {
-            title: 'Watchers',
-            dataIndex: 'watchers_count',
-            key: 'watchers_count',
-            render: (count: number) => (
-                <Space size={4}>
-                    <GoEye size={13} style={{ color: '#656d76' }} />
-                    <Text style={{ fontSize: 12, color: '#656d76' }}>{count}</Text>
-                </Space>
-            ),
-        },
-        {
-            title: 'Size',
-            dataIndex: 'size',
-            key: 'size',
-            sorter: (a: any, b: any) => a.size - b.size,
+            title: t('profile.size'), dataIndex: 'size', key: 'size',
             render: (size: number) => (
-                <Text style={{ fontSize: 12, color: '#656d76' }}>
+                <Text className="profile-page__cell-text">
                     {size > 1024 ? `${(size / 1024).toFixed(1)} MB` : `${size} KB`}
                 </Text>
             ),
         },
         {
-            title: 'Updated',
-            dataIndex: 'updated_at',
-            key: 'updated_at',
-            sorter: (a: any, b: any) => new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime(),
-            render: (date: string) => (
-                <Text className="date">{new Date(date).toLocaleDateString('en-US')}</Text>
-            ),
+            title: t('profile.updated'), dataIndex: 'updated_at', key: 'updated_at',
+            render: (date: string) => <Text className="date">{new Date(date).toLocaleDateString('en-US')}</Text>,
         },
         {
-            title: 'Actions',
-            key: 'actions',
+            title: t('profile.actions'), key: 'actions',
             render: (_: any, repo: any) => (
                 <Space>
-                    <Tooltip title="Analyze codebase">
-                        <Button size="small" type="text" icon={<TbZoomCode size={20} />} />
+                    <Tooltip title={t('profile.analyzeCodebase')}>
+                        <Button
+                            size="small"
+                            type="text"
+                            icon={<TbZoomCode size={20} />}
+                            onClick={() => {
+                                setSelectedRepo(repo.full_name)
+                                navigate('/agents/codebase-qa')
+                            }}
+                        />
                     </Tooltip>
-                    <Tooltip title="Write tests">
-                        <Button size="small" type="text" icon={<VscBeaker size={20} />} />
+                    <Tooltip title={t('profile.writeTests')}>
+                        <Button
+                            size="small"
+                            type="text"
+                            icon={<VscBeaker size={20} />}
+                            onClick={() => {
+                                setSelectedRepo(repo.full_name)
+                                navigate('/agents/test-generator')
+                            }}
+                        />
                     </Tooltip>
-                    <Tooltip title="PR Review">
-                        <Button size="small" type="text" icon={<GoGitPullRequest size={20} />} />
+                    <Tooltip title={t('profile.prReview')}>
+                        <Button
+                            size="small"
+                            type="text"
+                            icon={<GoGitPullRequest size={20} />}
+                            onClick={() => {
+                                setSelectedRepo(repo.full_name)
+                                navigate('/agents/pr-review')
+                            }}
+                        />
+                    </Tooltip>
+                    <Tooltip title={t('profile.debug')}>
+                        <Button
+                            size="small"
+                            type="text"
+                            icon={<TbBug size={20} />}
+                            onClick={() => {
+                                setSelectedRepo(repo.full_name)
+                                navigate('/agents/debugging')
+                            }}
+                        />
+                    </Tooltip>
+                    <Tooltip title={t('profile.documentation')}>
+                        <Button
+                            size="small"
+                            type="text"
+                            icon={<TbFileDescription size={20} />}
+                            onClick={() => {
+                                setSelectedRepo(repo.full_name)
+                                navigate('/agents/documentation')
+                            }}
+                        />
                     </Tooltip>
                 </Space>
             ),
@@ -215,60 +348,36 @@ const Profile = () => {
     ]
 
     return (
-        <div className="container profile-page">
+        <div className="profile-page">
             <Card className="profile-page__user-card">
-                <Flex align="flex-start" gap={20}>
-                    <Avatar size={80} src={user?.avatar_url} className="profile-page__user-avatar" />
-                    <Flex vertical style={{ flex: 1 }}>
-                        <Typography.Title level={3} className="profile-page__user-name">
-                            {user?.name || user?.username}
-                        </Typography.Title>
-                        <Text className="profile-page__user-meta">@{user?.username}</Text>
-                        {user?.bio && (
-                            <Text className="profile-page__user-meta" style={{ marginBottom: 10 }}>{user.bio}</Text>
-                        )}
-                        {user?.email && (
-                            <Flex align="center" gap={6}>
-                                <GoMail size={14} className="profile-page__user-icon" />
-                                <Text className="profile-page__user-meta">{user.email}</Text>
-                            </Flex>
-                        )}
-                        {user?.location && (
-                            <Flex align="center" gap={6}>
-                                <GoLocation size={14} className="profile-page__user-icon" />
-                                <Text className="profile-page__user-meta">{user.location}</Text>
-                            </Flex>
-                        )}
-                        {user?.company && (
-                            <Flex align="center" gap={6}>
-                                <GoOrganization size={14} className="profile-page__user-icon" />
-                                <Text className="profile-page__user-meta">{user.company}</Text>
-                            </Flex>
-                        )}
+                <Flex align="flex-start" justify='space-between' className="profile-page__user-header">
+                    <Flex gap={20}>
+                        <Avatar size={80} src={user?.avatar_url} className="profile-page__user-avatar" />
+                        <Flex vertical className="profile-page__user-info">
+                            <Typography.Title level={3} className="profile-page__user-name">{user?.name || user?.username}</Typography.Title>
+                            <Text className="profile-page__user-meta">@{user?.username}</Text>
+                            {user?.bio && <Text className="profile-page__user-meta profile-page__user-bio">{user.bio}</Text>}
+                            {user?.email && <Flex align="center" gap={6} wrap="wrap"><GoMail size={14} className="profile-page__user-icon" /><Text className="profile-page__user-meta">{user.email}</Text></Flex>}
+                            {user?.location && <Flex align="center" gap={6} wrap="wrap"><GoLocation size={14} className="profile-page__user-icon" /><Text className="profile-page__user-meta">{user.location}</Text></Flex>}
+                            {user?.company && <Flex align="center" gap={6} wrap="wrap"><GoOrganization size={14} className="profile-page__user-icon" /><Text className="profile-page__user-meta">{user.company}</Text></Flex>}
+                        </Flex>
                     </Flex>
-                    <Flex align="center" gap={6}>
+                    <Flex align="center" gap={6} className="profile-page__user-link-wrap">
                         <GoLinkExternal size={14} className="profile-page__user-icon" />
-                        <Link href={user?.html_url} target="_blank" className="profile-page__user-link">View on GitHub</Link>
+                        <Link href={user?.html_url} target="_blank" className="profile-page__user-link">{t('profile.viewOnGithub')}</Link>
                     </Flex>
                 </Flex>
             </Card>
 
             <div className="profile-page__scroll-container">
-                <Row gutter={12} className="profile-page__stat-row">
-                    {statItems.map(({ label, value, icon, iconBg, iconColor }) => (
-                        <Col span={6} key={label}>
-                            <Card className="profile-page__stats__card" loading={loading}>
+                <Row gutter={[12, 12]} className="profile-page__stat-row">
+                    {statItems.map(({ label, value, icon, iconClass }) => (
+                        <Col xs={24} sm={12} lg={6} key={label}>
+                            <Card className="profile-page__stats__card" loading={allReposLoading}>
                                 <Flex gap={12} align="flex-start">
-                                    <Flex
-                                        align="center"
-                                        justify="center"
-                                        className="profile-page__stat-icon"
-                                        style={{ background: iconBg, color: iconColor }}
-                                    >
-                                        {icon}
-                                    </Flex>
-                                    <Flex vertical justify="flex-start" align="flex-start" style={{ marginLeft: 10 }}>
-                                        <Typography.Title level= {3} className="profile-page__stat-value">{value}</Typography.Title>
+                                    <Flex align="center" justify="center" className={`profile-page__stat-icon ${iconClass}`}>{icon}</Flex>
+                                    <Flex vertical justify="flex-start" align="flex-start" className="profile-page__stat-content">
+                                        <Typography.Title level={3} className="profile-page__stat-value">{value}</Typography.Title>
                                         <div className="profile-page__stat-label">{label}</div>
                                     </Flex>
                                 </Flex>
@@ -280,55 +389,64 @@ const Profile = () => {
                 <Card
                     className="profile-page__table-container"
                     extra={
-                        <div className="profile-page__filters">
+                        <Flex align="center" gap={8} wrap="wrap" className="profile-page__filters">
                             <Input
-                                prefix={<SearchOutlined style={{ color: '#8b949e' }} />}
-                                placeholder="Search repositories..."
+                                prefix={<SearchOutlined className="profile-page__search-icon" />}
+                                suffix={search ? <CloseCircleFilled className="profile-page__search-clear" onClick={() => setSearch('')} /> : null}
+                                placeholder={t('profile.searchRepositories')}
                                 value={search}
-                                onChange={e => setSearch(e.target.value)}
-                                style={{ width: 180 }}
+                                onChange={e => setSearch(normalizeSearch(e.target.value))}
                                 className="repo-search"
                             />
                             <Select
                                 value={typeFilter}
-                                onChange={setTypeFilter}
-                                style={{ width: 120 }}
+                                onChange={v => { setTypeFilter(v); setCurrentPage(0) }}
+                                placeholder={t('profile.selectType')}
+                                className="profile-page__filter-select profile-page__filter-select--sm"
+                                allowClear
+                                onClear={() => { setTypeFilter('all'); setCurrentPage(0) }}
                                 options={[
-                                    { value: 'all', label: 'All types' },
-                                    { value: 'public', label: 'Public' },
-                                    { value: 'private', label: 'Private' },
-                                    { value: 'forks', label: 'Forks' },
-                                    { value: 'archived', label: 'Archived' },
+                                    { value: 'all', label: t('profile.allTypes') },
+                                    { value: 'public', label: t('profile.public') },
+                                    { value: 'private', label: t('profile.privateLabel') },
+                                    { value: 'forks', label: t('profile.forksFilter') },
                                 ]}
                             />
                             <Select
                                 value={languageFilter}
-                                onChange={setLanguageFilter}
-                                style={{ width: 140 }}
-                                options={languages?.map(lang => ({
+                                onChange={v => { setLanguageFilter(v); setCurrentPage(0) }}
+                                placeholder={t('profile.selectLanguage')}
+                                className="profile-page__filter-select profile-page__filter-select--md"
+                                allowClear
+                                onClear={() => { setLanguageFilter('all'); setCurrentPage(0) }}
+                                options={languages.map(lang => ({
                                     value: lang,
-                                    label: lang === 'all' ? 'All languages' : lang,
+                                    label: lang === 'all' ? t('profile.allLanguages') : lang,
                                 }))}
                             />
-                            <Select
-                                value={sortBy}
-                                onChange={setSortBy}
-                                style={{ width: 140 }}
-                                options={[
-                                    { value: 'updated', label: 'Last updated' },
-                                    { value: 'created', label: 'Newest' },
-                                    { value: 'name', label: 'Name' },
-                                    { value: 'stars', label: 'Stars' },
-                                ]}
-                            />
-                        </div>
+                            <Button
+                                icon={<LuFilterX />}
+                                size="small"
+                                onClick={clearFilters}
+                                type="text"
+                                className="profile-page__clear-btn"
+                                disabled={!isFiltered}
+                            >
+                                {t('profile.clear')}
+                            </Button>
+                        </Flex>
                     }
                 >
                     <Table
                         dataSource={repos}
                         columns={columns}
                         rowKey="id"
-                        pagination={{ pageSize: 10 }}
+                        pagination={{
+                            current: currentPage + 1,
+                            pageSize: 10,
+                            total,
+                            onChange: (page) => setCurrentPage(page - 1),
+                        }}
                         className="repo-table"
                         loading={loading}
                         scroll={{ x: 'max-content' }}

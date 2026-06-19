@@ -1,159 +1,355 @@
-import { useState } from 'react'
-import { Button, Card, Flex, Input, Tag, Typography, List, Steps, Select } from 'antd'
+import { useEffect, useMemo, useState } from 'react'
+import { Button, Card, Flex, Tag, Typography, List, Select, Spin } from 'antd'
+import { LoadingOutlined, FileOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import withLayout from '../../layout/withLayout'
+import { api } from '../../services/api'
+import toast from 'react-hot-toast'
+import { timeAgo } from '../../utils/timeAgo'
+import { useRepo } from '../../context/repoContext'
+import RunTestsModal from './components/RunTestsModal'
 import './index.scss'
 
 const { Text } = Typography
 
-const MOCK_HISTORY = [
-    { target: 'auth_service.py', testCount: 6, coverage: 88, timeAgo: '20 dk önce' },
-    { target: 'user_controller.py', testCount: 9, coverage: 74, timeAgo: '2 saat önce' },
-    { target: 'config.py', testCount: 3, coverage: 95, timeAgo: '1 gün önce' },
-]
-
-const PIPELINE_STEPS = [
-    { title: 'Kod analizi' },
-    { title: 'Edge case' },
-    { title: 'Test üret' },
-    { title: 'Doğrula' },
-]
-
-const TYPE_CONFIG: Record<string, { color: string; label: string }> = {
-    unit: { color: 'blue', label: 'unit' },
-    integration: { color: 'purple', label: 'integration' },
-    edge: { color: 'orange', label: 'edge case' },
+const frameworksByExtension: Record<string, string[]> = {
+    '.tsx': ['jest', 'vitest'],
+    '.ts': ['jest', 'vitest'],
+    '.jsx': ['jest', 'vitest', 'mocha'],
+    '.js': ['jest', 'vitest', 'mocha'],
+    '.py': ['pytest', 'unittest'],
 }
 
-const DEFAULT_RESULT = {
-    totalTests: 8, coverage: 91, unitCount: 4, edgeCount: 3, integrationCount: 1,
-    tests: [
-        { name: 'test_charge_success', type: 'unit', description: 'Geçerli kart bilgisiyle başarılı ödeme senaryosu', code: `def test_charge_success():\n    result = charge_customer(1000, "tok_visa")\n    assert result.status == "succeeded"` },
-        { name: 'test_charge_timeout_retry', type: 'edge', description: 'Stripe timeout durumunda retry tetiklenmeli', code: `def test_charge_timeout_retry():\n    with mock.patch("stripe.Charge.create",\n                    side_effect=stripe.error.Timeout):\n        with pytest.raises(stripe.error.Timeout):\n            charge_customer(1000, "tok_visa")` },
-        { name: 'test_charge_invalid_card', type: 'edge', description: 'Geçersiz kart numarasında CardError fırlatılmalı', code: `def test_charge_invalid_card():\n    with pytest.raises(stripe.error.CardError):\n        charge_customer(1000, "tok_invalid")` },
-        { name: 'test_charge_zero_amount', type: 'edge', description: 'Sıfır tutarlı ödeme reddedilmeli', code: `def test_charge_zero_amount():\n    with pytest.raises(ValueError):\n        charge_customer(0, "tok_visa")` },
-        { name: 'test_charge_duplicate', type: 'integration', description: 'Aynı idempotency key ile ikinci istek reddedilmeli', code: `def test_charge_duplicate_idempotency():\n    charge_customer(1000, "tok_visa", idempotency_key="key_1")\n    with pytest.raises(stripe.error.IdempotencyError):\n        charge_customer(1000, "tok_visa", idempotency_key="key_1")` },
-        { name: 'test_charge_missing_token', type: 'unit', description: 'Token eksikse ValueError fırlatılmalı', code: `def test_charge_missing_token():\n    with pytest.raises(ValueError):\n        charge_customer(1000, "")` },
-        { name: 'test_charge_negative_amount', type: 'unit', description: 'Negatif tutar reddedilmeli', code: `def test_charge_negative_amount():\n    with pytest.raises(ValueError):\n        charge_customer(-100, "tok_visa")` },
-        { name: 'test_charge_returns_charge_id', type: 'unit', description: 'Başarılı işlemde charge_id dönmeli', code: `def test_charge_returns_charge_id():\n    result = charge_customer(1000, "tok_visa")\n    assert result.id.startswith("ch_")` },
-    ],
+const allFrameworks = [
+    { value: 'pytest', label: 'pytest' },
+    { value: 'jest', label: 'Jest' },
+    { value: 'unittest', label: 'unittest' },
+    { value: 'vitest', label: 'Vitest' },
+    { value: 'mocha', label: 'Mocha' },
+]
+
+const testableExtentions = [
+    '.py',
+    '.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs',
+    '.java', '.kt', '.kts', '.go', '.rs',
+    '.c', '.cpp', '.cc', '.cxx', '.h', '.hpp',
+    '.cs', '.rb', '.php', '.swift', '.scala',
+    '.dart', '.ex', '.exs', '.hs', '.lua',
+    '.pl', '.r', '.R',
+]
+
+const getFrameworksForFile = (file: string) => {
+    const ext = Object.keys(frameworksByExtension).find(e => file.endsWith(e))
+    if (!ext) return allFrameworks
+    return allFrameworks.filter(f => frameworksByExtension[ext].includes(f.value))
+}
+
+const getDefaultFramework = (file: string): string => {
+    return getFrameworksForFile(file)[0]?.value ?? 'jest'
 }
 
 const TestGenerator = () => {
-    const [input, setInput] = useState('payment_service.py · charge_customer fonksiyonu')
-    const [result, setResult] = useState<any | null>(DEFAULT_RESULT)
-    const [loading, setLoading] = useState(false)
-    const [currentStep, setCurrentStep] = useState(3)
-    const [expanded, setExpanded] = useState<string | null>(null)
-    const [filterType, setFilterType] = useState<string>('all')
+    const { t } = useTranslation()
+    const { selectedRepo } = useRepo()
 
-    const handleGenerate = async () => {
-        if (!input.trim()) return
-        setLoading(true)
-        setResult(null)
-        setCurrentStep(0)
-        for (let i = 0; i <= 3; i++) {
-            await new Promise((r) => setTimeout(r, 400))
-            setCurrentStep(i)
-        }
-        setResult(DEFAULT_RESULT)
-        setLoading(false)
+    const [repoFiles, setRepoFiles] = useState<string[]>([])
+    const [filesLoading, setFilesLoading] = useState(false)
+    const [selectedFile, setSelectedFile] = useState<string | null>(null)
+    const [framework, setFramework] = useState('jest')
+    const [result, setResult] = useState<any>(null)
+    const [loading, setLoading] = useState(false)
+    const [history, setHistory] = useState<any[]>([])
+    const [expanded, setExpanded] = useState<string | null>(null)
+    const [filterType, setFilterType] = useState('all')
+    const [runTestsModalOpen, setRunTestsModalOpen] = useState(false)
+
+    const token = localStorage.getItem('dt-token') || ''
+
+    const typeConfig: Record<string, { color: string; label: string; className: string }> = {
+        unit: {
+            color: 'blue',
+            label: t('testGenerator.unitLabel'),
+            className: 'test-generator__type-tag--unit',
+        },
+        integration: {
+            color: 'purple',
+            label: t('testGenerator.integrationLabel'),
+            className: 'test-generator__type-tag--integration',
+        },
+        edge: {
+            color: 'orange',
+            label: t('testGenerator.edgeLabel'),
+            className: 'test-generator__type-tag--edge',
+        },
     }
 
-    const filteredTests = result?.tests?.filter(
-        (item: any) => filterType === 'all' || item.type === filterType
-    ) ?? []
+    useEffect(() => {
+        if (!selectedRepo) return
+        const [owner, repo] = selectedRepo.split('/')
+        setSelectedFile(null)
+        setResult(null)
+        setRepoFiles([])
+        setHistory([])
+        setFramework('jest')
+        fetchRepoFiles(owner, repo)
+        getHistoryList(owner, repo)
+    }, [selectedRepo])
+
+    // get repo file
+    const fetchRepoFiles = async (owner: string, repo: string) => {
+        setFilesLoading(true)
+        try {
+            const { data, error } = await api.agents.repoFiles(token, owner, repo)
+            if (error) {
+                toast.error(error)
+            } else {
+                const allFiles = data?.files ?? []
+                const testable = allFiles.filter((f: string) =>
+                    testableExtentions.some(ext => f.endsWith(ext))
+                )
+                setRepoFiles(testable)
+            }
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setFilesLoading(false)
+        }
+    }
+
+    // get history
+    const getHistoryList = async (owner: string, repo: string) => {
+        const { data, error } = await api.agents.testHistory(token, owner, repo)
+        if (error) {
+            toast.error(error)
+        } else {
+            setHistory(data)
+        }
+    }
+
+    const handleFileSelect = (file: string) => {
+        setSelectedFile(file)
+        setFramework(getDefaultFramework(file))
+    }
+
+    // generate test
+    const handleGenerateTest = async () => {
+        if (!selectedFile || !selectedRepo) return
+        setLoading(true)
+        setResult(null)
+
+        try {
+            const [owner, repo] = selectedRepo.split('/')
+            const { data, error } = await api.agents.generateTests(token, owner, repo, selectedFile, framework)
+            if (error) {
+                toast.error(error)
+            } else {
+                setResult(data)
+                await getHistoryList(owner, repo)
+            }
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    // history click
+    const handleHistoryClick = (item: any) => {
+        setSelectedFile(item?.target)
+        setFramework(item?.framework ?? 'jest')
+        setResult({
+            testCount: item?.testCount,
+            coverage: item?.coverage,
+            unitCount: item?.tests?.filter((t: any) => t?.type === 'unit').length ?? 0,
+            edgeCount: item?.tests?.filter((t: any) => t?.type === 'edge').length ?? 0,
+            integrationCount: item?.tests?.filter((t: any) => t?.type === 'integration').length ?? 0,
+            tests: item?.tests ?? [],
+            mergedCode: item?.mergedCode ?? '',
+        })
+    }
+
+    // save test
+    const handleSaveTests = () => {
+        if (!result?.mergedCode || !selectedFile) return
+        const ext = selectedFile?.split('.').pop() ?? 'tsx'
+        const baseName = selectedFile?.split('/').pop()?.replace(`.${ext}`, '') ?? 'test'
+        const filename = `${baseName}.test.${ext}`
+        const blob = new Blob([result?.mergedCode], { type: 'text/plain' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = filename
+        a.click()
+        URL.revokeObjectURL(url)
+    }
+
+    const filteredTests = useMemo(
+        () => result?.tests?.filter((item: any) => filterType === 'all' || item?.type === filterType) ?? [],
+        [result?.tests, filterType]
+    )
+
+    const availableFrameworks = selectedFile ? getFrameworksForFile(selectedFile) : allFrameworks
+
+    const renderHistory = () => (
+        <List
+            dataSource={history}
+            split
+            locale={{ emptyText: t('testGenerator.noTestHistory') }}
+            renderItem={(item: any) => (
+                <List.Item className="test-generator__history-list-item">
+                    <Flex
+                        align="flex-start"
+                        gap={10}
+                        className="test-generator__history-item"
+                        onClick={() => handleHistoryClick(item)}
+                    >
+                        <div className="test-generator__history-dot" />
+                        <Flex vertical gap={2} className="test-generator__history-content">
+                            <Text code className="test-generator__history-file">{item?.target}</Text>
+                            <Text type="secondary" className="test-generator__history-meta">
+                                {t('testGenerator.historyMeta', {
+                                    count: item?.testCount,
+                                    coverage: item?.coverage,
+                                    time: timeAgo(item?.timeAgo, t),
+                                })}
+                            </Text>
+                        </Flex>
+                    </Flex>
+                </List.Item>
+            )}
+        />
+    )
 
     return (
         <div className="test-generator">
-
-            {/* Header */}
             <Flex align="center" justify="space-between" className="test-generator__header">
                 <Flex align="center" gap={10}>
-                    <div className="test-generator__dot" />
+                    <div className={`test-generator__dot test-generator__dot--${result ? 'ready' : selectedRepo ? 'active' : 'idle'}`} />
                     <Flex vertical align="flex-start" gap={2}>
-                        <Text strong style={{ fontSize: 15 }}>Test Generator</Text>
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                            Unit · integration · edge case testleri
+                        <Text strong className="test-generator__title">
+                            {t('testGenerator.title')}
+                        </Text>
+                        <Text type="secondary" className="test-generator__subtitle">
+                            {selectedRepo ?? t('testGenerator.subtitle')}
                         </Text>
                     </Flex>
                 </Flex>
-                <Tag color="green">8 test üretildi</Tag>
+                {result && (
+                    <Tag className="test-generator__tag--ready">
+                        {t('testGenerator.testsGenerated', { count: result?.totalTests })}
+                    </Tag>
+                )}
             </Flex>
 
-            {/* Body */}
             <Flex vertical gap={16} className="test-generator__body">
 
-                <Steps current={currentStep} size="small" items={PIPELINE_STEPS} />
-
-                {/* Input */}
-                <Flex vertical gap={8}>
-                    <Text className="test-generator__section-label">INPUT</Text>
-                    <Flex gap={8}>
-                        <Input
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onPressEnter={handleGenerate}
-                            placeholder="Dosya adı, fonksiyon adı veya açıklama girin..."
-                            className="test-generator__input"
+                <Flex gap={8} className="test-generator__controls-row">
+                    <Flex vertical gap={6} className="test-generator__target-col">
+                        <Text className="test-generator__section-label">
+                            {t('testGenerator.targetFile')}
+                        </Text>
+                        <Select
+                            className="test-generator__select"
+                            placeholder={
+                                !selectedRepo
+                                    ? t('testGenerator.selectRepoFirst')
+                                    : filesLoading
+                                        ? t('testGenerator.loadingFiles')
+                                        : t('testGenerator.selectFile')
+                            }
+                            value={selectedFile}
+                            onChange={handleFileSelect}
+                            disabled={!selectedRepo || filesLoading}
+                            loading={filesLoading}
+                            showSearch
+                            suffixIcon={
+                                filesLoading
+                                    ? <Spin indicator={<LoadingOutlined spin />} size="small" />
+                                    : <FileOutlined className="test-generator__file-icon" />
+                            }
+                            options={repoFiles?.map((file) => ({
+                                value: file,
+                                label: (
+                                    <Flex align="center" gap={8}>
+                                        <FileOutlined className="test-generator__file-icon" />
+                                        <span>{file}</span>
+                                    </Flex>
+                                ),
+                            }))}
                         />
-                        <Button
-                            type="primary"
-                            onClick={handleGenerate}
-                            loading={loading}
-                            className="test-generator__generate-btn"
-                        >
-                            Üret
-                        </Button>
+                    </Flex>
+
+                    <Flex vertical gap={6} className="test-generator__framework-col">
+                        <Text className="test-generator__section-label">
+                            {t('testGenerator.framework')}
+                        </Text>
+                        <Select
+                            value={framework}
+                            onChange={setFramework}
+                            disabled={!selectedRepo}
+                            className="test-generator__framework-select"
+                            options={availableFrameworks}
+                        />
                     </Flex>
                 </Flex>
 
+                <Button
+                    type="primary"
+                    onClick={handleGenerateTest}
+                    loading={loading}
+                    disabled={!selectedFile}
+                    className="test-generator__generate-btn"
+                >
+                    {t('testGenerator.generateTests')}
+                </Button>
+
                 {result && !loading && (
                     <>
-                        {/* Skor kartları */}
-                        <Flex gap={10}>
+                        <Flex gap={10} className="test-generator__score-cards">
                             <Card size="small" className="test-generator__card-green">
-                                <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Toplam test</Text>
-                                <Text className="test-generator__stat-value-green">{result.totalTests}</Text>
+                                <Text className="test-generator__card-label">{t('testGenerator.totalTests')}</Text>
+                                <Text className="test-generator__stat-value-green">{result?.testCount}</Text>
                             </Card>
                             <Card size="small" className="test-generator__card-green">
-                                <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Tahmini coverage</Text>
-                                <Text className="test-generator__stat-value-green">%{result.coverage}</Text>
+                                <Text className="test-generator__card-label">{t('testGenerator.estimatedCoverage')}</Text>
+                                <Text className="test-generator__stat-value-green">%{result?.coverage}</Text>
                             </Card>
                             <Card size="small" className="test-generator__card-neutral">
-                                <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Unit</Text>
-                                <Text className="test-generator__stat-value">{result.unitCount}</Text>
+                                <Text className="test-generator__card-label">{t('testGenerator.unit')}</Text>
+                                <Text className="test-generator__stat-value">{result?.unitCount}</Text>
                             </Card>
                             <Card size="small" className="test-generator__card-neutral">
-                                <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Edge case</Text>
-                                <Text className="test-generator__stat-value">{result.edgeCount}</Text>
+                                <Text className="test-generator__card-label">{t('testGenerator.edgeCase')}</Text>
+                                <Text className="test-generator__stat-value">{result?.edgeCount}</Text>
                             </Card>
                             <Card size="small" className="test-generator__card-neutral">
-                                <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Integration</Text>
-                                <Text className="test-generator__stat-value">{result.integrationCount}</Text>
+                                <Text className="test-generator__card-label">{t('testGenerator.integration')}</Text>
+                                <Text className="test-generator__stat-value">{result?.integrationCount}</Text>
                             </Card>
                         </Flex>
 
-                        <Flex gap={16} style={{ alignItems: 'stretch' }}>
-
-                            {/* Test listesi */}
-                            <Flex vertical gap={8} style={{ flex: 2 }}>
-                                <Flex align="center" justify="space-between">
-                                    <Text className="test-generator__section-label">TESTLER</Text>
+                        <Flex gap={16} className="test-generator__stretch-row">
+                            <Flex vertical gap={8} className="test-generator__tests-col">
+                                <Flex align="center" justify="space-between" className="test-generator__tests-head">
+                                    <Text className="test-generator__section-label">
+                                        {t('testGenerator.tests')}
+                                    </Text>
                                     <Select
                                         value={filterType}
                                         onChange={setFilterType}
                                         size="small"
-                                        style={{ width: 130 }}
+                                        className="test-generator__filter-select"
                                         options={[
-                                            { value: 'all', label: 'Tümü' },
-                                            { value: 'unit', label: 'Unit' },
-                                            { value: 'edge', label: 'Edge case' },
-                                            { value: 'integration', label: 'Integration' },
+                                            { value: 'all', label: t('testGenerator.all') },
+                                            { value: 'unit', label: t('testGenerator.unit') },
+                                            { value: 'edge', label: t('testGenerator.edgeCase') },
+                                            { value: 'integration', label: t('testGenerator.integration') },
                                         ]}
                                     />
                                 </Flex>
+
                                 <div className="test-generator__tests-scroll">
-                                    {filteredTests.map((item: any) => (
+                                    {filteredTests?.map((item: any) => (
                                         <div key={item?.name} className="test-generator__test-item">
                                             <Flex
                                                 align="center"
@@ -161,68 +357,84 @@ const TestGenerator = () => {
                                                 className={`test-generator__test-header ${expanded === item?.name ? 'test-generator__test-header--expanded' : ''}`}
                                                 onClick={() => setExpanded(expanded === item?.name ? null : item?.name)}
                                             >
-                                                <Flex align="center" gap={8}>
-                                                    <Tag color={TYPE_CONFIG[item?.type].color} style={{ margin: 0 }}>
-                                                        {TYPE_CONFIG[item?.type].label}
+                                                <Flex align="center" gap={8} className="test-generator__test-header-left">
+                                                    <Tag
+                                                        color={typeConfig[item?.type]?.color}
+                                                        className={`test-generator__type-tag ${typeConfig[item?.type]?.className ?? ''}`}
+                                                    >
+                                                        {typeConfig[item?.type]?.label}
                                                     </Tag>
-                                                    <Text code style={{ fontSize: 12 }}>{item?.name}</Text>
+                                                    <Text code className="test-generator__test-name">
+                                                        {item?.name}
+                                                    </Text>
                                                 </Flex>
-                                                <Text type="secondary" style={{ fontSize: 11 }}>
+                                                <Text type="secondary" className="test-generator__test-chevron">
                                                     {expanded === item?.name ? '▲' : '▼'}
                                                 </Text>
                                             </Flex>
+
                                             {expanded === item?.name && (
                                                 <div className="test-generator__test-body">
                                                     <Text type="secondary" className="test-generator__test-description">
                                                         {item?.description}
                                                     </Text>
-                                                    <div className="test-generator__test-code">
-                                                        {item?.code}
-                                                    </div>
+                                                    <pre className="test-generator__test-code">{item?.code}</pre>
                                                 </div>
                                             )}
                                         </div>
                                     ))}
                                 </div>
-                                <Flex gap={8} style={{ marginTop: 4 }}>
-                                    <Button type="primary" className="test-generator__save-btn">
-                                        tests/ klasörüne kaydet
+
+                                <Flex gap={8} className="test-generator__actions-row">
+                                    <Button
+                                        type="primary"
+                                        className="test-generator__save-btn"
+                                        disabled={!result?.mergedCode}
+                                        onClick={handleSaveTests}
+                                    >
+                                        {t('testGenerator.saveToTests')}
                                     </Button>
-                                    <Button className="test-generator__run-btn">
-                                        Testleri çalıştır
+                                    <Button
+                                        className="test-generator__run-btn"
+                                        disabled={!result?.tests?.length}
+                                        onClick={() => setRunTestsModalOpen(true)}
+                                    >
+                                        {t('testGenerator.runTests')}
                                     </Button>
                                 </Flex>
                             </Flex>
 
-                            {/* History */}
-                            <Flex vertical gap={4} style={{ flex: 1 }}>
-                                <Text className="test-generator__section-label">HISTORY</Text>
+                            <Flex vertical gap={4} className="test-generator__history-col">
+                                <Text className="test-generator__section-label">
+                                    {t('testGenerator.history')}
+                                </Text>
                                 <div className="test-generator__history-scroll">
-                                    <List
-                                        dataSource={MOCK_HISTORY}
-                                        split
-                                        renderItem={(item) => (
-                                            <List.Item style={{ padding: 0 }}>
-                                                <Flex align="flex-start" gap={10} className="test-generator__history-item">
-                                                    <div className="test-generator__history-dot" />
-                                                    <Flex vertical gap={2}>
-                                                        <Text code className="test-generator__history-file">{item.target}</Text>
-                                                        <Text type="secondary" className="test-generator__history-meta">
-                                                            {item.testCount} test · %{item.coverage} coverage · {item.timeAgo}
-                                                        </Text>
-                                                    </Flex>
-                                                </Flex>
-                                            </List.Item>
-                                        )}
-                                    />
+                                    {renderHistory()}
                                 </div>
                             </Flex>
-
                         </Flex>
                     </>
                 )}
 
+                {selectedRepo && !result && !loading && (
+                    <Flex vertical gap={4}>
+                        <Text className="test-generator__section-label">
+                            {t('testGenerator.history')}
+                        </Text>
+                        <div className="test-generator__history-scroll">
+                            {renderHistory()}
+                        </div>
+                    </Flex>
+                )}
             </Flex>
+
+            <RunTestsModal
+                open={runTestsModalOpen}
+                onClose={() => setRunTestsModalOpen(false)}
+                framework={framework}
+                target={selectedFile ?? ''}
+                mergedCode={result?.mergedCode ?? ''}
+            />
         </div>
     )
 }

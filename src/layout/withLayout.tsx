@@ -4,7 +4,6 @@ import "../assets/style/layout/layout.scss"
 import AppHeader from "./AppHeader";
 import AppSidebar from "./AppSidebar";
 
-
 const withLayout = (PageContent: any) => {
 
   return () => (
@@ -14,7 +13,11 @@ const withLayout = (PageContent: any) => {
       </div>
       <Layout className="app-inside-container">
         <Flex vertical className="sidebar-container" >
-          {/* <div>logo</div> */}
+          {/* <Image
+            src={logo}
+            preview={false}
+            className="app-container__logo"
+          /> */}
           <AppSidebar />
         </Flex>
         <Content className="content-container">

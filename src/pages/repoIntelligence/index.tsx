@@ -1,29 +1,20 @@
-import React, { useState } from 'react'
-import {
-    Card,
-    Flex,
-    Tag,
-    Typography,
-    List,
-    Select,
-    Progress,
-} from 'antd'
-import {
-    FileOutlined,
-    BugOutlined,
-    ClockCircleOutlined,
-} from '@ant-design/icons'
+import React, { useState, useEffect } from 'react'
+import { Card, Flex, Tag, Typography, List, Select, Progress, Spin } from 'antd'
+import { FileOutlined, BugOutlined, GithubOutlined, LoadingOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
+import dayjs from 'dayjs'
 import withLayout from '../../layout/withLayout'
+import { api } from '../../services/api'
+import toast from 'react-hot-toast'
+import { useRepo } from '../../context/repoContext'
+import './index.scss'
 
 const { Text } = Typography
-
-// ── Types ─────────────────────────────────────────────────────────────────────
 
 interface ModuleHealth {
     name: string
     path: string
     bugRate: number
-    coverage: number
     complexity: 'low' | 'medium' | 'high'
     lastChanged: string
     changeCount: number
@@ -49,321 +40,327 @@ interface HotspotItem {
     percentage: number
 }
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-
-const COMPLEXITY_CONFIG = {
-    low:    { color: 'green',  label: 'Düşük'  },
-    medium: { color: 'orange', label: 'Orta'   },
-    high:   { color: 'red',    label: 'Yüksek' },
+interface Metrics {
+    totalBugs: number
+    bugsThisWeek: number
+    openPrs: number
+    reviewsWaiting: number
+    totalCommits: number
+    riskScore: number
+    riskLabel: string
 }
 
-const ACTIVITY_CONFIG = {
-    bug:    { color: '#dc2626', label: 'Bug'    },
-    pr:     { color: '#185FA5', label: 'PR'     },
-    commit: { color: '#16a34a', label: 'Commit' },
-    review: { color: '#d97706', label: 'Review' },
+interface IntelligenceData {
+    metrics: Metrics
+    modules: ModuleHealth[]
+    hotspots: HotspotItem[]
+    activity: ActivityItem[]
+    contributors: ContributorItem[]
 }
-
-const MOCK_MODULES: ModuleHealth[] = [
-    { name: 'payment_service.py', path: 'app/services/', bugRate: 30, coverage: 42, complexity: 'high',   lastChanged: '2 saat önce',  changeCount: 47 },
-    { name: 'auth_service.py',    path: 'app/services/', bugRate: 8,  coverage: 88, complexity: 'medium', lastChanged: '1 gün önce',   changeCount: 23 },
-    { name: 'user_controller.py', path: 'app/routes/',   bugRate: 12, coverage: 74, complexity: 'medium', lastChanged: '3 gün önce',   changeCount: 31 },
-    { name: 'jwt_middleware.py',  path: 'app/core/',     bugRate: 4,  coverage: 91, complexity: 'low',    lastChanged: '1 hafta önce', changeCount: 9  },
-    { name: 'config.py',          path: 'app/',          bugRate: 2,  coverage: 95, complexity: 'low',    lastChanged: '2 hafta önce', changeCount: 5  },
-]
-
-const MOCK_ACTIVITY: ActivityItem[] = [
-    { type: 'bug',    message: 'Stripe timeout handle edilmedi',    file: 'payment_service.py', timeAgo: '2 saat önce'  },
-    { type: 'pr',     message: 'PR #42 merge edildi',               file: 'auth_service.py',    timeAgo: '4 saat önce'  },
-    { type: 'commit', message: 'JWT refresh logic güncellendi',     file: 'jwt_middleware.py',  timeAgo: '6 saat önce'  },
-    { type: 'review', message: 'PR #41 review bekleniyor',          file: 'user_controller.py', timeAgo: '8 saat önce'  },
-    { type: 'bug',    message: 'Null pointer — user_id boş geldi',  file: 'user_controller.py', timeAgo: '1 gün önce'   },
-    { type: 'commit', message: 'Config env variable refactor',      file: 'config.py',          timeAgo: '2 gün önce'   },
-]
-
-const MOCK_CONTRIBUTORS: ContributorItem[] = [
-    { name: 'sumeyra',  commits: 89, prs: 14, percentage: 52 },
-    { name: 'ahmet',    commits: 43, prs: 8,  percentage: 25 },
-    { name: 'elif',     commits: 28, prs: 5,  percentage: 16 },
-    { name: 'mehmet',   commits: 12, prs: 2,  percentage: 7  },
-]
-
-const MOCK_HOTSPOTS: HotspotItem[] = [
-    { file: 'payment_service.py', bugCount: 12, percentage: 30 },
-    { file: 'user_controller.py', bugCount: 7,  percentage: 18 },
-    { file: 'auth_service.py',    bugCount: 4,  percentage: 10 },
-    { file: 'jwt_middleware.py',  bugCount: 2,  percentage: 5  },
-]
-
-// ── Main Component ────────────────────────────────────────────────────────────
 
 const RepoIntelligence: React.FC = () => {
-    const [period, setPeriod]         = useState('30d')
-    const [sortBy, setSortBy]         = useState('bugRate')
+    const { t } = useTranslation()
+    const { selectedRepo } = useRepo()
 
-    const sortedModules = [...MOCK_MODULES].sort((a, b) => {
-        if (sortBy === 'bugRate')    return b.bugRate - a.bugRate
-        if (sortBy === 'coverage')  return a.coverage - b.coverage
-        if (sortBy === 'changes')   return b.changeCount - a.changeCount
+    const [period, setPeriod] = useState('30d')
+    const [sortBy, setSortBy] = useState('bugRate')
+    const [data, setData] = useState<IntelligenceData | null>(null)
+    const [loading, setLoading] = useState(false)
+
+    const token = localStorage.getItem('dt-token') || ''
+
+    const getIntelligenceData = async () => {
+        if (!selectedRepo) return
+        const [owner, repo] = selectedRepo.split('/')
+
+        const days = period === '7d' ? 7 : period === '90d' ? 90 : 30
+        const since = dayjs()?.subtract(days, 'day')?.format('YYYY-MM-DD')
+        const until = dayjs()?.format('YYYY-MM-DD')
+
+        setLoading(true)
+        setData(null)
+        try {
+            const { data: result, error } = await api.agents.getRepoIntelligence(token, owner, repo, since, until)
+            if (error) {
+                toast.error(error)
+            } else {
+                setData(result)
+            }
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        getIntelligenceData()
+    }, [selectedRepo, period])
+
+    const complexityConfig = {
+        low: { label: t('repoIntelligence.complexityLow'), className: 'repo-intelligence__complexity-tag--low' },
+        medium: { label: t('repoIntelligence.complexityMedium'), className: 'repo-intelligence__complexity-tag--medium' },
+        high: { label: t('repoIntelligence.complexityHigh'), className: 'repo-intelligence__complexity-tag--high' },
+    }
+
+    const activityConfig = {
+        bug: { label: t('repoIntelligence.activityBug'), className: 'repo-intelligence__activity-tag--bug', dotClass: 'repo-intelligence__activity-dot--bug' },
+        pr: { label: t('repoIntelligence.activityPr'), className: 'repo-intelligence__activity-tag--pr', dotClass: 'repo-intelligence__activity-dot--pr' },
+        commit: { label: t('repoIntelligence.activityCommit'), className: 'repo-intelligence__activity-tag--commit', dotClass: 'repo-intelligence__activity-dot--commit' },
+        review: { label: t('repoIntelligence.activityReview'), className: 'repo-intelligence__activity-tag--review', dotClass: 'repo-intelligence__activity-dot--review' },
+    }
+
+    const sortedModules = [...(data?.modules ?? [])].sort((a, b) => {
+        if (sortBy === 'bugRate') return b.bugRate - a.bugRate
+        if (sortBy === 'changes') return b.changeCount - a.changeCount
         return 0
     })
 
     return (
-        <div style={{ borderRadius: 6, overflow: 'hidden', backgroundColor: '#fff', margin: 20 }}>
+        <div className="repo-intelligence">
 
-            {/* Header */}
-            <Flex
-                align="center"
-                justify="space-between"
-                style={{ padding: '14px 20px', borderBottom: '1px solid #f0f0f0' }}
-            >
-                <Flex align="center" gap={10}>
-                    <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#0F6E56', flexShrink: 0 }} />
+            <Flex align="center" justify="space-between" className="repo-intelligence__header">
+                <Flex align="center" gap={10} className="repo-intelligence__header-left">
+                    <div className={`repo-intelligence__dot ${selectedRepo ? 'repo-intelligence__dot--active' : ''}`} />
                     <Flex vertical align="flex-start" gap={2}>
-                        <Text strong style={{ fontSize: 15 }}>Repo Intelligence</Text>
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                            myorg/backend-api · engineering dashboard
+                        <Text strong className="repo-intelligence__title">
+                            {t('repoIntelligence.title')}
+                        </Text>
+                        <Text type="secondary" className="repo-intelligence__subtitle">
+                            {selectedRepo
+                                ? t('repoIntelligence.subtitle', { repo: selectedRepo })
+                                : t('repoIntelligence.selectRepoFirst')
+                            }
                         </Text>
                     </Flex>
                 </Flex>
-                <Flex align="center" gap={8}>
+
+                <Flex align="center" gap={8} className="repo-intelligence__header-actions">
                     <Select
                         value={period}
                         onChange={setPeriod}
                         size="small"
-                        style={{ width: 110 }}
+                        disabled={!selectedRepo || loading}
+                        className="repo-intelligence__period-select"
                         options={[
-                            { value: '7d',  label: 'Son 7 gün'  },
-                            { value: '30d', label: 'Son 30 gün' },
-                            { value: '90d', label: 'Son 90 gün' },
+                            { value: '7d', label: t('repoIntelligence.period7d') },
+                            { value: '30d', label: t('repoIntelligence.period30d') },
+                            { value: '90d', label: t('repoIntelligence.period90d') },
                         ]}
                     />
-                    <Tag style={{ background: '#e1f5ee', color: '#0F6E56', border: '1px solid #9FE1CB' }}>
-                        Canlı
+                    <Tag className="repo-intelligence__live-tag">
+                        {t('repoIntelligence.live')}
                     </Tag>
                 </Flex>
             </Flex>
 
-            <Flex vertical gap={16} style={{ padding: 20 }}>
+            <Flex vertical gap={16} className="repo-intelligence__body">
 
-                {/* Üst metrik kartlar */}
-                <Flex gap={10}>
-                    <Card size="small" style={{ flex: 1, background: '#fef2f2', border: '1px solid #fecaca' }}>
-                        <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Toplam bug</Text>
-                        <Text style={{ fontSize: 22, fontWeight: 500, color: '#dc2626' }}>38</Text>
-                        <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>+4 bu hafta</Text>
-                    </Card>
-                    <Card size="small" style={{ flex: 1, background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-                        <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Ortalama coverage</Text>
-                        <Text style={{ fontSize: 22, fontWeight: 500, color: '#16a34a' }}>%78</Text>
-                        <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>+3% bu ay</Text>
-                    </Card>
-                    <Card size="small" style={{ flex: 1, background: '#f9fafb' }}>
-                        <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Açık PR</Text>
-                        <Text style={{ fontSize: 22, fontWeight: 500 }}>7</Text>
-                        <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>2 review bekliyor</Text>
-                    </Card>
-                    <Card size="small" style={{ flex: 1, background: '#f9fafb' }}>
-                        <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Toplam commit</Text>
-                        <Text style={{ fontSize: 22, fontWeight: 500 }}>172</Text>
-                        <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>bu ay</Text>
-                    </Card>
-                    <Card size="small" style={{ flex: 1, background: '#fffbeb', border: '1px solid #fde68a' }}>
-                        <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Risk skoru</Text>
-                        <Text style={{ fontSize: 22, fontWeight: 500, color: '#d97706' }}>64</Text>
-                        <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Orta seviye</Text>
-                    </Card>
-                </Flex>
-
-                {/* Module health + Hotspots yan yana */}
-                <Flex gap={16} style={{ alignItems: 'stretch' }}>
-
-                    {/* Module health tablosu */}
-                    <Flex vertical gap={8} style={{ flex: 2 }}>
-                        <Flex align="center" justify="space-between">
-                            <Text style={{ fontSize: 14, fontWeight: 500, display: 'block' }}>MODULE HEALTH</Text>
-                            <Select
-                                value={sortBy}
-                                onChange={setSortBy}
-                                size="small"
-                                style={{ width: 140 }}
-                                options={[
-                                    { value: 'bugRate',  label: 'Bug rate'   },
-                                    { value: 'coverage', label: 'Coverage'   },
-                                    { value: 'changes',  label: 'Değişiklik' },
-                                ]}
-                            />
-                        </Flex>
-                        <div style={{ maxHeight: 300, overflowY: 'auto' }}>
-                            {sortedModules.map((mod) => (
-                                <div
-                                    key={mod.name}
-                                    style={{
-                                        padding: '10px 12px',
-                                        borderBottom: '1px solid #f0f0f0',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    <Flex align="center" justify="space-between" style={{ marginBottom: 6 }}>
-                                        <Flex align="center" gap={8}>
-                                            <FileOutlined style={{ color: '#9ca3af', fontSize: 13 }} />
-                                            <Text code style={{ fontSize: 12 }}>{mod.name}</Text>
-                                            <Text type="secondary" style={{ fontSize: 11 }}>{mod.path}</Text>
-                                        </Flex>
-                                        <Flex align="center" gap={6}>
-                                            <Tag color={COMPLEXITY_CONFIG[mod.complexity].color} style={{ margin: 0, fontSize: 10 }}>
-                                                {COMPLEXITY_CONFIG[mod.complexity].label}
-                                            </Tag>
-                                            <Flex align="center" gap={4}>
-                                                <ClockCircleOutlined style={{ fontSize: 10, color: '#9ca3af' }} />
-                                                <Text type="secondary" style={{ fontSize: 10 }}>{mod.lastChanged}</Text>
-                                            </Flex>
-                                        </Flex>
-                                    </Flex>
-                                    <Flex gap={16}>
-                                        <Flex align="center" gap={6} style={{ flex: 1 }}>
-                                            <BugOutlined style={{ fontSize: 11, color: '#dc2626' }} />
-                                            <Text type="secondary" style={{ fontSize: 11 }}>Bug rate</Text>
-                                            <Progress
-                                                percent={mod.bugRate}
-                                                size="small"
-                                                showInfo={false}
-                                                strokeColor={mod.bugRate > 20 ? '#dc2626' : mod.bugRate > 10 ? '#d97706' : '#16a34a'}
-                                                style={{ flex: 1, margin: 0 }}
-                                            />
-                                            <Text style={{ fontSize: 11, fontWeight: 500, minWidth: 28 }}>%{mod.bugRate}</Text>
-                                        </Flex>
-                                        <Flex align="center" gap={6} style={{ flex: 1 }}>
-                                            <Text type="secondary" style={{ fontSize: 11 }}>Coverage</Text>
-                                            <Progress
-                                                percent={mod.coverage}
-                                                size="small"
-                                                showInfo={false}
-                                                strokeColor={mod.coverage > 80 ? '#16a34a' : mod.coverage > 60 ? '#d97706' : '#dc2626'}
-                                                style={{ flex: 1, margin: 0 }}
-                                            />
-                                            <Text style={{ fontSize: 11, fontWeight: 500, minWidth: 28 }}>%{mod.coverage}</Text>
-                                        </Flex>
-                                    </Flex>
-                                </div>
-                            ))}
-                        </div>
-                    </Flex>
-
-                    {/* Hotspots */}
-                    <Flex vertical gap={8} style={{ flex: 1 }}>
-                        <Text style={{ fontSize: 14, fontWeight: 500, display: 'block' }}>BUG HOTSPOTS</Text>
-                        <Card size="small" style={{ background: '#fef2f2', flex: 1 }}>
-                            <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 12 }}>
-                                Payment module toplam bugların %30'una neden oluyor
+                {loading ? (
+                    <Flex align="center" justify="center" className="repo-intelligence__loading">
+                        <Flex vertical align="center" gap={12}>
+                            <Spin indicator={<LoadingOutlined style={{ fontSize: 28 }} spin />} />
+                            <Text type="secondary" className="repo-intelligence__loading-text">
+                                {t('repoIntelligence.analyzing')}
                             </Text>
-                            <Flex vertical gap={10}>
-                                {MOCK_HOTSPOTS.map((h) => (
-                                    <div key={h.file}>
-                                        <Flex align="center" justify="space-between" style={{ marginBottom: 4 }}>
-                                            <Text code style={{ fontSize: 11 }}>{h.file}</Text>
-                                            <Flex align="center" gap={4}>
-                                                <BugOutlined style={{ fontSize: 10, color: '#dc2626' }} />
-                                                <Text style={{ fontSize: 11, color: '#dc2626', fontWeight: 500 }}>{h.bugCount}</Text>
-                                            </Flex>
-                                        </Flex>
-                                        <Progress
-                                            percent={h.percentage}
-                                            size="small"
-                                            showInfo={false}
-                                            strokeColor="#dc2626"
-                                        />
-                                    </div>
-                                ))}
-                            </Flex>
-                        </Card>
+                        </Flex>
                     </Flex>
-
-                </Flex>
-
-                {/* Activity + Contributors yan yana */}
-                <Flex gap={16} style={{ alignItems: 'stretch' }}>
-
-                    {/* Son aktiviteler */}
-                    <Flex vertical gap={8} style={{ flex: 2 }}>
-                        <Text style={{ fontSize: 14, fontWeight: 500, display: 'block' }}>SON AKTİVİTELER</Text>
-                        <div style={{ maxHeight: 260, overflowY: 'auto' }}>
-                            <List
-                                dataSource={MOCK_ACTIVITY}
-                                split
-                                renderItem={(item) => (
-                                    <List.Item style={{ padding: 0 }}>
-                                        <Flex align="flex-start" gap={10} style={{ padding: '10px 0', width: '100%' }}>
-                                            <div style={{
-                                                width: 7, height: 7, borderRadius: '50%',
-                                                background: ACTIVITY_CONFIG[item.type].color,
-                                                marginTop: 5, flexShrink: 0,
-                                            }} />
-                                            <Flex align="center" justify="space-between" style={{ flex: 1 }}>
-                                                <Flex vertical gap={2}>
-                                                    <Flex align="center" gap={6}>
-                                                        <Tag
-                                                            style={{
-                                                                fontSize: 10,
-                                                                margin: 0,
-                                                                padding: '0 5px',
-                                                                color: ACTIVITY_CONFIG[item.type].color,
-                                                                borderColor: ACTIVITY_CONFIG[item.type].color,
-                                                                background: 'transparent',
-                                                            }}
-                                                        >
-                                                            {ACTIVITY_CONFIG[item.type].label}
-                                                        </Tag>
-                                                        <Text style={{ fontSize: 13 }}>{item.message}</Text>
-                                                    </Flex>
-                                                    <Text code style={{ fontSize: 11 }}>{item.file}</Text>
-                                                </Flex>
-                                                <Text type="secondary" style={{ fontSize: 11, flexShrink: 0, marginLeft: 12 }}>
-                                                    {item.timeAgo}
-                                                </Text>
-                                            </Flex>
-                                        </Flex>
-                                    </List.Item>
-                                )}
-                            />
-                        </div>
+                ) : !data ? (
+                    <Flex align="center" justify="center" className="repo-intelligence__loading">
+                        <Flex vertical align="center" gap={8}>
+                            <GithubOutlined className="repo-intelligence__empty-icon" />
+                            <Text type="secondary" className="repo-intelligence__empty-text">
+                                {t('repoIntelligence.selectRepoFirst')}
+                            </Text>
+                        </Flex>
                     </Flex>
+                ) : (
+                    <>
+                        {/* ── Metrics ── */}
+                        <Flex gap={10} wrap="wrap" className="repo-intelligence__metrics-row">
+                            <Card size="small" className="repo-intelligence__metric-card repo-intelligence__metric-card--success">
+                                <Text type="secondary" className="repo-intelligence__metric-label">{t('repoIntelligence.totalBugs')}</Text>
+                                <Text className="repo-intelligence__metric-value repo-intelligence__metric-value--success">{data?.metrics?.totalBugs}</Text>
+                                <Text type="secondary" className="repo-intelligence__metric-footnote">{t('repoIntelligence.bugsThisWeek', { count: data?.metrics?.bugsThisWeek })}</Text>
+                            </Card>
+                            <Card size="small" className="repo-intelligence__metric-card repo-intelligence__metric-card--success">
+                                <Text type="secondary" className="repo-intelligence__metric-label">{t('repoIntelligence.openPr')}</Text>
+                                <Text className="repo-intelligence__metric-value">{data?.metrics?.openPrs}</Text>
+                                <Text type="secondary" className="repo-intelligence__metric-footnote">{t('repoIntelligence.reviewsWaiting', { count: data?.metrics?.reviewsWaiting })}</Text>
+                            </Card>
+                            <Card size="small" className="repo-intelligence__metric-card repo-intelligence__metric-card--success">
+                                <Text type="secondary" className="repo-intelligence__metric-label">{t('repoIntelligence.totalCommits')}</Text>
+                                <Text className="repo-intelligence__metric-value">{data?.metrics?.totalCommits}</Text>
+                                <Text type="secondary" className="repo-intelligence__metric-footnote">{t('repoIntelligence.thisPeriod')}</Text>
+                            </Card>
+                            <Card size="small" className={`repo-intelligence__metric-card repo-intelligence__metric-card--${data?.metrics?.riskScore > 66 ? 'danger' :
+                                data?.metrics?.riskScore > 33 ? 'warning' : 'success'
+                                }`}>
+                                <Text type="secondary" className="repo-intelligence__metric-label">{t('repoIntelligence.riskScore')}</Text>
+                                <Text className={`repo-intelligence__metric-value ${data?.metrics?.riskScore > 66 ? 'repo-intelligence__metric-value--danger' :
+                                    data?.metrics?.riskScore > 33 ? 'repo-intelligence__metric-value--warning' :
+                                        'repo-intelligence__metric-value--success'
+                                    }`}>
+                                    {data?.metrics?.riskScore}
+                                </Text>
+                                <Text type="secondary" className="repo-intelligence__metric-footnote">{data?.metrics?.riskLabel}</Text>
+                            </Card>
+                        </Flex>
 
-                    {/* Contributors */}
-                    <Flex vertical gap={8} style={{ flex: 1 }}>
-                        <Text style={{ fontSize: 14, fontWeight: 500, display: 'block' }}>CONTRIBUTORS</Text>
-                        <div style={{ maxHeight: 260, overflowY: 'auto' }}>
-                            {MOCK_CONTRIBUTORS.map((c) => (
-                                <div key={c.name} style={{ padding: '10px 0', borderBottom: '1px solid #f0f0f0' }}>
-                                    <Flex align="center" justify="space-between" style={{ marginBottom: 6 }}>
-                                        <Flex align="center" gap={8}>
-                                            <div style={{
-                                                width: 28, height: 28, borderRadius: '50%',
-                                                background: '#e1f5ee',
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                fontSize: 11, fontWeight: 500, color: '#0F6E56', flexShrink: 0,
-                                            }}>
-                                                {c.name.slice(0, 2).toUpperCase()}
-                                            </div>
-                                            <Text style={{ fontSize: 13 }}>{c.name}</Text>
-                                        </Flex>
-                                        <Text type="secondary" style={{ fontSize: 11 }}>
-                                            {c.commits} commit · {c.prs} PR
-                                        </Text>
-                                    </Flex>
-                                    <Progress
-                                        percent={c.percentage}
+                        <Flex gap={16} className="repo-intelligence__top-row">
+
+                            {/* Module Health */}
+                            <Flex vertical gap={8} className="repo-intelligence__modules-col">
+                                <Flex align="center" justify="space-between" className="repo-intelligence__section-head">
+                                    <Text className="repo-intelligence__section-title">{t('repoIntelligence.moduleHealth')}</Text>
+                                    <Select
+                                        value={sortBy}
+                                        onChange={setSortBy}
                                         size="small"
-                                        strokeColor="#0F6E56"
-                                        format={(p) => `%${p}`}
+                                        className="repo-intelligence__sort-select"
+                                        options={[
+                                            { value: 'bugRate', label: t('repoIntelligence.sortBugRate') },
+                                            { value: 'changes', label: t('repoIntelligence.sortChanges') },
+                                        ]}
+                                    />
+                                </Flex>
+
+                                <div className="repo-intelligence__modules-scroll">
+                                    {sortedModules?.map((mod) => (
+                                        <div key={mod?.name} className="repo-intelligence__module-item">
+                                            <Flex align="center" justify="space-between" className="repo-intelligence__module-head">
+                                                <Flex align="center" gap={8} className="repo-intelligence__module-head-left">
+                                                    <FileOutlined className="repo-intelligence__file-icon" />
+                                                    <Text code className="repo-intelligence__module-name">{mod?.name}</Text>
+                                                    <Text type="secondary" className="repo-intelligence__module-path">{mod?.path}</Text>
+                                                </Flex>
+                                                <Flex align="center" gap={12} className="repo-intelligence__module-head-right">
+                                                    <Tag className={`repo-intelligence__complexity-tag ${complexityConfig[mod?.complexity].className}`}>
+                                                        {complexityConfig[mod?.complexity].label}
+                                                    </Tag>
+                                                    <Text type="secondary" className="repo-intelligence__module-time">{mod?.lastChanged}</Text>
+                                                </Flex>
+                                            </Flex>
+
+                                            <Flex gap={16} className="repo-intelligence__module-metrics">
+                                                <Flex align="center" gap={6} className="repo-intelligence__metric-inline">
+                                                    <BugOutlined className="repo-intelligence__bug-icon" />
+                                                    <Text type="secondary" className="repo-intelligence__inline-label">{t('repoIntelligence.bugRate')}</Text>
+                                                    <Progress
+                                                        percent={mod?.bugRate}
+                                                        size="small"
+                                                        showInfo={false}
+                                                        className={`repo-intelligence__progress ${mod?.bugRate > 20 ? 'repo-intelligence__progress--danger' :
+                                                            mod?.bugRate > 10 ? 'repo-intelligence__progress--warning' :
+                                                                'repo-intelligence__progress--success'
+                                                            }`}
+                                                    />
+                                                    <Text className="repo-intelligence__inline-value">%{mod?.bugRate}</Text>
+                                                </Flex>
+                                            </Flex>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Flex>
+
+                            {/* Bug Hotspots */}
+                            <Flex vertical gap={8} className="repo-intelligence__hotspots-col">
+                                <Text className="repo-intelligence__section-title">{t('repoIntelligence.bugHotspots')}</Text>
+                                <Card size="small" className="repo-intelligence__hotspots-card">
+                                    <Text type="secondary" className="repo-intelligence__hotspots-summary">{t('repoIntelligence.hotspotSummary')}</Text>
+                                    <Flex vertical gap={10}>
+                                        {data?.hotspots?.length === 0 ? (
+                                            <Text type="secondary" className="repo-intelligence__empty-text">
+                                                {t('repoIntelligence.noHotspots')}
+                                            </Text>
+                                        ) : data?.hotspots?.map((item) => (
+                                            <div key={item?.file}>
+                                                <Flex align="center" justify="space-between" className="repo-intelligence__hotspot-head">
+                                                    <Text code className="repo-intelligence__hotspot-file">{item?.file}</Text>
+                                                    <Flex align="center" gap={4}>
+                                                        <BugOutlined className="repo-intelligence__bug-icon" />
+                                                        <Text className="repo-intelligence__hotspot-count">{item?.bugCount}</Text>
+                                                    </Flex>
+                                                </Flex>
+                                                <Progress
+                                                    percent={item?.percentage}
+                                                    size="small"
+                                                    showInfo={false}
+                                                    className="repo-intelligence__progress repo-intelligence__progress--danger"
+                                                />
+                                            </div>
+                                        ))}
+                                    </Flex>
+                                </Card>
+                            </Flex>
+                        </Flex>
+
+                        {/* ── Bottom Row ── */}
+                        <Flex gap={16} className="repo-intelligence__bottom-row">
+
+                            {/* Recent Activity */}
+                            <Flex vertical gap={8} className="repo-intelligence__activity-col">
+                                <Text className="repo-intelligence__section-title">{t('repoIntelligence.recentActivities')}</Text>
+                                <div className="repo-intelligence__activity-scroll">
+                                    <List
+                                        dataSource={data.activity}
+                                        split
+                                        locale={{ emptyText: t('repoIntelligence.noActivity') }}
+                                        renderItem={(item) => (
+                                            <List.Item className="repo-intelligence__activity-list-item">
+                                                <Flex align="flex-start" gap={10} className="repo-intelligence__activity-item">
+                                                    <div className={`repo-intelligence__activity-dot ${activityConfig[item?.type]?.dotClass}`} />
+                                                    <Flex align="center" justify="space-between" className="repo-intelligence__activity-content">
+                                                        <Flex gap={2} className="repo-intelligence__activity-content-left">
+                                                            <Flex align="center" gap={6} wrap="wrap">
+                                                                <Tag className={`repo-intelligence__activity-tag ${activityConfig[item?.type]?.className}`}>
+                                                                    {activityConfig[item?.type]?.label}
+                                                                </Tag>
+                                                                <Text className="repo-intelligence__activity-message">{item?.message}</Text>
+                                                            </Flex>
+                                                            {item?.file && (
+                                                                <Text code className="repo-intelligence__activity-file">{item?.file}</Text>
+                                                            )}
+                                                        </Flex>
+                                                        <Text type="secondary" className="repo-intelligence__activity-time">{item?.timeAgo}</Text>
+                                                    </Flex>
+                                                </Flex>
+                                            </List.Item>
+                                        )}
                                     />
                                 </div>
-                            ))}
-                        </div>
-                    </Flex>
+                            </Flex>
 
-                </Flex>
-
+                            {/* Contributors */}
+                            <Flex vertical gap={8} className="repo-intelligence__contributors-col">
+                                <Text className="repo-intelligence__section-title">{t('repoIntelligence.contributors')}</Text>
+                                <div className="repo-intelligence__contributors-scroll">
+                                    {data?.contributors?.map((c) => (
+                                        <Flex vertical key={c?.name} className="repo-intelligence__contributor-item">
+                                            <Flex align="center" justify="space-between" className="repo-intelligence__contributor-head">
+                                                <Flex align="center" gap={8}>
+                                                    <div className="repo-intelligence__avatar">
+                                                        {c?.name?.slice(0, 2)?.toUpperCase()}
+                                                    </div>
+                                                    <Text className="repo-intelligence__contributor-name">{c?.name}</Text>
+                                                </Flex>
+                                                <Text type="secondary" className="repo-intelligence__contributor-meta">
+                                                    {t('repoIntelligence.commitsAndPrs', { commits: c?.commits, prs: c?.prs })}
+                                                </Text>
+                                            </Flex>
+                                            <Progress
+                                                percent={c?.percentage}
+                                                size="small"
+                                                className="repo-intelligence__progress repo-intelligence__progress--brand"
+                                                format={(p) => `%${p}`}
+                                            />
+                                        </Flex>
+                                    ))}
+                                </div>
+                            </Flex>
+                        </Flex>
+                    </>
+                )}
             </Flex>
         </div>
     )

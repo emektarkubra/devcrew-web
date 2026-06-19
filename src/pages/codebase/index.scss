@@ -1,111 +1,286 @@
+@import '../../assets/style/variables';
+
 .codebase-qa {
   border-radius: 6px;
   overflow: hidden;
-  background-color: #fff;
+  border: 1px solid $gh-light-border;
+  background-color: $gh-light-bg-primary;
   margin: 20px;
+
+  @apply dark:bg-gh-bg-secondary dark:border-gh-border;
+
+  // header
 
   &__header {
     padding: 14px 20px;
-    border-bottom: 1px solid #f0f0f0;
-  }
+    border-bottom: 1px solid $gh-light-border;
+    background-color: $gh-light-bg-secondary;
 
-  &__dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: #185FA5;
-    flex-shrink: 0;
+    @apply dark:bg-gh-bg-tertiary dark:border-gh-border;
   }
 
   &__body {
     padding: 20px;
   }
 
-  &__chip {
-    cursor: pointer;
-    border-radius: 20px !important;
-    padding: 2px 10px !important;
+  // status fot
+
+  &__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+
+    &--idle {
+      background: $gh-light-blue;
+      box-shadow: 0 0 6px $gh-light-blue(9, 105, 218, 0.4);
+
+      @apply dark:bg-gh-text-muted;
+    }
+
+    &--indexing {
+
+      background: $gh-light-yellow;
+      box-shadow: 0 0 6px gh-light-yellow(9, 105, 218, 0.4);
+      animation: pulse 1.2s infinite;
+
+      @apply dark:bg-gh-yellow-text;
+    }
+
+    &--ready {
+      background: $gh-light-green;
+      box-shadow: 0 0 6px $gh-light-green(9, 105, 218, 0.4);
+
+      @apply dark:bg-gh-green-text;
+    }
   }
 
-  &__response {
-    margin-top: 30px;
+  @keyframes pulse {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.4;
+    }
   }
 
-  &__response-label {
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    display: block !important;
-    align-self: flex-start;
+  // status tag
+
+  &__status-tag {
+    font-size: 13px;
+    padding: 4px 10px;
+    font-weight: 500;
+
+    &--idle {
+      background-color: $gh-light-bg-tertiary;
+      border-color: $gh-light-border;
+      color: $gh-light-text-muted;
+
+      @apply dark:bg-gh-bg-primary dark:border-gh-border dark:text-gh-text-secondary;
+    }
+
+    &--indexing {
+      background-color: $gh-light-yellow-bg;
+      border-color: $gh-light-yellow-border;
+      color: $gh-light-yellow-text;
+
+      @apply dark:bg-gh-yellow-bg dark:border-gh-yellow-border dark:text-gh-yellow-text;
+
+      .anticon-loading {
+        @apply dark:text-gh-yellow-text;
+      }
+    }
+
+    &--ready {
+
+      background-color: $gh-light-green-bg;
+      border-color: $gh-light-green-border;
+      color: $gh-light-green;
+
+      @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text;
+
+      .anticon-check-circle {
+        @apply dark:text-gh-green-text;
+      }
+    }
   }
 
-  &__response-card {
-    background: #f9fafb !important;
+  // labels
+
+  &__section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: $gh-light-text-muted;
+    text-align: left;
+
+    @apply dark:text-gh-text-muted;
   }
 
-  &__response-paragraph {
-    font-size: 14px !important;
-  }
 
-  &__file-item {
-    margin-bottom: 6px;
-    background-color: #fff;
-    padding: 20px;
-  }
+  // select
 
-  &__file-avatar {
-    background: #dbeafe !important;
-    color: #1d4ed8 !important;
-    flex-shrink: 0;
-  }
-
-  &__file-name {
-    font-size: 12px !important;
-    font-weight: 500 !important;
-  }
-
-  &__file-meta {
-    font-size: 11px !important;
-  }
-
-  &__spin {
-    padding: 12px 0;
-  }
-
-  &__history-label {
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    display: block !important;
-    align-self: flex-start;
-  }
-
-  &__history-item {
-    padding: 10px 0;
-    cursor: pointer;
+  &__select {
     width: 100%;
   }
 
-  &__history-dot {
-    width: 7px;
-    height: 7px;
+  &__lang-dot {
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    background: #d1d5db;
-    margin-top: 6px;
     flex-shrink: 0;
   }
 
+  &__lang-text {
+    font-size: 12px;
+    color: $gh-light-text-muted;
+
+    @apply dark:text-gh-text-muted;
+  }
+
+  &__history-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  // button
+
+  &__btn {
+    background: $gh-light-green !important;
+    border-color: $gh-light-green !important;
+    align-self: flex-start;
+
+    @apply dark:bg-gh-green dark:border-gh-green-border text-gh-text-primary !important;
+
+    &:hover {
+      background: $gh-light-green-hover !important;
+      @apply dark:bg-gh-light-green !important;
+    }
+
+    &.ant-btn-disabled,
+    &[disabled] {
+      background: $gh-light-bg-tertiary;
+      border-color: $gh-light-border;
+      color: $gh-light-text-muted;
+
+      @apply dark:bg-gh-bg-tertiary dark:border-gh-border dark:text-gh-text-muted !important;
+    }
+  }
+
+  // chips
+
+  &__chip {
+    cursor: pointer;
+    border-radius: 20px;
+    padding: 3px 10px;
+
+    &:hover {
+      background-color: $gh-light-blue-bg;
+      border-color: $gh-light-blue-border;
+      color: $gh-light-blue-text;
+
+      @apply dark:bg-gh-blue-bg dark:border-gh-blue-border dark:text-gh-blue-text;
+    }
+  }
+
+  // response
+
+  &__response-card {
+    background: $gh-light-bg-secondary;
+    border-color: $gh-light-border;
+
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border;
+  }
+
+  &__response-paragraph {
+    color: $gh-light-text-primary;
+
+    @apply dark:text-gh-text-primary;
+  }
+
+  // file
+
+  &__file-item {
+    background-color: $gh-light-bg-primary !important;
+    border: 1px solid $gh-light-border !important;
+    padding: 5px;
+
+    @apply dark:bg-gh-bg-secondary dark:border-gh-border !important;
+
+  }
+
+  &__file-avatar {
+    background: $gh-light-blue-bg !important;
+    color: $gh-light-blue !important;
+
+    @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text !important;
+
+    .anticon {
+
+      @apply dark:bg-gh-green-bg dark:border-gh-green-border dark:text-gh-green-text !important;
+    }
+  }
+
+  // gh-light-blue
+
+  &__file-name {
+    color: $gh-light-blue;
+    @apply dark:text-gh-blue-text;
+  }
+
+  &__file-meta {
+    color: $gh-light-text-muted;
+    @apply dark:text-gh-text-muted;
+  }
+
+  // history
+
+  &__history-item {
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+      background: $gh-light-bg-tertiary;
+      @apply dark:bg-gh-bg-tertiary;
+    }
+
+    &--active {
+      background: $gh-light-bg-tertiary !important;
+      @apply dark:bg-gh-bg-tertiary !important;
+
+
+
+      .debugging__history-error {
+        color: $gh-light-red;
+        @apply dark:text-gh-text-primary !important;
+      }
+    }
+  }
+
+  &__history-dot {
+    background: $gh-light-text-muted;
+
+    @apply dark:bg-gh-text-muted;
+
+    &--active {
+      background: $gh-light-blue;
+      @apply dark:bg-gh-blue-text;
+    }
+  }
+
   &__history-question {
-    font-size: 13px !important;
+    color: $gh-light-text-primary;
+    @apply dark:text-gh-text-primary;
   }
 
   &__history-meta {
-    font-size: 11px !important;
-  }
-
-  &__search-prefix {
-    color: #9ca3af;
-  }
-
-  &__btn {
-    background: #185FA5 !important;
+    color: $gh-light-text-muted;
+    @apply dark:text-gh-text-muted;
   }
 }

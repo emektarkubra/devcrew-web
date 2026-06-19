@@ -3,9 +3,9 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="icon" href="/src/assets/images/github_logo.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Project Name</title>
+  <title>Devcrew</title>
   <script src="config.js"></script>
 </head>
 
@@ -14,5 +14,19 @@
   <script type="module" src="/src/main.tsx"></script>
 
 </body>
+
+
+<script>
+  (function () {
+    try {
+      const theme = localStorage.getItem('theme');
+      const parsed = theme ? theme : 'dark';
+
+      document.documentElement.classList.toggle('dark', parsed === 'dark');
+    } catch (e) {
+      document.documentElement.classList.add('dark');
+    }
+  })();
+</script>
 
 </html>

@@ -10,5 +10,9 @@ h3,
 h4,
 h5,
 h6 {
-    color: $dark-gray !important;
+    color: $gh-light-text-secondary !important;
+}
+
+body {
+    @apply dark:bg-gh-bg-secondary
 }
