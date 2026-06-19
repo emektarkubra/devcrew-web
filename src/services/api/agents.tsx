@@ -147,7 +147,7 @@ class agents {
     static teamModeStream = (token: string, owner: string, repo: string, selectedAgents: string[]): EventSource => {
         const params = new URLSearchParams({ token, owner, repo, selected_agents: selectedAgents.join(',') })
         return new EventSource(
-            `${import.meta.env.VITE_API_URL ?? 'http://localhost:8000'}/agents/team-mode/stream?${params}`
+            `${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'}/agents/team-mode/stream?${params}`
         )
     }
 
